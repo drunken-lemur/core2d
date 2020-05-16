@@ -1,8 +1,11 @@
 // create web audio context
+// @ts-ignore
 const context = new AudioContext();
 const musicGainNode = context.createGain();
 const sfxGainNode = context.createGain();
+// @ts-ignore
 let testSoundBuffer = null;
+// @ts-ignore
 let testMusicBuffer = null;
 
 // set default music volume
@@ -27,27 +30,33 @@ const _base64ToArrayBuffer = (base64: string) => {
 };
 
 // load and play background music
+// noinspection JSIgnoredPromiseFromCall
 context.decodeAudioData(_base64ToArrayBuffer(encodedMusicFile), buffer => {
   testMusicBuffer = buffer;
 });
 
 // load test sound
+// noinspection JSIgnoredPromiseFromCall
 context.decodeAudioData(_base64ToArrayBuffer(encodedSoundFile), buffer => {
   testSoundBuffer = buffer;
 });
 
+// @ts-ignore
 const setMusicVolume = volume => {
   musicGainNode.gain.value = volume;
 };
 
+// @ts-ignore
 const setSfxVolume = volume => {
   sfxGainNode.gain.value = volume;
 };
 
 const playMusic = () => {
+  // @ts-ignore
   if (testMusicBuffer) {
     const source = context.createBufferSource();
     source.loop = true;
+    // @ts-ignore
     source.buffer = testMusicBuffer;
     source.connect(musicGainNode);
     musicGainNode.connect(context.destination);
@@ -56,8 +65,10 @@ const playMusic = () => {
 };
 
 const playSound = () => {
+  // @ts-ignore
   if (testSoundBuffer) {
     const source = context.createBufferSource();
+    // @ts-ignore
     source.buffer = testSoundBuffer;
     source.connect(sfxGainNode);
     sfxGainNode.connect(context.destination);

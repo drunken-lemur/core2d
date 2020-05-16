@@ -3,26 +3,22 @@ import {
   IDrawer,
   BaseView,
   IBoundsData,
+  randomColor,
   BaseBehavior,
-  Color
-} from "../core";
+} from "core";
 
 class View extends BaseView<Box> {
-  constructor(box: Box) {
-    super(box);
-
-    this.styles.strokeStyle = Color.Black;
-  }
-
   draw = (drawer: IDrawer, deltaTime: number) => {
-    super.draw(drawer, deltaTime);
+    const { x, y, w, h } = this.parent;
+    drawer.strokeStyle = randomColor();
+    drawer.strokeRect(x, y, w, h);
 
     return this;
   };
 }
 
 export class Box extends Entity {
-  constructor(bounds: IBoundsData) {
+  constructor(bounds?: IBoundsData) {
     super(bounds);
 
     this.setBehavior(new BaseBehavior(this)).setView(new View(this));

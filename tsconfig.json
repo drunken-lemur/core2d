@@ -1,15 +1,10 @@
 {
-  "include": [
-    "./src/*"
-  ],
+  "include": ["./src/*"],
   "compilerOptions": {
     "baseUrl": "src",
     "strict": true,
     "esModuleInterop": true,
-    "lib": [
-      "dom",
-      "esnext"
-    ],
+    "lib": ["dom", "esnext"],
     "jsx": "react",
     "target": "es5",
     "allowJs": true,

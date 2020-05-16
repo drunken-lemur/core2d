@@ -1,23 +1,20 @@
 import { IGame } from "./game";
 import { IDrawer } from "./drawer";
-import { ISizeData } from "./size";
 import { IEntity, Entity } from "./entity";
 
 export interface IScene extends IEntity {
   game: IGame;
 }
 
-export class Scene extends Entity implements IEntity {
+export class BaseScene extends Entity implements IEntity {
   game: IGame;
 
-  constructor(game: IGame, size?: ISizeData) {
+  constructor(game: IGame) {
     super();
 
     this.game = game;
 
-    if (size) {
-      this.setSize(size);
-    }
+    this.setSize(game.screen.getSize());
   }
 
   draw(drawer: IDrawer, deltaTime: number) {

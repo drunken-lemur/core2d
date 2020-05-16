@@ -7,7 +7,7 @@ import {
   ISizeData,
   randomColor,
   BaseBehavior
-} from "../../../core";
+} from "core";
 
 class View extends BaseView<Square> {
   draw = (drawer?: IDrawer, deltaTime?: number) => {

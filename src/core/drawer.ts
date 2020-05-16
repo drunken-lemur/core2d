@@ -18,6 +18,11 @@ export interface IDrawerData
     CanvasImageSmoothing,
     CanvasPathDrawingStylesData,
     CanvasShadowStyles,
-    CanvasTextDrawingStyles {}
+    CanvasTextDrawingStyles {
+  setStyle(style: IDrawerStyle): this;
+}
 
 export interface IDrawer extends CanvasRenderingContext2D {}
+
+export interface IDrawerStyle extends Partial<IDrawerData> {}
+

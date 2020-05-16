@@ -6,7 +6,7 @@ export interface ISizeData {
 }
 
 export interface ISize extends ISizeData, IWithToArray<number> {
-  get: () => ISizeData;
+  getSize: () => ISizeData;
   set: (size: ISizeData) => this;
   plus: (size: ISizeData) => this;
   minus: (size: ISizeData) => this;
@@ -53,7 +53,7 @@ export class Size implements ISize {
     }
   }
 
-  get = (): ISizeData => ({ w: this.w, h: this.h });
+  getSize = (): ISizeData => ({ w: this.w, h: this.h });
 
   set = (size: ISizeData) => {
     Object.assign(this, size);
@@ -93,7 +93,7 @@ export class Size implements ISize {
 
   swap = () => this.set({ w: this.h, h: this.w });
 
-  clone = () => new Size(this.get());
+  clone = () => new Size(this.getSize());
 
   eq = (size: ISizeData) => this.w === size.w && this.h === size.h;
 

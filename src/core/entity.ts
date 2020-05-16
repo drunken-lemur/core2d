@@ -67,14 +67,14 @@ export class Entity extends Bounds implements IEntity {
 
   isDisabled = () => !this.isEnabledState;
 
-  update (deltaTime: number) {
+  update(deltaTime: number) {
     if (this.isEnabledState) {
       this.behavior.update(deltaTime);
       this.children.forEach(children => children.update(deltaTime));
     }
 
     return this;
-  };
+  }
 
   toggleView = () => {
     this.isVisibleState = !this.isVisibleState;

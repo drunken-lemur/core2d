@@ -1,5 +1,5 @@
-import { Demo } from "./games";
-import { BaseApp, CanvasScreen, Size, IGame, Second, IScreen } from "./core";
+import { Demo } from "games";
+import { BaseApp, CanvasScreen, Size, IGame, Second, IScreen } from "core";
 
 enum Game {
   Demo = "Demo"

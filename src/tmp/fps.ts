@@ -62,7 +62,7 @@
 //   }
 
 //   // @ts-ignore
-//   get cursor_next() {
+//   getSize cursor_next() {
 //     return (this.cursor + 1) % (FPS.max + 1);
 //   }
 
@@ -73,7 +73,7 @@
 //   }
 
 //   // @ts-ignore
-//   get value() {
+//   getSize value() {
 //     const time = this.measures[this.cursor] - this.measures[this.cursor_next];
 //     return Math.floor((FPS.max * 1000) / time);
 //   }
@@ -98,6 +98,7 @@
 
 // - - - - - Variant 4 - - - - -
 
+// @ts-ignore
 const frameCount = (fastTimeStart?: number, preciseTimeStart?: number) => {
   let now = performance.now();
 

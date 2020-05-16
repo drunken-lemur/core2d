@@ -1,7 +1,8 @@
 import { IEntity } from "./entity";
 import { IDrawable } from "./drawable";
 import { IWithParent } from "./composite";
-import { IDrawer, IDrawerData } from "./drawer";
+import { IDrawer, IDrawerData, IDrawerStyle } from "./drawer";
+import { Color } from "core/color";
 
 export interface IWithView {
   setView: (view: IView) => this;
@@ -12,15 +13,24 @@ export interface IView<T extends IEntity = IEntity>
 
 export class BaseView<T extends IEntity = IEntity> implements IView<T> {
   parent: T;
-  protected styles: Partial<IDrawerData> = {};
 
   constructor(parent: T) {
     this.parent = parent;
   }
 
   draw(drawer: IDrawer, deltaTime: number) {
-    Object.assign(drawer, this.styles);
+    return this;
+  }
+}
+
+export abstract class StyledView<T extends IEntity = IEntity> extends BaseView<
+  T
+> {
+  protected abstract style: IDrawerStyle;
+
+  draw(drawer: IDrawer, deltaTime: number) {
+    super.draw(drawer, deltaTime);
 
     return this;
-  };
+  }
 }

@@ -1,4 +1,5 @@
 // Main Game Class
+// @ts-ignore
 enum Key {
   Up = 38,
   Right = 39,

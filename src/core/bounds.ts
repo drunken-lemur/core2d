@@ -151,7 +151,7 @@ export class Bounds implements IBounds {
     return { x, y, w, h };
   };
 
-  getSize = () => this.size.get();
+  getSize = () => this.size.getSize();
 
   getPosition = () => this.position.get();
 
@@ -315,7 +315,7 @@ export class Bounds implements IBounds {
 
   cloneBounds = () => new Bounds(this.getBounds());
 
-  cloneSize = () => new Size(this.size.get());
+  cloneSize = () => new Size(this.size.getSize());
 
   clonePosition = () => new Point(this.position.get());
 
