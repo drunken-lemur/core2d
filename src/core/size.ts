@@ -6,83 +6,83 @@ export interface ISizeData {
 }
 
 export interface ISize extends ISizeData, IWithToArray<number> {
-  getSize: () => ISizeData;
-  set: (size: ISizeData) => this;
-  plus: (size: ISizeData) => this;
-  minus: (size: ISizeData) => this;
-  multiply: (size: ISizeData) => this;
-  divide: (size: ISizeData) => this;
+  get: () => ISizeData;
+  set: (w: number | ISizeData, h?: number) => this;
+  plus: (w: number | ISizeData, h?: number) => this;
+  minus: (w: number | ISizeData, h?: number) => this;
+  multiply: (w: number | ISizeData, h?: number) => this;
+  divide: (w: number | ISizeData, h?: number) => this;
   invert: () => this;
   swap: () => this;
   clone: () => ISize;
-  eq: (size: ISizeData) => boolean;
-  min: (size: ISizeData) => this;
-  max: (size: ISizeData) => this;
+  eq: (w: number | ISizeData, h?: number) => boolean;
+  min: (w: number | ISizeData, h?: number) => this;
+  max: (w: number | ISizeData, h?: number) => this;
   invertW: () => this;
   invertH: () => this;
   ceil: () => this;
   round: () => this;
   floor: () => this;
-  lessThan: (size: ISizeData, orEqual: boolean) => boolean;
+  lessThan: (orEqual: boolean, w: number | ISizeData, h?: number) => boolean;
 }
 
 export class Size implements ISize {
   w: number;
   h: number;
 
-  static valueOf(w?: number | ISizeData, h: number = 0): ISizeData {
+  static valueOf(w: number | ISizeData = 0, h?: number): ISizeData {
     if (typeof w === "number") {
-      return { w, h };
-    } else if (w) {
-      return { w: w.w, h: w.h };
-    } else {
-      return { w: 0, h: 0 };
+      return { w, h: h || w };
     }
+
+    return { w: w.w, h: w.h };
   }
 
-  static objectOf(w?: number | ISizeData, h: number = 0): Size {
-    return new Size(Size.valueOf(w, h));
-  }
-
-  constructor(size?: ISizeData) {
+  constructor(w: number | ISizeData = 0, h?: number) {
     this.w = 0;
     this.h = 0;
 
-    if (size) {
-      this.set(size);
-    }
+    this.set(Size.valueOf(w, h));
   }
 
-  getSize = (): ISizeData => ({ w: this.w, h: this.h });
+  get = (): ISizeData => ({ w: this.w, h: this.h });
 
-  set = (size: ISizeData) => {
-    Object.assign(this, size);
+  set = (w: number | ISizeData, h?: number) => {
+    Object.assign(this, Size.valueOf(w, h));
 
     return this;
   };
 
-  plus = (size: ISizeData) => {
+  plus = (w: number | ISizeData, h?: number) => {
+    const size = Size.valueOf(w, h);
+
     this.w += size.w;
     this.h += size.h;
 
     return this;
   };
 
-  minus = (size: ISizeData) => {
+  minus = (w: number | ISizeData, h?: number) => {
+    const size = Size.valueOf(w, h);
+
     this.w -= size.w;
     this.h -= size.h;
 
     return this;
   };
 
-  multiply = (size: ISizeData) => {
+  multiply = (w: number | ISizeData, h?: number) => {
+    const size = Size.valueOf(w, h);
+
     this.w *= size.w;
     this.h *= size.h;
 
     return this;
   };
 
-  divide = (size: ISizeData) => {
+  divide = (w: number | ISizeData, h?: number) => {
+    const size = Size.valueOf(w, h);
+
     this.w /= size.w;
     this.h /= size.h;
 
@@ -93,18 +93,26 @@ export class Size implements ISize {
 
   swap = () => this.set({ w: this.h, h: this.w });
 
-  clone = () => new Size(this.getSize());
+  clone = () => new Size(this.get());
 
-  eq = (size: ISizeData) => this.w === size.w && this.h === size.h;
+  eq = (w: number | ISizeData, h?: number) => {
+    const size = Size.valueOf(w, h);
 
-  min = (size: ISizeData) => {
+    return this.w === size.w && this.h === size.h;
+  };
+
+  min = (w: number | ISizeData, h?: number) => {
+    const size = Size.valueOf(w, h);
+
     this.w = Math.min(this.w, size.w);
     this.h = Math.min(this.h, size.h);
 
     return this;
   };
 
-  max = (size: ISizeData) => {
+  max = (w: number | ISizeData, h?: number) => {
+    const size = Size.valueOf(w, h);
+
     this.w = Math.max(this.w, size.w);
     this.h = Math.max(this.h, size.h);
 
@@ -136,7 +144,9 @@ export class Size implements ISize {
     return this;
   };
 
-  lessThan = (size: ISizeData, orEqual: boolean = false) => {
+  lessThan = (orEqual: boolean, w: number | ISizeData, h?: number) => {
+    const size = Size.valueOf(w, h);
+
     if (orEqual) {
       return this.w <= size.w && this.h <= size.h;
     } else {

@@ -101,10 +101,14 @@ export class Entity extends Bounds implements IEntity {
   draw(drawer: IDrawer, deltaTime: number) {
     if (this.isVisibleState) {
       drawer.save();
+
       this.view.draw(drawer, deltaTime);
-      drawer.restore();
+
+      drawer.translate(this.x, this.y);
 
       this.children.forEach(children => children.draw(drawer, deltaTime));
+
+      drawer.restore();
     }
 
     return this;

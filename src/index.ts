@@ -1,11 +1,9 @@
 import { Demo } from "games";
-import { BaseApp, CanvasScreen, Size, IGame, Second, IScreen } from "core";
+import {BaseApp, CanvasScreen, Size, IGame, Second, IScreen, Resolutions} from "core";
 
 enum Game {
   Demo = "Demo"
 }
-
-const screenSize = Size.valueOf(300, 200);
 
 const games: Record<Game, (screen: IScreen) => IGame> = {
   Demo: screen => new Demo(screen)
@@ -31,7 +29,7 @@ class App extends BaseApp {
   }
 
   run = (gameName: Game) => {
-    const screen = new CanvasScreen(this.canvas, screenSize);
+    const screen = new CanvasScreen(this.canvas, Resolutions.$8x5.$640x400);
 
     const game = games[gameName](screen);
     game.start();

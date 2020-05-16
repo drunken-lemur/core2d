@@ -282,9 +282,9 @@ it("", () => void 0);
 //   const c = new Entity(view, behavior);
 //   const group = new Entity();
 //
-//   a.setSize(Size.valueOf(1, 2));
-//   b.setSize(Size.valueOf(3, 4));
-//   c.setSize(Size.valueOf(5, 6));
+//   a.set(Size.valueOf(1, 2));
+//   b.set(Size.valueOf(3, 4));
+//   c.set(Size.valueOf(5, 6));
 //
 //   group
 //     .add(a)

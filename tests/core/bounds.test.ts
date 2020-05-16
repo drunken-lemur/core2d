@@ -47,11 +47,11 @@ it("", () => void 0);
 //   expect(a.eqBounds(b)).toBeTruthy();
 // });
 //
-// it("eqSize", () => {
+// it("eq", () => {
 //   const a = Bounds.objectOf(1, 2, 3, 4);
 //   const b = Size.valueOf(3, 4);
 //
-//   expect(a.eqSize(b)).toBeTruthy();
+//   expect(a.eq(b)).toBeTruthy();
 // });
 //
 // it("eqPosition", () => {
@@ -69,12 +69,12 @@ it("", () => void 0);
 //   expect(a.eqBounds(Bounds.valueOf(1, 2, 3, 4))).toBeTruthy();
 // });
 //
-// it("setSize", () => {
+// it("set", () => {
 //   const a = new Bounds();
 //
-//   a.setSize(Size.valueOf(3, 4));
+//   a.set(Size.valueOf(3, 4));
 //
-//   expect(a.eqSize(Size.valueOf(3, 4))).toBeTruthy();
+//   expect(a.eq(Size.valueOf(3, 4))).toBeTruthy();
 // });
 //
 // it("setPosition", () => {
@@ -94,11 +94,11 @@ it("", () => void 0);
 //   expect(a.eqBounds(Bounds.valueOf(6, 8, 10, 12))).toBeTruthy();
 // });
 //
-// it("plusSize", () => {
+// it("plus", () => {
 //   const a = Bounds.objectOf(1, 2, 3, 4);
 //   const b = Size.valueOf(5, 6);
 //
-//   a.plusSize(b);
+//   a.plus(b);
 //
 //   expect(a.eqBounds(Bounds.valueOf(1, 2, 8, 10))).toBeTruthy();
 // });
@@ -121,11 +121,11 @@ it("", () => void 0);
 //   expect(a.eqBounds(Bounds.valueOf(-4, -4, -4, -4))).toBeTruthy();
 // });
 //
-// it("minusSize", () => {
+// it("minus", () => {
 //   const a = Bounds.objectOf(1, 2, 3, 4);
 //   const b = Size.valueOf(5, 6);
 //
-//   a.minusSize(b);
+//   a.minus(b);
 //
 //   expect(a.eqBounds(Bounds.valueOf(1, 2, -2, -2))).toBeTruthy();
 // });
@@ -148,11 +148,11 @@ it("", () => void 0);
 //   expect(a.eqBounds(Bounds.valueOf(4, 10, 18, 28))).toBeTruthy();
 // });
 //
-// it("multiplySize", () => {
+// it("multiply", () => {
 //   const a = Bounds.objectOf(1, 2, 3, 4);
 //   const b = Size.valueOf(5, 6);
 //
-//   a.multiplySize(b);
+//   a.multiply(b);
 //
 //   expect(a.eqBounds(Bounds.valueOf(1, 2, 15, 24))).toBeTruthy();
 // });
@@ -175,11 +175,11 @@ it("", () => void 0);
 //   expect(b.eqBounds(Bounds.valueOf(16, 16, 16, 16))).toBeTruthy();
 // });
 //
-// it("divideSize", () => {
+// it("divide", () => {
 //   const a = Bounds.objectOf(1, 2, 4, 8);
 //   const b = Size.valueOf(16, 32);
 //
-//   a.divideSize(b);
+//   a.divide(b);
 //
 //   expect(a.eqBounds(Bounds.valueOf(1, 2, 0.25, 0.25))).toBeTruthy();
 // });
@@ -201,10 +201,10 @@ it("", () => void 0);
 //   expect(a.eqBounds(Bounds.valueOf(-1, -2, -3, -4))).toBeTruthy();
 // });
 //
-// it("invertSize", () => {
+// it("invert", () => {
 //   const a = Bounds.objectOf(1, 2, 3, 4);
 //
-//   a.invertSize();
+//   a.invert();
 //
 //   expect(a.eqBounds(Bounds.valueOf(1, 2, -3, -4))).toBeTruthy();
 // });
@@ -225,10 +225,10 @@ it("", () => void 0);
 //   expect(a.eqBounds(Bounds.valueOf(2, 1, 4, 3))).toBeTruthy();
 // });
 //
-// it("swapSize", () => {
+// it("swap", () => {
 //   const a = Bounds.objectOf(1, 2, 3, 4);
 //
-//   a.swapSize();
+//   a.swap();
 //
 //   expect(a.eqBounds(Bounds.valueOf(1, 2, 4, 3))).toBeTruthy();
 // });
@@ -291,10 +291,10 @@ it("", () => void 0);
 //   expect(a.eqBounds(Bounds.valueOf(2, 3, 4, 5))).toBeTruthy();
 // });
 //
-// it("ceilSize", () => {
+// it("ceil", () => {
 //   const a = Bounds.objectOf(1.5, 2.5, 3.5, 4.5);
 //
-//   a.ceilSize();
+//   a.ceil();
 //
 //   expect(a.eqBounds(Bounds.valueOf(1.5, 2.5, 4, 5))).toBeTruthy();
 // });
@@ -315,10 +315,10 @@ it("", () => void 0);
 //   expect(a.eqBounds(Bounds.valueOf(2, 2, 4, 4))).toBeTruthy();
 // });
 //
-// it("roundSize", () => {
+// it("round", () => {
 //   const a = Bounds.objectOf(1.6, 2.4, 3.6, 4.4);
 //
-//   a.roundSize();
+//   a.round();
 //
 //   expect(a.eqBounds(Bounds.valueOf(1.6, 2.4, 4, 4))).toBeTruthy();
 // });
@@ -339,10 +339,10 @@ it("", () => void 0);
 //   expect(a.eqBounds(Bounds.valueOf(1, 2, 3, 4))).toBeTruthy();
 // });
 //
-// it("floorSize", () => {
+// it("floor", () => {
 //   const a = Bounds.objectOf(1.5, 2.5, 3.5, 4.5);
 //
-//   a.floorSize();
+//   a.floor();
 //
 //   expect(a.eqBounds(Bounds.valueOf(1.5, 2.5, 3, 4))).toBeTruthy();
 // });
@@ -365,13 +365,13 @@ it("", () => void 0);
 //   expect(b.lessThanBounds(a, true)).toBeFalsy();
 // });
 //
-// it("lessThanSize", () => {
+// it("lessThan", () => {
 //   const a = Bounds.objectOf(1, 2, 3, 4);
 //   const b = Size.objectOf(5, 6);
 //
-//   expect(a.lessThanSize(b)).toBeTruthy();
+//   expect(a.lessThan(b)).toBeTruthy();
 //   expect(b.lessThan(a)).toBeFalsy();
-//   expect(a.lessThanSize(a, true)).toBeTruthy();
+//   expect(a.lessThan(a, true)).toBeTruthy();
 //   expect(b.lessThan(a, true)).toBeFalsy();
 // });
 //

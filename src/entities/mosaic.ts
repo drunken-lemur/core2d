@@ -8,7 +8,7 @@ export class Mosaic extends Entity {
 
     this.setSize(size);
 
-    const cellSize = Size.objectOf(size).divide(cells);
+    const cellSize = new Size(size).divide(cells);
     const { w, h } = cellSize;
 
     for (let y = 0; y < cells.h; y++) {

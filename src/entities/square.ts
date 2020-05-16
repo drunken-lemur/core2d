@@ -24,8 +24,8 @@ class View extends BaseView<Square> {
 }
 
 class Behavior extends BaseBehavior<Square> {
-  private speed = Point.objectOf(1, 1);
-  private deltaSpeed = Point.objectOf(1, 1);
+  private speed = new Point(1);
+  private deltaSpeed = new Point(1);
 
   constructor(parent: Square) {
     super(parent);

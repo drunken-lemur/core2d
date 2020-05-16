@@ -62,7 +62,7 @@
 //   }
 
 //   // @ts-ignore
-//   getSize cursor_next() {
+//   get cursor_next() {
 //     return (this.cursor + 1) % (FPS.max + 1);
 //   }
 
@@ -73,7 +73,7 @@
 //   }
 
 //   // @ts-ignore
-//   getSize value() {
+//   get value() {
 //     const time = this.measures[this.cursor] - this.measures[this.cursor_next];
 //     return Math.floor((FPS.max * 1000) / time);
 //   }

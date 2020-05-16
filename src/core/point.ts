@@ -7,82 +7,82 @@ export interface IPointData {
 
 export interface IPoint extends IPointData, IWithToArray<number> {
   get: () => IPointData;
-  set: (point: IPointData) => this;
-  plus: (point: IPointData) => this;
-  minus: (point: IPointData) => this;
-  multiply: (point: IPointData) => this;
-  divide: (point: IPointData) => this;
+  set: (x: number | IPointData, y?: number) => this;
+  plus: (x: number | IPointData, y?: number) => this;
+  minus: (x: number | IPointData, y?: number) => this;
+  multiply: (x: number | IPointData, y?: number) => this;
+  divide: (x: number | IPointData, y?: number) => this;
   invert: () => this;
   swap: () => this;
   clone: () => IPoint;
-  eq: (point: IPointData) => boolean;
-  min: (point: IPointData) => this;
-  max: (point: IPointData) => this;
+  eq: (x: number | IPointData, y?: number) => boolean;
+  min: (x: number | IPointData, y?: number) => this;
+  max: (x: number | IPointData, y?: number) => this;
   invertX: () => this;
   invertY: () => this;
   ceil: () => this;
   round: () => this;
   floor: () => this;
-  lessThan: (point: IPointData, orEqual: boolean) => boolean;
+  lessThan: (orEqual: boolean, x: number | IPointData, y?: number) => boolean;
 }
 
 export class Point implements IPoint {
   x: number;
   y: number;
 
-  static valueOf = (x?: number | IPointData, y: number = 0): IPointData => {
+  static valueOf(x: number | IPointData = 0, y?: number): IPointData {
     if (typeof x === "number") {
-      return { x, y };
-    } else if (x) {
-      return { x: x.x, y: x.y };
-    } else {
-      return { x: 0, y };
+      return { x, y: y || x };
     }
-  };
 
-  static objectOf = (x?: number | IPointData, y: number = 0): Point => {
-    return new Point(Point.valueOf(x, y));
-  };
+    return { x: x.x, y: x.y };
+  }
 
-  constructor(point?: IPointData) {
+  constructor(x: number | IPointData = 0, y?: number) {
     this.x = 0;
     this.y = 0;
 
-    if (point) {
-      this.set(point);
-    }
+    this.set(Point.valueOf(x, y));
   }
 
   get = (): IPointData => ({ x: this.x, y: this.y });
 
-  set = (point: IPointData) => {
-    Object.assign(this, point);
+  set = (x: number | IPointData, y?: number) => {
+    Object.assign(this, Point.valueOf(x, y));
 
     return this;
   };
 
-  plus = (point: IPointData) => {
+  plus = (x: number | IPointData, y?: number) => {
+    const point = Point.valueOf(x, y);
+
     this.x += point.x;
     this.y += point.y;
 
     return this;
   };
 
-  minus = (point: IPointData) => {
+  minus = (x: number | IPointData, y?: number) => {
+    const point = Point.valueOf(x, y);
+
     this.x -= point.x;
     this.y -= point.y;
 
     return this;
   };
 
-  multiply = (point: IPointData) => {
+  multiply = (x: number | IPointData, y?: number) => {
+    const point = Point.valueOf(x, y);
+
     this.x *= point.x;
     this.y *= point.y;
 
     return this;
   };
 
-  divide = (point: IPointData) => {
+  divide = (x: number | IPointData, y?: number) => {
+    const point = Point.valueOf(x, y);
+
     this.x /= point.x;
     this.y /= point.y;
 
@@ -96,16 +96,24 @@ export class Point implements IPoint {
 
   clone = () => new Point(this.get());
 
-  eq = (point: IPointData) => this.x === point.x && this.y === point.y;
+  eq = (x: number | IPointData, y?: number) => {
+    const point = Point.valueOf(x, y);
 
-  min = (point: IPointData) => {
+    return this.x === point.x && this.y === point.y;
+  };
+
+  min = (x: number | IPointData, y?: number) => {
+    const point = Point.valueOf(x, y);
+
     this.x = Math.min(this.x, point.x);
     this.y = Math.min(this.y, point.y);
 
     return this;
   };
 
-  max = (point: IPointData) => {
+  max = (x: number | IPointData, y?: number) => {
+    const point = Point.valueOf(x, y);
+
     this.x = Math.max(this.x, point.x);
     this.y = Math.max(this.y, point.y);
 
@@ -137,7 +145,9 @@ export class Point implements IPoint {
     return this;
   };
 
-  lessThan = (point: IPointData, orEqual: boolean = false) => {
+  lessThan = (orEqual: boolean, x: number | IPointData, y?: number) => {
+    const point = Point.valueOf(x, y);
+
     if (orEqual) {
       return this.x <= point.x && this.y <= point.y;
     } else {

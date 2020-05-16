@@ -14,7 +14,7 @@ export class BaseScene extends Entity implements IEntity {
 
     this.game = game;
 
-    this.setSize(game.screen.getSize());
+    this.setSize(game.screen.get());
   }
 
   draw(drawer: IDrawer, deltaTime: number) {

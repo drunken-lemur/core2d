@@ -19,7 +19,7 @@ it("", () => void 0);
 // it("get", () => {
 //   const a = new Size({ w: 1, h: 2 });
 //
-//   expect(a.getSize()).toMatchObject({ w: 1, h: 2 });
+//   expect(a.get()).toMatchObject({ w: 1, h: 2 });
 // });
 //
 // it("objectOf", () => {
@@ -29,11 +29,11 @@ it("", () => void 0);
 //   const d = Size.objectOf({ w: 4, h: 5 });
 //   const e = Size.objectOf(b);
 //
-//   expect(a.getSize()).toMatchObject({ w: 0, h: 0 });
-//   expect(b.getSize()).toMatchObject({ w: 1, h: 0 });
-//   expect(c.getSize()).toMatchObject({ w: 2, h: 3 });
-//   expect(d.getSize()).toMatchObject({ w: 4, h: 5 });
-//   expect(e.getSize()).toMatchObject({ w: 1, h: 0 });
+//   expect(a.get()).toMatchObject({ w: 0, h: 0 });
+//   expect(b.get()).toMatchObject({ w: 1, h: 0 });
+//   expect(c.get()).toMatchObject({ w: 2, h: 3 });
+//   expect(d.get()).toMatchObject({ w: 4, h: 5 });
+//   expect(e.get()).toMatchObject({ w: 1, h: 0 });
 // });
 //
 // it("eq", () => {

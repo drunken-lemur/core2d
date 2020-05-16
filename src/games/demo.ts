@@ -10,6 +10,6 @@ export class Demo extends BaseGame {
     super(screen, 60);
 
     this.input = {} as any; // todo
-    this.scene = new Intro(this); // todo: refactor .getSize() to getSize();
+    this.scene = new Intro(this); // todo: refactor .get() to get();
   }
 }

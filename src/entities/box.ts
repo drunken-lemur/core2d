@@ -10,7 +10,9 @@ import {
 class View extends BaseView<Box> {
   draw = (drawer: IDrawer, deltaTime: number) => {
     const { x, y, w, h } = this.parent;
+    drawer.fillStyle = randomColor();
     drawer.strokeStyle = randomColor();
+    drawer.fillRect(x, y, w, h);
     drawer.strokeRect(x, y, w, h);
 
     return this;
