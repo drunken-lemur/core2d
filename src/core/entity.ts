@@ -1,12 +1,18 @@
-import { IDrawer } from "./drawer";
 import { IUpdated } from "./updated";
 import { IVisible } from "./visiable";
 import { IDrawable } from "./drawable";
 import { IComposite } from "./composite";
 import { IToggleable } from "./toggleable";
+import { IDrawer, IDrawerStyle } from "./drawer";
 import { IView, BaseView, IWithView } from "./view";
 import { IBounds, Bounds, IBoundsData } from "./bounds";
 import { IBehavior, BaseBehavior, IWithBehavior } from "./behavior";
+
+interface IStylable {
+  style: IDrawerStyle;
+
+  setStyle: (style: IDrawerStyle) => this;
+}
 
 export interface IEntity
   extends IBounds,
@@ -16,9 +22,11 @@ export interface IEntity
     IUpdated,
     IToggleable,
     IWithBehavior,
+    IStylable,
     IComposite<IEntity> {}
 
 export class Entity extends Bounds implements IEntity {
+  style: IDrawerStyle = {};
   private static DefaultEntity = new Entity();
   private static DefaultView = new BaseView(Entity.DefaultEntity);
   private static DefaultBehavior = new BaseBehavior(Entity.DefaultEntity);
@@ -102,6 +110,8 @@ export class Entity extends Bounds implements IEntity {
     if (this.isVisibleState) {
       drawer.save();
 
+      Object.assign(drawer, this.style);
+
       this.view.draw(drawer, deltaTime);
 
       drawer.translate(this.x, this.y);
@@ -175,6 +185,12 @@ export class Entity extends Bounds implements IEntity {
 
   setBehavior = (behavior: IBehavior) => {
     this.behavior = behavior;
+
+    return this;
+  };
+
+  setStyle = (style: IDrawerStyle) => {
+    Object.assign(this.style, style);
 
     return this;
   };

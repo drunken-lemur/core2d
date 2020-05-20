@@ -25,4 +25,3 @@ export interface IDrawerData
 export interface IDrawer extends CanvasRenderingContext2D {}
 
 export interface IDrawerStyle extends Partial<IDrawerData> {}
-

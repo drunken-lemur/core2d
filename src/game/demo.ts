@@ -1,6 +1,6 @@
 import { BaseGame, IInput, IScreen, IScene } from "core";
 
-import { Intro } from "scenes";
+import { Intro } from "scene";
 
 export class Demo extends BaseGame {
   input: IInput;

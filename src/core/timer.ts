@@ -1,3 +1,5 @@
+import { Fps, IFps } from "core/fps";
+
 export const Second = 1000;
 
 export const Minute = Second * 60;
@@ -13,21 +15,27 @@ export interface ITimer {
 type Update = (deltaTime: number) => void;
 
 export class Timer implements ITimer {
-  fps = 0;
-
+  private readonly fpsMeter: IFps;
   private readonly step: number;
   private readonly draw: Update;
   private readonly update: Update;
+  private readonly fpsLimit: number;
 
   private deltaTime = 0;
   private isRunning: boolean = false;
   private lastTime = performance.now();
 
-  constructor(fps: number, update: Update, draw: Update) {
+  get fps() {
+    return this.fpsMeter.value;
+  }
+
+  constructor(fpsLimit: number, update: Update, draw: Update) {
     this.draw = draw;
     this.update = update;
+    this.step = 1 / fpsLimit;
+    this.fpsLimit = fpsLimit;
 
-    this.step = 1 / fps;
+    this.fpsMeter = new Fps(fpsLimit);
   }
 
   private loop = (now: number) => {
@@ -43,7 +51,7 @@ export class Timer implements ITimer {
     this.draw(this.deltaTime);
 
     if (this.isRunning) {
-      // todo:: calc fps
+      this.fpsMeter.update();
 
       requestAnimationFrame(this.loop);
     }

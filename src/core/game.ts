@@ -6,6 +6,7 @@ import { ITimer, Timer } from "./timer";
 export interface IGame {
   input: IInput;
   scene: IScene;
+  timer: ITimer;
   screen: IScreen;
   stop: () => this;
   start: () => this;
@@ -13,12 +14,15 @@ export interface IGame {
 
 export abstract class BaseGame implements IGame {
   screen: IScreen;
+  static instance: IGame;
   abstract input: IInput;
   abstract scene: IScene;
 
-  private timer: ITimer;
+  readonly timer: ITimer;
 
   protected constructor(screen: IScreen, fps: number) {
+    BaseGame.instance = this;
+
     this.screen = screen;
     this.timer = new Timer(fps, this.update, this.draw);
   }

@@ -4,7 +4,7 @@ import {
   BaseView,
   IBoundsData,
   randomColor,
-  BaseBehavior,
+  BaseBehavior
 } from "core";
 
 class View extends BaseView<Box> {

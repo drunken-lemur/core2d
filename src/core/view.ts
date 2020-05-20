@@ -1,8 +1,7 @@
 import { IEntity } from "./entity";
 import { IDrawable } from "./drawable";
 import { IWithParent } from "./composite";
-import { IDrawer, IDrawerData, IDrawerStyle } from "./drawer";
-import { Color } from "core/color";
+import { IDrawer, IDrawerStyle } from "./drawer";
 
 export interface IWithView {
   setView: (view: IView) => this;

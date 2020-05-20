@@ -1,6 +1,6 @@
 import { Entity, ISizeData, Size, Point } from "core";
 
-import { Square } from "entities";
+import { Square } from "entity";
 
 export class Mosaic extends Entity {
   constructor(size: ISizeData, cells: ISizeData) {

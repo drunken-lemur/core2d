@@ -16,19 +16,39 @@ export interface IBounds extends IBoundsData, IWithToArray {
   getBounds: () => IBoundsData;
   getSize: () => ISizeData;
   getPosition: () => IPointData;
-  setBounds: (x: number | IBoundsData, y?: number, w?: number, h?: number) => this;
+  setBounds: (
+    x: number | IBoundsData,
+    y?: number,
+    w?: number,
+    h?: number
+  ) => this;
   setSize: (w: number | ISizeData, h?: number) => this;
   setPosition: (x: number | IPointData, y?: number) => this;
   plusBounds: (bounds: IBounds) => this;
   plusSize: (w: number | ISizeData, h?: number) => this;
   plusPosition: (x: number | IPointData, y?: number) => this;
-  minusBounds: (x: number | IBoundsData, y?: number, w?: number, h?: number) => this;
+  minusBounds: (
+    x: number | IBoundsData,
+    y?: number,
+    w?: number,
+    h?: number
+  ) => this;
   minusSize: (w: number | ISizeData, h?: number) => this;
   minusPosition: (x: number | IPointData, y?: number) => this;
-  multiplyBounds: (x: number | IBoundsData, y?: number, w?: number, h?: number) => this;
+  multiplyBounds: (
+    x: number | IBoundsData,
+    y?: number,
+    w?: number,
+    h?: number
+  ) => this;
   multiplySize: (w: number | ISizeData, h?: number) => this;
   multiplyPosition: (x: number | IPointData, y?: number) => this;
-  divideBounds: (x: number | IBoundsData, y?: number, w?: number, h?: number) => this;
+  divideBounds: (
+    x: number | IBoundsData,
+    y?: number,
+    w?: number,
+    h?: number
+  ) => this;
   divideSize: (w: number | ISizeData, h?: number) => this;
   dividePosition: (x: number | IPointData, y?: number) => this;
   invertBounds: () => this;
@@ -44,19 +64,49 @@ export interface IBounds extends IBoundsData, IWithToArray {
   cloneBounds: () => IBounds;
   cloneSize: () => ISize;
   clonePosition: () => IPoint;
-  eqBounds: (x: number | IBoundsData, y?: number, w?: number, h?: number) => boolean;
+  eqBounds: (
+    x: number | IBoundsData,
+    y?: number,
+    w?: number,
+    h?: number
+  ) => boolean;
   eqSize: (w: number | ISizeData, h?: number) => boolean;
   eqPosition: (x: number | IPointData, y?: number) => boolean;
-  minBounds: (x: number | IBoundsData, y?: number, w?: number, h?: number) => this;
+  minBounds: (
+    x: number | IBoundsData,
+    y?: number,
+    w?: number,
+    h?: number
+  ) => this;
   minSize: (w: number | ISizeData, h?: number) => this;
   minPosition: (point: IPointData) => this;
-  maxBounds: (x: number | IBoundsData, y?: number, w?: number, h?: number) => this;
+  maxBounds: (
+    x: number | IBoundsData,
+    y?: number,
+    w?: number,
+    h?: number
+  ) => this;
   maxSize: (w: number | ISizeData, h?: number) => this;
   maxPosition: (point: IPointData) => this;
-  mergeBounds: (x: number | IBoundsData, y?: number, w?: number, h?: number) => this;
-  cropBounds: (x: number | IBoundsData, y?: number, w?: number, h?: number) => this;
+  mergeBounds: (
+    x: number | IBoundsData,
+    y?: number,
+    w?: number,
+    h?: number
+  ) => this;
+  cropBounds: (
+    x: number | IBoundsData,
+    y?: number,
+    w?: number,
+    h?: number
+  ) => this;
   getCorners: () => ICorners;
-  isIntersect: (x: number | IBoundsData, y?: number, w?: number, h?: number) => boolean;
+  isIntersect: (
+    x: number | IBoundsData,
+    y?: number,
+    w?: number,
+    h?: number
+  ) => boolean;
   ceilBounds: () => this;
   ceilSize: () => this;
   ceilPosition: () => this;
@@ -66,9 +116,23 @@ export interface IBounds extends IBoundsData, IWithToArray {
   floorBounds: () => this;
   floorSize: () => this;
   floorPosition: () => this;
-  lessThanBounds: (orEqual: boolean, x: number | IBoundsData, y?: number, w?: number, h?: number) => boolean;
-  lessThanSize: (orEqual: boolean, w: number | ISizeData, h?: number) => boolean;
-  lessThanPosition: (orEqual: boolean, x: number | IPointData, y?: number) => boolean;
+  lessThanBounds: (
+    orEqual: boolean,
+    x: number | IBoundsData,
+    y?: number,
+    w?: number,
+    h?: number
+  ) => boolean;
+  lessThanSize: (
+    orEqual: boolean,
+    w: number | ISizeData,
+    h?: number
+  ) => boolean;
+  lessThanPosition: (
+    orEqual: boolean,
+    x: number | IPointData,
+    y?: number
+  ) => boolean;
 }
 
 export class Bounds implements IBounds {
@@ -176,9 +240,14 @@ export class Bounds implements IBounds {
     return this;
   };
 
-  plusBounds = (x: number | IBoundsData, y?: number, w?: number, h?: number) => {
+  plusBounds = (
+    x: number | IBoundsData,
+    y?: number,
+    w?: number,
+    h?: number
+  ) => {
     const bounds = Bounds.valueOf(x, y, w, h);
-    
+
     this.size.plus(bounds);
     this.position.plus(bounds);
 
@@ -197,7 +266,12 @@ export class Bounds implements IBounds {
     return this;
   };
 
-  minusBounds = (x: number | IBoundsData, y?: number, w?: number, h?: number) => {
+  minusBounds = (
+    x: number | IBoundsData,
+    y?: number,
+    w?: number,
+    h?: number
+  ) => {
     const bounds = Bounds.valueOf(x, y, w, h);
 
     this.size.minus(bounds);
@@ -218,7 +292,12 @@ export class Bounds implements IBounds {
     return this;
   };
 
-  multiplyBounds = (x: number | IBoundsData, y?: number, w?: number, h?: number) => {
+  multiplyBounds = (
+    x: number | IBoundsData,
+    y?: number,
+    w?: number,
+    h?: number
+  ) => {
     const bounds = Bounds.valueOf(x, y, w, h);
 
     this.size.multiply(bounds);
@@ -239,7 +318,12 @@ export class Bounds implements IBounds {
     return this;
   };
 
-  divideBounds = (x: number | IBoundsData, y?: number, w?: number, h?: number) => {
+  divideBounds = (
+    x: number | IBoundsData,
+    y?: number,
+    w?: number,
+    h?: number
+  ) => {
     const bounds = Bounds.valueOf(x, y, w, h);
 
     this.size.divide(bounds);
@@ -339,9 +423,11 @@ export class Bounds implements IBounds {
     );
   };
 
-  eqSize = (w: number | ISizeData, h?: number) => this.size.eq(Size.valueOf(w, h));
+  eqSize = (w: number | ISizeData, h?: number) =>
+    this.size.eq(Size.valueOf(w, h));
 
-  eqPosition = (x: number | IPointData, y?: number) => this.position.eq(Point.valueOf(x, y));
+  eqPosition = (x: number | IPointData, y?: number) =>
+    this.position.eq(Point.valueOf(x, y));
 
   minBounds = (x: number | IBoundsData, y?: number, w?: number, h?: number) => {
     const bounds = Bounds.valueOf(x, y, w, h);
@@ -397,7 +483,12 @@ export class Bounds implements IBounds {
     return this;
   };
 
-  mergeBounds = (x: number | IBoundsData, y?: number, w?: number, h?: number) => {
+  mergeBounds = (
+    x: number | IBoundsData,
+    y?: number,
+    w?: number,
+    h?: number
+  ) => {
     const bounds = Bounds.valueOf(x, y, w, h);
 
     this.size.max(bounds);
@@ -406,7 +497,12 @@ export class Bounds implements IBounds {
     return this;
   };
 
-  cropBounds = (x: number | IBoundsData, y?: number, w?: number, h?: number) => {
+  cropBounds = (
+    x: number | IBoundsData,
+    y?: number,
+    w?: number,
+    h?: number
+  ) => {
     const bounds = Bounds.valueOf(x, y, w, h);
 
     this.size.min(bounds);
@@ -427,7 +523,12 @@ export class Bounds implements IBounds {
     };
   };
 
-  isIntersect = (x: number | IBoundsData, y?: number, w?: number, h?: number) => {
+  isIntersect = (
+    x: number | IBoundsData,
+    y?: number,
+    w?: number,
+    h?: number
+  ) => {
     const bounds = Bounds.valueOf(x, y, w, h);
 
     return (
@@ -495,7 +596,13 @@ export class Bounds implements IBounds {
     return this;
   };
 
-  lessThanBounds = (orEqual: boolean, x: number | IBoundsData, y?: number, w?: number, h?: number) => {
+  lessThanBounds = (
+    orEqual: boolean,
+    x: number | IBoundsData,
+    y?: number,
+    w?: number,
+    h?: number
+  ) => {
     const bounds = Bounds.valueOf(x, y, w, h);
 
     return (
