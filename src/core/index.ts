@@ -3,6 +3,7 @@ export * from "./behavior";
 export * from "./bounds";
 export * from "./color";
 export * from "./composite";
+export * from "./delay";
 export * from "./drawable";
 export * from "./drawer";
 export * from "./entity";

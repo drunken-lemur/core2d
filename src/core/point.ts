@@ -32,7 +32,7 @@ export class Point implements IPoint {
 
   static valueOf(x: number | IPointData = 0, y?: number): IPointData {
     if (typeof x === "number") {
-      return { x, y: y || x };
+      return { x, y: y === undefined ? x : y };
     }
 
     return { x: x.x, y: x.y };

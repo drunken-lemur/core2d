@@ -177,7 +177,7 @@ export class Ship extends Entity {
 
   accelerate = () => {
     // increase push amount for acceleration
-    (this.behavior as any).accelerate(); // todo: check types
+    (this.behavior as any).accelerate(); // todo: isDone types
 
     return this;
   };

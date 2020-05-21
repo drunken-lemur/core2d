@@ -32,7 +32,7 @@ export class Size implements ISize {
 
   static valueOf(w: number | ISizeData = 0, h?: number): ISizeData {
     if (typeof w === "number") {
-      return { w, h: h || w };
+      return { w, h: h === undefined ? w : h };
     }
 
     return { w: w.w, h: w.h };

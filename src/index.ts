@@ -50,4 +50,4 @@ class App extends BaseApp {
 
 setStyle(document.body, { margin: "0" });
 
-new App().run(Game.BasicGame);
+new App().run(Game.Demo);

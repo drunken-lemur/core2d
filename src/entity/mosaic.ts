@@ -1,12 +1,23 @@
-import { Entity, ISizeData, Size, Point } from "core";
+import { Entity, ISizeData, Size, Point, BaseView, Color, IDrawer } from "core";
 
 import { Square } from "entity";
 
 export class Mosaic extends Entity {
+  private static View = class extends BaseView<Mosaic> {
+    draw(drawer: IDrawer, deltaTime: number) {
+      const { x, y, w, h } = this.parent;
+
+      drawer.fillStyle = Color.Blue;
+      drawer.fillRect(x, y, w, h);
+
+      return super.draw(drawer, deltaTime);
+    }
+  };
+
   constructor(size: ISizeData, cells: ISizeData) {
     super();
 
-    this.setSize(size);
+    this.setSize(size).setView(new Mosaic.View(this));
 
     const cellSize = new Size(size).divide(cells);
     const { w, h } = cellSize;

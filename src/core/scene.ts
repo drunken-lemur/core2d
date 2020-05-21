@@ -18,7 +18,7 @@ export class BaseScene extends Entity implements IEntity {
   }
 
   draw(drawer: IDrawer, deltaTime: number) {
-    this.game.screen.fill();
+    this.game.screen.clean();
 
     super.draw(drawer, deltaTime);
 

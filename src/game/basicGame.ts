@@ -10,10 +10,12 @@ import {
   IScreen,
   Key
 } from "core";
+import { Delay, IDelay } from "core/delay";
 
 class IntroScene extends BaseScene {
   private infoText: string;
   private elapsedTime: number;
+  private readonly delay: IDelay;
   private readonly bigText: string;
   private readonly logoRevealTime: number;
   private readonly textTypingTime: number;
@@ -31,15 +33,15 @@ class IntroScene extends BaseScene {
     this.elapsedTime = 0;
     this.bigText = "Intro";
     this.infoText = "This is intro scene example...";
+
+    this.delay = new Delay(this.sceneDisplayTime);
   }
 
   update(dt: number) {
     this.elapsedTime += dt;
+    this.delay.update(dt);
 
-    if (
-      this.elapsedTime >= this.sceneDisplayTime ||
-      this.game.input.isKeyPressedOnce(Key.Enter)
-    ) {
+    if (this.delay.isDone || this.game.input.isKeyPressedOnce(Key.Enter)) {
       this.game.scene = new MenuScene(this.game);
     }
 

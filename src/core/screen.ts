@@ -33,14 +33,11 @@ export const Resolutions = {
 };
 
 export interface IScreen extends ISize {
-  fill: () => void;
   clean: () => void;
   render: (scene: IScene, deltaTime: number) => void;
 }
 
 export abstract class BaseScreen extends Size implements IScreen {
-  abstract fill: () => void;
-
   abstract clean: () => void;
 
   abstract render: (scene: IScene, deltaTime: number) => void;
@@ -66,13 +63,6 @@ export class CanvasScreen extends BaseScreen {
 
   render = (scene: IScene, deltaTime: number) => {
     scene.draw(this.ctx!, deltaTime);
-  };
-
-  fill = () => {
-    this.ctx.save();
-    this.ctx.fillStyle = Color.White;
-    this.ctx.fillRect(0, 0, this.w, this.h);
-    this.ctx.restore();
   };
 
   clean = () => this.ctx.clearRect(0, 0, this.w, this.h);

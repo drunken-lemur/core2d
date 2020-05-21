@@ -1,27 +1,86 @@
-import { BaseView, Entity, IBoundsData, IDrawer, IDrawerStyle } from "core";
+import {
+  BaseBehavior,
+  BaseView,
+  Entity,
+  IBoundsData,
+  IDrawer,
+  Delay,
+  IDelay
+} from "core";
 
-class View extends BaseView<Label> {
-  draw = (drawer: IDrawer, deltaTime: number) => {
-    const { x, y } = this.parent;
+export class TypingLabelBehavior extends BaseBehavior<Label> {
+  private delay: IDelay;
+  private originalText: string;
 
-    const height = 0;
-    // Number(`${this.parent.style.font}`.replace(/[^0-9]/g, "")) || this.parent.h;
+  constructor(
+    label: Label,
+    typingSec: number,
+    delaySec = 0,
+    onDone?: () => void
+  ) {
+    super(label);
 
-    drawer.fillText(this.parent.text, x, y + height);
+    this.delay = new Delay(typingSec, onDone, delaySec);
+    this.originalText = label.text;
+  }
 
-    return super.draw(drawer, deltaTime);
-  };
+  update(dt: number) {
+    const { delay, originalText, parent } = this;
+
+    delay.update(dt);
+
+    if (delay.isStart) {
+      parent.show().text = originalText.substr(
+        0,
+        Math.floor(originalText.length * delay.factor)
+      );
+    } else {
+      parent.hide();
+    }
+
+    if (delay.isDone) {
+    }
+
+    return super.update(dt);
+  }
 }
 
 export class Label extends Entity {
-  text: string;
-  style: IDrawerStyle = {};
+  private static View = class extends BaseView<Label> {
+    draw(drawer: IDrawer, deltaTime: number) {
+      const { x, y } = this.parent;
 
-  constructor(value?: string, bounds?: IBoundsData) {
+      const width = drawer.measureText(this.parent.text).width;
+      const height =
+        Number(`${this.parent.style.font}`.replace(/[^0-9]/g, "")) ||
+        this.parent.h ||
+        10;
+
+      if (this.parent.w !== width) {
+        this.parent.w = width;
+      }
+      if (this.parent.h !== height) {
+        this.parent.h = height;
+      }
+
+      drawer.fillText(
+        this.parent.text,
+        x,
+        y + height
+        // BaseGame.instance.screen.w
+      );
+
+      return super.draw(drawer, deltaTime);
+    }
+  };
+
+  text: string;
+
+  constructor(text: string = "", bounds?: IBoundsData) {
     super(bounds);
 
-    this.text = value || "";
+    this.text = text;
 
-    this.setView(new View(this));
+    this.setView(new Label.View(this));
   }
 }
