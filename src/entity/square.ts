@@ -34,34 +34,32 @@ class Behavior extends BaseBehavior<Square> {
   }
 
   update = (deltaTime?: number) => {
-    if (this.parent) {
-      const corners = this.parent.getCorners();
-      const sceneCorners = this.parent.parent?.getCorners();
+    const corners = this.parent.getCorners();
+    const sceneCorners = this.parent.parent?.getCorners();
 
-      if (sceneCorners) {
-        if (corners.TOP_LEFT.x < sceneCorners.TOP_LEFT.x) {
-          this.deltaSpeed.x = 1;
-          this.changeColor();
-        }
-
-        if (corners.TOP_RIGHT.x > sceneCorners.TOP_RIGHT.x) {
-          this.deltaSpeed.x = -1;
-          this.changeColor();
-        }
-
-        if (corners.TOP_LEFT.y < sceneCorners.TOP_LEFT.y) {
-          this.deltaSpeed.y = 1;
-          this.changeColor();
-        }
-
-        if (corners.BOTTOM_RIGHT.y > sceneCorners.BOTTOM_RIGHT.y) {
-          this.deltaSpeed.y = -1;
-          this.changeColor();
-        }
+    if (sceneCorners) {
+      if (corners.TOP_LEFT.x < sceneCorners.TOP_LEFT.x) {
+        this.deltaSpeed.x = 1;
+        this.changeColor();
       }
 
-      this.parent.plusPosition(this.speed.clone().multiply(this.deltaSpeed));
+      if (corners.TOP_RIGHT.x > sceneCorners.TOP_RIGHT.x) {
+        this.deltaSpeed.x = -1;
+        this.changeColor();
+      }
+
+      if (corners.TOP_LEFT.y < sceneCorners.TOP_LEFT.y) {
+        this.deltaSpeed.y = 1;
+        this.changeColor();
+      }
+
+      if (corners.BOTTOM_RIGHT.y > sceneCorners.BOTTOM_RIGHT.y) {
+        this.deltaSpeed.y = -1;
+        this.changeColor();
+      }
     }
+
+    this.parent.plusPosition(this.speed.clone().multiply(this.deltaSpeed));
 
     return this;
   };

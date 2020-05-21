@@ -1,19 +1,22 @@
-import { Demo } from "game";
 import {
-  BaseApp,
-  CanvasScreen,
   IGame,
-  Second,
   IScreen,
-  Resolutions
+  BaseApp,
+  Resolutions,
+  CanvasScreen
 } from "core";
+import { BasicGame, Demo, SpaceRock } from "game";
 
 enum Game {
-  Demo = "Demo"
+  BasicGame = "BasicGame",
+  Demo = "Demo",
+  SpaceRock = "SpaceRock"
 }
 
 const games: Record<Game, (screen: IScreen) => IGame> = {
-  Demo: screen => new Demo(screen)
+  BasicGame: screen => new BasicGame(screen),
+  Demo: screen => new Demo(screen),
+  SpaceRock: screen => new SpaceRock(screen)
 };
 
 type Style = Partial<CSSStyleDeclaration>;
@@ -41,12 +44,10 @@ class App extends BaseApp {
     const game = games[gameName](screen);
     game.start();
 
-    setTimeout(game.stop, 45 * Second);
-
     return this;
   };
 }
 
 setStyle(document.body, { margin: "0" });
 
-new App().run(Game.Demo);
+new App().run(Game.BasicGame);

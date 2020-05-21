@@ -1,6 +1,7 @@
 export enum Color {
-  Black = "black",
-  White = "white"
+  Black = "#000",
+  White = "#fff",
+  Gray = "#ccc"
 }
 
 export const randomColor = () =>
