@@ -6,7 +6,8 @@ export interface IDelay extends IUpdated {
   factor: number;
   isDone: boolean;
   isStart: boolean;
-  reset: () => void;
+  add: (value: number) => this;
+  reset: () => this;
   onDone: () => void;
 }
 
@@ -50,6 +51,12 @@ export class Delay implements IDelay {
 
     return this;
   }
+
+  add = (value: number) => {
+    this.passed += value;
+
+    return this;
+  };
 
   reset = () => {
     this.passed = 0;

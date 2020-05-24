@@ -38,6 +38,12 @@ export class Size implements ISize {
     return { w: w.w, h: w.h };
   }
 
+  static random(w: number | ISizeData = 1, h?: number): ISize {
+    const size = Size.valueOf(w, h);
+
+    return new Size(Math.random() * size.w, Math.random() * size.h);
+  }
+
   constructor(w: number | ISizeData = 0, h?: number) {
     this.w = 0;
     this.h = 0;

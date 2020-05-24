@@ -15,6 +15,26 @@ import {
   Position
 } from "core";
 
+class Score {
+  private score = 0;
+
+  get value() {
+    return this.score;
+  }
+
+  reset = () => {
+    this.score = 0;
+
+    return this;
+  };
+
+  add = (value: number) => {
+    this.score += value;
+
+    return this;
+  };
+}
+
 class ShipBody extends Entity {
   private static View = class extends BaseView<ShipBody> {
     draw = (d: IDrawer, dt: number) => {
@@ -183,7 +203,9 @@ export class Ship extends Entity {
   };
 }
 
-export class IntroScene extends BaseScene {
+export class GameScene extends BaseScene {
+  score = new Score();
+
   constructor(game: IGame) {
     super(game);
 
@@ -203,6 +225,6 @@ export class SpaceRock extends BaseGame {
     super(screen, 60);
 
     this.input = {} as any; // todo
-    this.scene = new IntroScene(this);
+    this.scene = new GameScene(this);
   }
 }

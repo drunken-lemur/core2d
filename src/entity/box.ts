@@ -1,17 +1,17 @@
 import {
+  Color,
   Entity,
   IDrawer,
   BaseView,
   IBoundsData,
-  randomColor,
   BaseBehavior
 } from "core";
 
 class View extends BaseView<Box> {
   draw = (drawer: IDrawer, deltaTime: number) => {
     const { x, y, w, h } = this.parent;
-    drawer.fillStyle = randomColor();
-    drawer.strokeStyle = randomColor();
+    drawer.fillStyle = Color.random();
+    drawer.strokeStyle = Color.random();
     drawer.fillRect(x, y, w, h);
     drawer.strokeRect(x, y, w, h);
 

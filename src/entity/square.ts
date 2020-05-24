@@ -5,7 +5,6 @@ import {
   IDrawer,
   BaseView,
   ISizeData,
-  randomColor,
   BaseBehavior
 } from "core";
 
@@ -65,7 +64,7 @@ class Behavior extends BaseBehavior<Square> {
   };
 
   changeColor = () => {
-    this.parent.color = randomColor();
+    this.parent.color = Color.random();
   };
 }
 

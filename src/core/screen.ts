@@ -1,4 +1,3 @@
-import { Color } from "./color";
 import { IScene } from "./scene";
 import { Size, ISize, ISizeData } from "./size";
 

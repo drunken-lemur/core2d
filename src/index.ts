@@ -5,17 +5,19 @@ import {
   Resolutions,
   CanvasScreen
 } from "core";
-import { BasicGame, Demo, SpaceRock } from "game";
+import { BasicGame, Demo, SnakeGame, SpaceRock } from "game";
 
 enum Game {
   BasicGame = "BasicGame",
   Demo = "Demo",
+  Snake = "Snake",
   SpaceRock = "SpaceRock"
 }
 
 const games: Record<Game, (screen: IScreen) => IGame> = {
   BasicGame: screen => new BasicGame(screen),
   Demo: screen => new Demo(screen),
+  Snake: screen => new SnakeGame(screen),
   SpaceRock: screen => new SpaceRock(screen)
 };
 
@@ -50,4 +52,4 @@ class App extends BaseApp {
 
 setStyle(document.body, { margin: "0" });
 
-new App().run(Game.Demo);
+new App().run(Game.Snake);

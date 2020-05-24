@@ -45,7 +45,7 @@ export class Demo extends BaseGame {
             acc[acc.length - 1] += " " + str;
 
             if (acc[acc.length - 1].length < maxStrLen) {
-              acc[acc.length - 1] += Array();
+              acc[acc.length - 1] += [];
             }
 
             return acc;

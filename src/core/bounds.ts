@@ -148,22 +148,38 @@ export class Bounds implements IBounds {
     if (typeof x === "number") {
       return {
         x,
-        y: y || x,
-        w: w || x,
-        h: h || w || y || x
+        y: y !== undefined ? y : x,
+        w: w !== undefined ? w : x,
+        h: h !== undefined ? h : w !== undefined ? w : y !== undefined ? y : x
       };
     }
 
     return {
       // @ts-ignore
-      x: x.x || x.w || 0,
+      x: x.x !== undefined ? x.x : x.w !== undefined ? x.w : 0,
       // @ts-ignore
-      y: x.y || x.h || 0,
+      y: x.y !== undefined ? x.y : x.h !== undefined ? x.h : 0,
       // @ts-ignore
-      w: x.w || x.x || 0,
+      w: x.w !== undefined ? x.w : x.x !== undefined ? x.x : 0,
       // @ts-ignore
-      h: x.h || x.y || 0
+      h: x.h !== undefined ? x.h : x.y !== undefined ? x.y : 0
     };
+  };
+
+  static random = (
+    x: number | IBoundsData | IPointData | ISizeData = 1,
+    y?: number,
+    w?: number,
+    h?: number
+  ): IBounds => {
+    const bounds = Bounds.valueOf(x, y, w, h);
+
+    return new Bounds(
+      Math.random() * bounds.x,
+      Math.random() * bounds.y,
+      Math.random() * bounds.w,
+      Math.random() * bounds.h
+    );
   };
 
   // @ts-ignore
@@ -206,7 +222,9 @@ export class Bounds implements IBounds {
     this.size.h = h;
   }
 
-  constructor(bounds?: IBoundsData) {
+  constructor(x: number | IBoundsData = 0, y?: number, w?: number, h?: number) {
+    const bounds = Bounds.valueOf(x, y, w, h);
+
     this.size = new Size(bounds);
     this.position = new Point(bounds);
   }

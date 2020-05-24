@@ -38,6 +38,12 @@ export class Point implements IPoint {
     return { x: x.x, y: x.y };
   }
 
+  static random(x: number | IPointData = 1, y?: number): IPoint {
+    const point = Point.valueOf(x, y);
+
+    return new Point(Math.random() * point.x, Math.random() * point.y);
+  }
+
   constructor(x: number | IPointData = 0, y?: number) {
     this.x = 0;
     this.y = 0;
