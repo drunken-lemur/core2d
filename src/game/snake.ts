@@ -4,6 +4,7 @@ import {
   BaseInput,
   BaseScene,
   BaseView,
+  Bounds,
   Color,
   Delay,
   Direction,
@@ -20,7 +21,7 @@ import {
 
 const Config = {
   cellSize: 32,
-  updateSec: 0.5,
+  updateSec: 0.2,
   startSnakeSize: 3,
   worldSize: Size.valueOf(20, 15)
 };
@@ -32,21 +33,11 @@ class Apple extends Entity {
         .cloneBounds()
         .multiplyPosition(Config.cellSize);
 
-      const r = Math.floor((w + h) / 4);
-
-      d.translate(r, r)
+      d.translate(w / 2, h / 2)
         .beginPath()
-        .arc(x, y, r, 0, 2 * Math.PI)
+        .ellipse(x, y, w / 2, h / 2, 0, 0, 2 * Math.PI)
         .closePath()
         .fill();
-
-      return this;
-    }
-  };
-
-  private static Behavior = class extends BaseBehavior<Apple> {
-    update(deltaTime: number) {
-      this.parent.plusPosition(0.1, 0);
 
       return this;
     }
@@ -57,7 +48,6 @@ class Apple extends Entity {
 
     this.setSize(Config.cellSize)
       .setView(new Apple.View(this))
-      .setBehavior(new Apple.Behavior(this))
       .setStyle({ fillStyle: Color.random() });
   }
 }
@@ -75,23 +65,37 @@ class Snake extends Entity {
 }
 
 class GameScene extends BaseScene {
-  // private apple: Apple;
-  private readonly delay: IDelay;
+  private static Behavior = class extends BaseBehavior<GameScene> {
+    private readonly delay = new Delay(Config.updateSec);
+
+    update(dt: number) {
+      const { delay } = this;
+      if (delay.update(dt).isDone) {
+        delay.add(-delay.delay);
+
+        this.parent.apple.plusPosition(1, 0);
+
+        super.update(dt);
+      }
+
+      return this;
+    }
+  };
+
+  private readonly apple: Apple;
 
   constructor(game: SnakeGame) {
     super(game);
 
-    this.delay = new Delay(Config.updateSec);
+    this.apple = new Apple().setPosition(
+      Bounds.random(game.screen)
+        .dividePosition(Config.cellSize)
+        .floorPosition()
+    );
 
-    // this.apple = new Apple().setPosition(
-    //   Bounds.random(game.screen)
-    //     .dividePosition(Config.cellSize)
-    //     .floorPosition()
-    // );
-
-    this.setStyle({ fillStyle: Color.Blue });
-
-    this.add(new Apple());
+    this.setStyle({ fillStyle: Color.Blue })
+      .setBehavior(new GameScene.Behavior(this))
+      .add(this.apple);
   }
 }
 
@@ -106,6 +110,6 @@ export class SnakeGame extends BaseGame {
     this.input = new BaseInput();
     this.scene = new GameScene(this);
 
-    setTimeout(this.stop, 1 * Second);
+    setTimeout(this.stop, 10 * Second);
   }
 }
