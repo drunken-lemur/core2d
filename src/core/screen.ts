@@ -1,4 +1,5 @@
 import { IScene } from "./scene";
+import { Drawer, IDrawer } from "./drawer";
 import { Size, ISize, ISizeData } from "./size";
 
 export const Resolutions = {
@@ -44,7 +45,7 @@ export abstract class BaseScreen extends Size implements IScreen {
 
 export class CanvasScreen extends BaseScreen {
   protected readonly canvas: HTMLCanvasElement;
-  protected readonly ctx: CanvasRenderingContext2D;
+  protected readonly ctx: IDrawer;
 
   constructor(canvas: HTMLCanvasElement, size?: ISizeData) {
     super(size);
@@ -53,7 +54,7 @@ export class CanvasScreen extends BaseScreen {
     this.canvas.width = this.w;
     this.canvas.height = this.h;
 
-    this.ctx = this.canvas.getContext("2d")!;
+    this.ctx = new Drawer(this.canvas.getContext("2d")!);
 
     if (!this.ctx) {
       throw new Error("Canvas context not found!");

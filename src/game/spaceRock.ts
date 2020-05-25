@@ -38,14 +38,14 @@ class Score {
 class ShipBody extends Entity {
   private static View = class extends BaseView<ShipBody> {
     draw = (d: IDrawer, dt: number) => {
-      d.beginPath();
-      d.moveTo(0, 10);
-      d.lineTo(5, -6);
-      d.lineTo(0, -2);
-      d.lineTo(-5, -6);
-      d.closePath();
+      d.beginPath()
+        .moveTo(0, 10)
+        .lineTo(5, -6)
+        .lineTo(0, -2)
+        .lineTo(-5, -6)
+        .closePath()
 
-      d.stroke();
+        .stroke();
 
       return this;
     };
@@ -71,20 +71,20 @@ class ShipBody extends Entity {
 class ShipFlame extends Entity {
   private static View = class extends BaseView<ShipFlame> {
     draw = (d: IDrawer, dt: number) => {
-      d.scale(0.5, 0.5);
-      d.translate(0, -5);
+      d.scale(0.5, 0.5)
+        .translate(0, -5)
 
-      d.beginPath();
-      d.moveTo(2, 0); // ship
-      d.lineTo(4, -3); // rpoint
-      d.lineTo(2, -2); // rnotch
-      d.lineTo(0, -5); // tip
-      d.lineTo(-4, -3); // lnotch
-      d.lineTo(-2, -0); // lpoint
-      d.lineTo(-2, -0); // ship
-      d.closePath();
+        .beginPath()
+        .moveTo(2, 0) // ship
+        .lineTo(4, -3) // rpoint
+        .lineTo(2, -2) // rnotch
+        .lineTo(0, -5) // tip
+        .lineTo(-4, -3) // lnotch
+        .lineTo(-2, -0) // lpoint
+        .lineTo(-2, -0) // ship
+        .closePath()
 
-      d.stroke();
+        .stroke();
 
       return this;
     };

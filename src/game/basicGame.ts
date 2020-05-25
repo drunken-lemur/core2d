@@ -49,20 +49,24 @@ class IntroScene extends BaseScene {
   }
 
   draw(d: IDrawer, dt: number) {
+    const alpha = Math.min(1, this.elapsedTime / this.logoRevealTime);
+
     // fill background
-    d.fillStyle = Color.White;
-    d.fillRect(0, 0, this.w, this.h);
+    d.setStyle({ fillStyle: Color.White })
+      .fillRect(0, 0, this.w, this.h)
 
-    // draw big logo text
-    d.globalAlpha = Math.min(1, this.elapsedTime / this.logoRevealTime);
-    d.font = "80px Helvetica";
-    d.fillStyle = Color.Black;
+      // draw big logo text
+      .setStyle({
+        globalAlpha: alpha,
+        font: "80px Helvetica",
+        fillStyle: Color.Black
+      })
 
-    d.fillText(
-      this.bigText,
-      (this.w - d.measureText(this.bigText).width) / 2,
-      this.h / 2
-    );
+      .fillText(
+        this.bigText,
+        (this.w - d.measureText(this.bigText).width) / 2,
+        this.h / 2
+      );
 
     // draw typing text
     if (this.elapsedTime >= this.logoRevealTime) {
@@ -70,9 +74,11 @@ class IntroScene extends BaseScene {
         1,
         (this.elapsedTime - this.logoRevealTime) / this.textTypingTime
       );
-      d.font = "20px Helvetica";
-      d.fillStyle = "#bbb";
-      d.fillText(
+
+      d.setStyle({
+        fillStyle: "#bbb",
+        font: "20px Helvetica"
+      }).fillText(
         this.infoText.substr(
           0,
           Math.floor(this.infoText.length * textProgress)
@@ -142,34 +148,38 @@ class MenuScene extends BaseScene {
 
   draw(d: IDrawer, dt: number) {
     // fill menu background
-    d.fillStyle = "#007";
-    d.fillRect(0, 0, this.w, this.h);
+    d.setStyle({ fillStyle: "#007" })
+      .fillRect(0, 0, this.w, this.h)
 
-    // draw menu title
-    d.font = "60px Helvetica";
-    d.textBaseline = "top";
-    d.fillStyle = Color.White;
-    d.fillText(
-      this.menuTitle,
-      (this.w - d.measureText(this.menuTitle).width) / 2,
-      20
-    );
+      // draw menu title
+      .setStyle({
+        textBaseline: "top",
+        font: "60px Helvetica",
+        fillStyle: Color.White
+      })
+      .fillText(
+        this.menuTitle,
+        (this.w - d.measureText(this.menuTitle).width) / 2,
+        20
+      );
 
     // draw menu items
-    const itemHeight = 50;
     const fontSize = 30;
+    const itemHeight = 50;
 
-    d.font = fontSize + "px Helvetica";
+    d.setStyle({ font: fontSize + "px Helvetica" });
     this.menuItems.forEach((item, index) => {
       if (index === this.menuIndex) {
-        d.globalAlpha = this.menuActiveOpacity;
-        d.fillStyle = "#089cd3";
-        d.fillRect(0, this.h / 2 + index * itemHeight, this.w, itemHeight);
+        d.setStyle({
+          fillStyle: "#089cd3",
+          globalAlpha: this.menuActiveOpacity
+        }).fillRect(0, this.h / 2 + index * itemHeight, this.w, itemHeight);
       }
 
-      d.globalAlpha = 1;
-      d.fillStyle = Color.White;
-      d.fillText(
+      d.setStyle({
+        globalAlpha: 1,
+        fillStyle: Color.White
+      }).fillText(
         item,
         (this.w - d.measureText(item).width) / 2,
         this.h / 2 + index * itemHeight + (itemHeight - fontSize) / 2
@@ -225,14 +235,14 @@ class GameScene extends BaseScene {
   draw(d: IDrawer, dt: number) {
     const rectSize = 150;
 
-    d.save();
-    d.clearRect(0, 0, this.w, this.h);
-    d.translate(this.posX, this.posY);
-    d.rotate((this.angle * Math.PI) / 180);
-    d.translate(-rectSize / 2, -rectSize / 2);
-    d.fillStyle = "#0d0";
-    d.fillRect(0, 0, rectSize, rectSize);
-    d.restore();
+    d.save()
+      .clearRect(0, 0, this.w, this.h)
+      .translate(this.posX, this.posY)
+      .rotate((this.angle * Math.PI) / 180)
+      .translate(-rectSize / 2, -rectSize / 2)
+      .setStyle({ fillStyle: "#0d0" })
+      .fillRect(0, 0, rectSize, rectSize)
+      .restore();
 
     return this;
   }
@@ -254,19 +264,22 @@ class ExitScene extends BaseScene {
   }
 
   draw(d: IDrawer, dt: number) {
-    // clear the canvas
-    d.clearRect(0, 0, this.w, this.h);
-
-    // display "game over" text
     const gameOverText = "Game Over";
-    d.textBaseline = "top";
-    d.font = "100px Helvetica";
-    d.fillStyle = "#ee4024";
-    d.fillText(
-      gameOverText,
-      (this.w - d.measureText(gameOverText).width) / 2,
-      this.h / 2 - 50
-    );
+
+    // clear the canvas
+    d.clearRect(0, 0, this.w, this.h)
+
+      // display "game over" text
+      .setStyle({
+        textBaseline: "top",
+        fillStyle: "#ee4024",
+        font: "100px Helvetica"
+      })
+      .fillText(
+        gameOverText,
+        (this.w - d.measureText(gameOverText).width) / 2,
+        this.h / 2 - 50
+      );
 
     return this;
   }

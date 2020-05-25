@@ -9,14 +9,10 @@ import {
 } from "core";
 
 class View extends BaseView<Square> {
-  draw = (drawer?: IDrawer, deltaTime?: number) => {
-    if (this.parent && drawer) {
-      const { x, y, w, h } = this.parent.getBounds();
+  draw = (d: IDrawer, dt?: number) => {
+    const { x, y, w, h } = this.parent.getBounds();
 
-      drawer.fillStyle = this.parent.color;
-
-      drawer.fillRect(x, y, w, h);
-    }
+    d.setStyle({ fillStyle: this.parent.color }).fillRect(x, y, w, h);
 
     return this;
   };
@@ -32,7 +28,7 @@ class Behavior extends BaseBehavior<Square> {
     this.changeColor();
   }
 
-  update = (deltaTime?: number) => {
+  update = (dt?: number) => {
     const corners = this.parent.getCorners();
     const sceneCorners = this.parent.parent?.getCorners();
 

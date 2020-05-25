@@ -8,12 +8,15 @@ import {
 } from "core";
 
 class View extends BaseView<Box> {
-  draw = (drawer: IDrawer, deltaTime: number) => {
+  draw = (d: IDrawer, dt: number) => {
     const { x, y, w, h } = this.parent;
-    drawer.fillStyle = Color.random();
-    drawer.strokeStyle = Color.random();
-    drawer.fillRect(x, y, w, h);
-    drawer.strokeRect(x, y, w, h);
+
+    d.setStyle({
+      fillStyle: Color.random(),
+      strokeStyle: Color.random()
+    })
+      .fillRect(x, y, w, h)
+      .strokeRect(x, y, w, h);
 
     return this;
   };

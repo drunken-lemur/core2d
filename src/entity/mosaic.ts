@@ -4,13 +4,12 @@ import { Square } from "entity";
 
 export class Mosaic extends Entity {
   private static View = class extends BaseView<Mosaic> {
-    draw(drawer: IDrawer, deltaTime: number) {
+    draw(d: IDrawer, dt: number) {
       const { x, y, w, h } = this.parent;
 
-      drawer.fillStyle = Color.Blue;
-      drawer.fillRect(x, y, w, h);
+      d.setStyle({ fillStyle: Color.Blue }).fillRect(x, y, w, h);
 
-      return super.draw(drawer, deltaTime);
+      return super.draw(d, dt);
     }
   };
 

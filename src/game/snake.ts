@@ -13,7 +13,8 @@ import {
   IInput,
   IPointData,
   IScene,
-  IScreen, Second,
+  IScreen,
+  Second,
   Size
 } from "core";
 
@@ -33,13 +34,11 @@ class Apple extends Entity {
 
       const r = Math.floor((w + h) / 4);
 
-      d.translate(r, r);
-      d.beginPath();
-      d.arc(x, y, r, 0, 2 * Math.PI);
-      d.closePath();
-      d.fill();
-
-      // this.parent.hide();
+      d.translate(r, r)
+        .beginPath()
+        .arc(x, y, r, 0, 2 * Math.PI)
+        .closePath()
+        .fill();
 
       return this;
     }
@@ -47,8 +46,6 @@ class Apple extends Entity {
 
   private static Behavior = class extends BaseBehavior<Apple> {
     update(deltaTime: number) {
-      console.log("Apple.Behavior.update()");
-
       this.parent.plusPosition(0.1, 0);
 
       return this;
@@ -109,6 +106,6 @@ export class SnakeGame extends BaseGame {
     this.input = new BaseInput();
     this.scene = new GameScene(this);
 
-    setTimeout(this.stop, 1 * Second)
+    setTimeout(this.stop, 1 * Second);
   }
 }

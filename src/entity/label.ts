@@ -47,10 +47,10 @@ export class TypingLabelBehavior extends BaseBehavior<Label> {
 
 export class Label extends Entity {
   private static View = class extends BaseView<Label> {
-    draw(drawer: IDrawer, deltaTime: number) {
+    draw(d: IDrawer, dt: number) {
       const { x, y } = this.parent;
 
-      const width = drawer.measureText(this.parent.text).width;
+      const width = d.measureText(this.parent.text).width;
       const height =
         Number(`${this.parent.style.font}`.replace(/[^0-9]/g, "")) ||
         this.parent.h ||
@@ -63,14 +63,9 @@ export class Label extends Entity {
         this.parent.h = height;
       }
 
-      drawer.fillText(
-        this.parent.text,
-        x,
-        y + height
-        // BaseGame.instance.screen.w
-      );
+      d.fillText(this.parent.text, x, y + height);
 
-      return super.draw(drawer, deltaTime);
+      return super.draw(d, dt);
     }
   };
 
