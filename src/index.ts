@@ -1,10 +1,4 @@
-import {
-  IGame,
-  IScreen,
-  BaseApp,
-  Resolutions,
-  CanvasScreen
-} from "core";
+import { IGame, IScreen, BaseApp, Resolutions, CanvasScreen } from "core";
 import { BasicGame, Demo, SnakeGame, SpaceRock } from "game";
 
 enum Game {

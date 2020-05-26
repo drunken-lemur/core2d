@@ -7,7 +7,6 @@ import {
   Entity,
   IDrawer,
   IGame,
-  IInput,
   IPoint,
   IScene,
   IScreen,
@@ -218,13 +217,11 @@ export class GameScene extends BaseScene {
 }
 
 export class SpaceRock extends BaseGame {
-  input: IInput;
   scene: IScene;
 
   constructor(screen: IScreen) {
     super(screen, 60);
 
-    this.input = {} as any; // todo
     this.scene = new GameScene(this);
   }
 }

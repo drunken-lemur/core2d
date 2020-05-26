@@ -19,6 +19,7 @@ export interface IDrawerData
     CanvasPathDrawingStylesData,
     CanvasShadowStyles,
     CanvasTextDrawingStyles {
+  noTranslate?: boolean;
   setStyle(style: IDrawerStyle): this;
 }
 

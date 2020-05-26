@@ -1,14 +1,4 @@
-import {
-  BaseGame,
-  IInput,
-  IScreen,
-  IScene,
-  IGame,
-  Color,
-  BaseScene,
-  Size,
-  BaseInput
-} from "core";
+import { BaseGame, IScreen, IScene, IGame, Color, BaseScene, Size } from "core";
 
 import { FpsLabel, Label, Mosaic, TypingLabelBehavior } from "entity";
 
@@ -69,13 +59,12 @@ export class Demo extends BaseGame {
         });
     }
   };
-  input: IInput;
+
   scene: IScene;
 
   constructor(screen: IScreen) {
     super(screen, 60);
 
-    this.input = new BaseInput();
     this.scene = new Demo.Intro(this);
   }
 }

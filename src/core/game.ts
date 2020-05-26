@@ -1,7 +1,7 @@
-import { IInput } from "./input";
 import { IScene } from "./scene";
 import { IScreen } from "./screen";
 import { ITimer, Timer } from "./timer";
+import { BaseInput, IInput } from "./input";
 
 export interface IGame {
   input: IInput;
@@ -13,9 +13,10 @@ export interface IGame {
 }
 
 export abstract class BaseGame implements IGame {
-  screen: IScreen;
   static instance: IGame;
-  abstract input: IInput;
+
+  input: IInput;
+  screen: IScreen;
   abstract scene: IScene;
 
   readonly timer: ITimer;
@@ -24,6 +25,7 @@ export abstract class BaseGame implements IGame {
     BaseGame.instance = this;
 
     this.screen = screen;
+    this.input = new BaseInput();
     this.timer = new Timer(fps, this.update, this.draw);
   }
 

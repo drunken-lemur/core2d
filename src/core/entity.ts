@@ -114,7 +114,13 @@ export class Entity extends Bounds implements IEntity {
 
       this.view.draw(drawer, deltaTime);
 
-      drawer.translate(this.x, this.y);
+      if (
+        !this.style.noTranslate &&
+        this.children.size &&
+        this.x + this.y > 0
+      ) {
+        drawer.translate(this.x, this.y);
+      }
 
       this.children.forEach(children => children.draw(drawer, deltaTime));
 

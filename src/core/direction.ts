@@ -1,81 +1,76 @@
 import { randomEnum } from "./utils";
+import { IPointData, Point } from "./point";
 
 enum CompassDirection {
-  NORTH = "NORTH",
-  NORTHEAST = "NORTHEAST",
-  EAST = "EAST",
-  SOUTHEAST = "SOUTHEAST",
-  SOUTH = "SOUTH",
-  SOUTHWEST = "SOUTHWEST",
-  WEST = "WEST",
-  NORTHWEST = "NORTHWEST"
+  North = "North",
+  NorthEast = "NorthEast",
+  East = "East",
+  SouthEast = "SouthEast",
+  South = "South",
+  SouthWest = "SouthWest",
+  West = "West",
+  NorthWest = "NorthWest"
+}
+enum SimpleDirection {
+  North = "North",
+  East = "East",
+  South = "South",
+  West = "West"
 }
 
-enum SideDirection {
-  UP = CompassDirection.NORTH,
-  RIGHT = CompassDirection.EAST,
-  DOWN = CompassDirection.SOUTH,
-  LEFT = CompassDirection.WEST
-}
-
-export type Direction = CompassDirection & SideDirection;
+export type Direction = CompassDirection;
 
 export namespace Direction {
-  export const NORTH = CompassDirection.NORTH;
-  export const NORTHEAST = CompassDirection.NORTHEAST;
-  export const EAST = CompassDirection.EAST;
-  export const SOUTHEAST = CompassDirection.SOUTHEAST;
-  export const SOUTH = CompassDirection.SOUTH;
-  export const SOUTHWEST = CompassDirection.SOUTHWEST;
-  export const WEST = CompassDirection.WEST;
-  export const NORTHWEST = CompassDirection.NORTHWEST;
+  export const North = CompassDirection.North;
+  export const NorthEast = CompassDirection.NorthEast;
+  export const East = CompassDirection.East;
+  export const SouthEast = CompassDirection.SouthEast;
+  export const South = CompassDirection.South;
+  export const SouthWest = CompassDirection.SouthWest;
+  export const West = CompassDirection.West;
+  export const NorthWest = CompassDirection.NorthWest;
 
-  export const UP = SideDirection.UP;
-  export const RIGHT = SideDirection.RIGHT;
-  export const DOWN = SideDirection.DOWN;
-  export const LEFT = SideDirection.LEFT;
-
-  export const left = (direction: Direction) => {
+  export const left = (direction: CompassDirection) => {
     switch (direction) {
-      case NORTH:
-        return NORTHWEST;
-      case NORTHEAST:
-        return NORTH;
-      case EAST:
-        return NORTHEAST;
-      case SOUTHEAST:
-        return EAST;
-      case SOUTH:
-        return SOUTHEAST;
-      case SOUTHWEST:
-        return SOUTH;
-      case WEST:
-        return SOUTHWEST;
-      case NORTHWEST:
-        return WEST;
+      case CompassDirection.North:
+        return CompassDirection.NorthWest;
+      case CompassDirection.NorthEast:
+        return CompassDirection.North;
+      case CompassDirection.East:
+        return CompassDirection.NorthEast;
+      case CompassDirection.SouthEast:
+        return CompassDirection.East;
+      case CompassDirection.South:
+        return CompassDirection.SouthEast;
+      case CompassDirection.SouthWest:
+        return CompassDirection.South;
+      case CompassDirection.West:
+        return CompassDirection.SouthWest;
+      case CompassDirection.NorthWest:
+        return CompassDirection.West;
       default:
         return direction;
     }
   };
 
-  export const right = (direction: Direction) => {
+  export const right = (direction: CompassDirection) => {
     switch (direction) {
-      case NORTH:
-        return NORTHEAST;
-      case NORTHEAST:
-        return EAST;
-      case EAST:
-        return SOUTHEAST;
-      case SOUTHEAST:
-        return SOUTH;
-      case SOUTH:
-        return SOUTHWEST;
-      case SOUTHWEST:
-        return WEST;
-      case WEST:
-        return NORTHWEST;
-      case NORTHWEST:
-        return NORTH;
+      case CompassDirection.North:
+        return CompassDirection.NorthEast;
+      case CompassDirection.NorthEast:
+        return CompassDirection.East;
+      case CompassDirection.East:
+        return CompassDirection.SouthEast;
+      case CompassDirection.SouthEast:
+        return CompassDirection.South;
+      case CompassDirection.South:
+        return CompassDirection.SouthWest;
+      case CompassDirection.SouthWest:
+        return CompassDirection.West;
+      case CompassDirection.West:
+        return CompassDirection.NorthWest;
+      case CompassDirection.NorthWest:
+        return CompassDirection.North;
       default:
         return direction;
     }
@@ -83,31 +78,53 @@ export namespace Direction {
 
   export const opposite = (direction: Direction) => {
     switch (direction) {
-      case NORTH:
-        return SOUTH;
-      case NORTHEAST:
-        return SOUTHWEST;
-      case EAST:
-        return WEST;
-      case SOUTHEAST:
-        return NORTHWEST;
-      case SOUTH:
-        return NORTH;
-      case SOUTHWEST:
-        return NORTHEAST;
-      case WEST:
-        return EAST;
-      case NORTHWEST:
-        return SOUTHEAST;
+      case CompassDirection.North:
+        return CompassDirection.South;
+      case CompassDirection.NorthEast:
+        return CompassDirection.SouthWest;
+      case CompassDirection.East:
+        return CompassDirection.West;
+      case CompassDirection.SouthEast:
+        return CompassDirection.NorthWest;
+      case CompassDirection.South:
+        return CompassDirection.North;
+      case CompassDirection.SouthWest:
+        return CompassDirection.NorthEast;
+      case CompassDirection.West:
+        return CompassDirection.East;
+      case CompassDirection.NorthWest:
+        return CompassDirection.SouthEast;
       default:
         return direction;
     }
   };
 
-  export const random = (simple = false): Direction => {
-    return (simple
-      ? randomEnum(SideDirection)
-      : randomEnum(CompassDirection)) as Direction;
+  export const random = (simple = false) => {
+    return simple
+      ? ((randomEnum(SimpleDirection) as any) as CompassDirection)
+      : randomEnum(CompassDirection);
+  };
+
+  export const getDeltaPoint = (direction: Direction): IPointData => {
+    switch (direction) {
+      case CompassDirection.North:
+        return Point.valueOf(0, -1);
+      case CompassDirection.NorthEast:
+        return Point.valueOf(1, -1);
+      case CompassDirection.East:
+        return Point.valueOf(1, 0);
+      case CompassDirection.SouthEast:
+        return Point.valueOf(1, 1);
+      case CompassDirection.South:
+        return Point.valueOf(0, 1);
+      case CompassDirection.SouthWest:
+        return Point.valueOf(-1, 1);
+      case CompassDirection.West:
+        return Point.valueOf(-1, 0);
+      case CompassDirection.NorthWest:
+        return Point.valueOf(-1, -1);
+      default:
+        return Point.valueOf(0, 0);
+    }
   };
 }
-

@@ -1,6 +1,6 @@
 export interface IInput {
+  isKeyHold: (...keys: Key[]) => boolean;
   isKeyPressed: (...keys: Key[]) => boolean;
-  isKeyPressedOnce: (...keys: Key[]) => boolean;
 }
 
 export enum Key {
@@ -44,10 +44,9 @@ export class BaseInput {
     );
   }
 
-  isKeyPressed = (...keys: Key[]) =>
-    keys.map(key => this.keys[key]).some(Boolean);
+  isKeyHold = (...keys: Key[]) => keys.map(key => this.keys[key]).some(Boolean);
 
-  isKeyPressedOnce = (...keys: Key[]) => {
+  isKeyPressed = (...keys: Key[]) => {
     return keys
       .map(key => {
         // handle key press + release
