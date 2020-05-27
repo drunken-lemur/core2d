@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta
+      name="viewport"
+      content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0"
+    />
+    <meta http-equiv="X-UA-Compatible" content="ie=edge" />
+    <title>Measuring text</title>
+    <style>
+      .my_class {
+        font: 30em Arial;
+        white-space: nowrap;
+        position: absolute;
+        right: 99999px;
+        opacity: 0;
+      }
+      .textDimensionCalculation {
+        position: absolute;
+        visibility: hidden;
+        height: auto;
+        width: auto;
+        white-space: nowrap;
+      }
+    </style>
+  </head>
+  <body>
+    <div id="content"></div>
+    <div id="calculated"></div>
+    <div id="rendered"></div>
+    <br />
+    <span class="my_class">Hello World</span>
+    <script>
+      var calculateWordDimensions = function(text, classes, escape) {
+        classes = classes || [];
+
+        if (escape === undefined) {
+          escape = true;
+        }
+
+        classes.push("textDimensionCalculation");
+
+        var div = document.createElement("div");
+        div.setAttribute("class", classes.join(" "));
+
+        if (escape) {
+          div.innerHTML = text;
+        } else {
+          div.innerHTML = text;
+        }
+
+        document.body.appendChild(div);
+
+        var dimensions = {
+          width: div.offsetWidth,
+          height: div.offsetHeight
+        };
+
+        div.parentNode.removeChild(div);
+
+        return dimensions;
+      };
+
+      var dimensions = calculateWordDimensions("Hello World", ["my_class"]);
+
+      document.querySelector("#calculated").innerHTML =
+        "Calculated width " + dimensions.width;
+      document.querySelector("#rendered").innerHTML =
+        "Span text width " + dimensions.height;
+    </script>
+  </body>
+</html>

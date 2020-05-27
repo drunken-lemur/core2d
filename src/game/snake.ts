@@ -16,8 +16,7 @@ import {
   Key,
   NetView,
   Point,
-  RectView,
-  Second,
+  Score,
   Size
 } from "core";
 import { Label } from "entity";
@@ -29,24 +28,6 @@ const Config = {
   startSnakeSize: 4,
   worldSize: Size.valueOf(20, 15)
 };
-
-abstract class Score {
-  private static value = 0;
-
-  static add = (value: number) => {
-    Score.value += value;
-
-    return Score;
-  };
-
-  static reset = () => {
-    Score.value = 0;
-
-    return Score;
-  };
-
-  static get = () => Score.value;
-}
 
 class ScoreLabel extends Label {
   style = {
