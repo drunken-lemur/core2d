@@ -1,12 +1,13 @@
 import {
-  align,
   BaseBehavior,
   BaseGame,
   BaseScene,
   BaseView,
+  Bounds,
   Color,
   Entity,
   IDrawer,
+  IDrawerStyle,
   IGame,
   IPoint,
   IPointData,
@@ -16,9 +17,12 @@ import {
   Key,
   Point,
   Position,
-  Score,
   Size
 } from "core";
+import { Score } from "lib";
+import { ScoreLabel } from "lib/entity";
+
+const Deg = Math.PI / 180;
 
 const Config = {
   rockTime: 110, // approx tick count until a new asteroid gets introduced
@@ -36,14 +40,14 @@ class SpaceRock extends Entity {
   static LRG_ROCK = 40;
 
   private hit: number; // average radial disparity
-  private bounds; //visual radial size
+  // private bounds; //visual radial size
 
   private spin: number;
   private score: number;
   private rotation: number;
   private velocity: IPointData;
 
-  private active; //is it active
+  // private active; //is it active
 
   view = new (class extends BaseView<SpaceRock> {
     draw(d: IDrawer, dt: number) {
@@ -85,119 +89,127 @@ class SpaceRock extends Entity {
   }
 
   // handle drawing a spaceRock
-  private getShape = function(size) {
-    var angle = 0;
-    var radius = size;
-
-    this.size = size;
-    this.hit = size;
-    this.bounds = 0;
-
-    //setup
-    this.graphics.clear();
-    this.graphics.beginStroke("#FFFFFF");
-    this.graphics.moveTo(0, size);
-
-    //draw spaceRock
-    while (angle < Math.PI * 2 - 0.5) {
-      angle += 0.25 + (Math.random() * 100) / 500;
-      radius = size + (size / 2) * Math.random();
-      this.graphics.lineTo(Math.sin(angle) * radius, Math.cos(angle) * radius);
-
-      //track visual depiction for interaction
-      if (radius > this.bounds) {
-        this.bounds = radius;
-      } //furthest point
-
-      this.hit = (this.hit + radius) / 2; //running average
-    }
-
-    this.graphics.closePath(); // draw the last line segment back to the start point.
-    this.hit *= 1.1; //pad a bit
-  };
-
-  // handle reinit for poolings sake
-  private activate = function(size) {
-    this.getShape(size);
-
-    //pick a random direction to move in and base the rotation off of speed
-    var angle = Math.random() * (Math.PI * 2);
-    this.vX = Math.sin(angle) * (5 - size / 15);
-    this.vY = Math.cos(angle) * (5 - size / 15);
-    this.spin = (Math.random() + 0.2) * this.vX;
-
-    //associate score with size
-    this.score = (5 - size / 10) * 100;
-    this.active = true;
-  };
-
-  // position the spaceRock so it floats on screen
-  private floatOnScreen = function(width, height) {
-    //base bias on real estate and pick a side or top/bottom
-    if (Math.random() * (width + height) > width) {
-      //side; ensure velocity pushes it on screen
-      if (this.vX > 0) {
-        this.x = -2 * this.bounds;
-      } else {
-        this.x = 2 * this.bounds + width;
-      }
-      //randomly position along other dimension
-      if (this.vY > 0) {
-        this.y = Math.random() * height * 0.5;
-      } else {
-        this.y = Math.random() * height * 0.5 + 0.5 * height;
-      }
-    } else {
-      //top/bottom; ensure velocity pushes it on screen
-      if (this.vY > 0) {
-        this.y = -2 * this.bounds;
-      } else {
-        this.y = 2 * this.bounds + height;
-      }
-      //randomly position along other dimension
-      if (this.vX > 0) {
-        this.x = Math.random() * width * 0.5;
-      } else {
-        this.x = Math.random() * width * 0.5 + 0.5 * width;
-      }
-    }
-  };
-
-  private hitPoint = function(tX, tY) {
-    return this.hitRadius(tX, tY, 0);
-  };
-
-  private hitRadius = function(tX, tY, tHit) {
-    //early returns speed it up
-    if (tX - tHit > this.x + this.hit) {
-      return;
-    }
-    if (tX + tHit < this.x - this.hit) {
-      return;
-    }
-
-    if (tY - tHit > this.y + this.hit) {
-      return;
-    }
-
-    if (tY + tHit < this.y - this.hit) {
-      return;
-    }
-
-    //now do the circle distance test
-    return (
-      this.hit + tHit >
-      Math.sqrt(
-        Math.pow(Math.abs(this.x - tX), 2) + Math.pow(Math.abs(this.y - tY), 2)
-      )
-    );
-  };
+  // private getShape = function(size) {
+  //   var angle = 0;
+  //   var radius = size;
+  //
+  //   this.size = size;
+  //   this.hit = size;
+  //   this.bounds = 0;
+  //
+  //   //setup
+  //   this.graphics.clear();
+  //   this.graphics.beginStroke("#FFFFFF");
+  //   this.graphics.moveTo(0, size);
+  //
+  //   //draw spaceRock
+  //   while (angle < Math.PI * 2 - 0.5) {
+  //     angle += 0.25 + (Math.random() * 100) / 500;
+  //     radius = size + (size / 2) * Math.random();
+  //     this.graphics.lineTo(Math.sin(angle) * radius, Math.cos(angle) * radius);
+  //
+  //     //track visual depiction for interaction
+  //     if (radius > this.bounds) {
+  //       this.bounds = radius;
+  //     } //furthest point
+  //
+  //     this.hit = (this.hit + radius) / 2; //running average
+  //   }
+  //
+  //   this.graphics.closePath(); // draw the last line segment back to the start point.
+  //   this.hit *= 1.1; //pad a bit
+  // };
+  //
+  // // handle reinit for poolings sake
+  // private activate = function(size) {
+  //   this.getShape(size);
+  //
+  //   //pick a random direction to move in and base the rotation off of speed
+  //   var angle = Math.random() * (Math.PI * 2);
+  //   this.vX = Math.sin(angle) * (5 - size / 15);
+  //   this.vY = Math.cos(angle) * (5 - size / 15);
+  //   this.spin = (Math.random() + 0.2) * this.vX;
+  //
+  //   //associate score with size
+  //   this.score = (5 - size / 10) * 100;
+  //   this.active = true;
+  // };
+  //
+  // // position the spaceRock so it floats on screen
+  // private floatOnScreen = function(width, height) {
+  //   //base bias on real estate and pick a side or top/bottom
+  //   if (Math.random() * (width + height) > width) {
+  //     //side; ensure velocity pushes it on screen
+  //     if (this.vX > 0) {
+  //       this.x = -2 * this.bounds;
+  //     } else {
+  //       this.x = 2 * this.bounds + width;
+  //     }
+  //     //randomly position along other dimension
+  //     if (this.vY > 0) {
+  //       this.y = Math.random() * height * 0.5;
+  //     } else {
+  //       this.y = Math.random() * height * 0.5 + 0.5 * height;
+  //     }
+  //   } else {
+  //     //top/bottom; ensure velocity pushes it on screen
+  //     if (this.vY > 0) {
+  //       this.y = -2 * this.bounds;
+  //     } else {
+  //       this.y = 2 * this.bounds + height;
+  //     }
+  //     //randomly position along other dimension
+  //     if (this.vX > 0) {
+  //       this.x = Math.random() * width * 0.5;
+  //     } else {
+  //       this.x = Math.random() * width * 0.5 + 0.5 * width;
+  //     }
+  //   }
+  // };
+  //
+  // private hitPoint = function(tX, tY) {
+  //   return this.hitRadius(tX, tY, 0);
+  // };
+  //
+  // private hitRadius = function(tX, tY, tHit) {
+  //   //early returns speed it up
+  //   if (tX - tHit > this.x + this.hit) {
+  //     return;
+  //   }
+  //   if (tX + tHit < this.x - this.hit) {
+  //     return;
+  //   }
+  //
+  //   if (tY - tHit > this.y + this.hit) {
+  //     return;
+  //   }
+  //
+  //   if (tY + tHit < this.y - this.hit) {
+  //     return;
+  //   }
+  //
+  //   //now do the circle distance test
+  //   return (
+  //     this.hit + tHit >
+  //     Math.sqrt(
+  //       Math.pow(Math.abs(this.x - tX), 2) + Math.pow(Math.abs(this.y - tY), 2)
+  //     )
+  //   );
+  // };
 }
 
 class ShipBody extends Entity {
-  private static View = class extends BaseView<ShipBody> {
+  parent!: Ship;
+
+  style = { strokeStyle: Color.White };
+
+  view = new (class extends BaseView<ShipBody> {
     draw = (d: IDrawer, dt: number) => {
+      const { parent: ship } = this.parent;
+
       d.beginPath()
+        .scale(1, 1)
+        .rotate(ship.rotation * Deg)
         .moveTo(0, 10)
         .lineTo(5, -6)
         .lineTo(0, -2)
@@ -208,72 +220,54 @@ class ShipBody extends Entity {
 
       return this;
     };
-  };
-
-  private static Behavior = class extends BaseBehavior<ShipBody> {
-    update = (dt: number) => {
-      super.update(dt);
-
-      return this;
-    };
-  };
-
-  constructor() {
-    super();
-
-    this.setView(new ShipBody.View(this)).setBehavior(
-      new ShipBody.Behavior(this)
-    );
-  }
+  })(this);
 }
 
 class ShipFlame extends Entity {
-  private static View = class extends BaseView<ShipFlame> {
+  parent!: Ship;
+
+  style = { strokeStyle: Color.Blue };
+
+  view = new (class extends BaseView<ShipFlame> {
     draw = (d: IDrawer, dt: number) => {
-      d.scale(0.5, 0.5)
+      const { parent: ship } = this.parent;
+
+      d.scale(.8, .8)
+        .rotate(ship.rotation * Deg)
         .translate(0, -5)
 
         .beginPath()
-        .moveTo(2, 0) // ship
-        .lineTo(4, -3) // rpoint
-        .lineTo(2, -2) // rnotch
-        .lineTo(0, -5) // tip
-        .lineTo(-4, -3) // lnotch
-        .lineTo(-2, -0) // lpoint
-        .lineTo(-2, -0) // ship
+        .moveTo(2, 0)
+        .lineTo(4, -3)
+        .lineTo(0, -5)
+        .lineTo(-4, -3)
+        .lineTo(-2, -0)
         .closePath()
 
         .stroke();
 
       return this;
     };
-  };
-
-  private static Behavior = class extends BaseBehavior<ShipFlame> {
-    update = (dt: number) => {
-      super.update(dt);
-
-      return this;
-    };
-  };
-
-  constructor() {
-    super();
-
-    this.setView(new ShipFlame.View(this)).setBehavior(
-      new ShipFlame.Behavior(this)
-    );
-  }
+  })(this);
 }
 
 export class Ship extends Entity {
-  private static View = class extends BaseView<Ship> {
-    draw = (d: IDrawer, dt: number) => {
-      return this;
-    };
-  };
+  static TOGGLE = 60;
+  static MAX_THRUST = 60;
+  static MAX_VELOCITY = 60;
 
-  private static Behavior = class extends BaseBehavior<Ship> {
+  shipBody: ShipBody;
+  shipFlame: ShipFlame;
+
+  speed: IPoint;
+  thrust: number;
+  timeout: number;
+  rotation: number;
+
+  hit: any;
+  bounds: any;
+
+  behavior = new (class extends BaseBehavior<Ship> {
     update = (dt: number) => {
       const { parent } = this;
 
@@ -294,6 +288,9 @@ export class Ship extends Entity {
         // this.shipFlame.alpha = 0 // todo:
         parent.thrust = 0;
       }
+
+      parent.rotation++;
+      parent.rotation %= 360;
 
       super.update(dt);
 
@@ -321,22 +318,7 @@ export class Ship extends Entity {
       // cap max speeds
       parent.speed.set(min(MAX_VELOCITY, max(-MAX_VELOCITY, parent.speed.x)));
     };
-  };
-
-  static TOGGLE = 60;
-  static MAX_THRUST = 60;
-  static MAX_VELOCITY = 60;
-
-  shipBody: ShipBody;
-  shipFlame: ShipFlame;
-
-  speed: IPoint;
-  thrust: number;
-  timeout: number;
-  rotation: number;
-
-  hit: any;
-  bounds: any;
+  })(this);
 
   constructor() {
     super();
@@ -345,8 +327,6 @@ export class Ship extends Entity {
     this.timeout = 0;
     this.rotation = 0;
     this.speed = new Point();
-
-    this.setView(new Ship.View(this)).setBehavior(new Ship.Behavior(this));
 
     this.shipBody = new ShipBody();
     this.shipFlame = new ShipFlame();
@@ -363,16 +343,19 @@ export class Ship extends Entity {
 }
 
 export class GameScene extends BaseScene {
-  score = new Score();
-
-  style = { fillStyle: Color.White };
-
   private control = {
     shoot: false,
     left: false,
     right: false,
     forward: true
   };
+
+  private ship: Ship;
+  private readonly rockBelt: Entity;
+  private readonly gameGroup: Entity;
+  private readonly bulletStream: Entity;
+
+  style = { fillStyle: Color.Black };
 
   behavior = new (class extends BaseBehavior<GameScene> {
     constructor(parent: GameScene) {
@@ -402,7 +385,7 @@ export class GameScene extends BaseScene {
       const { parent: scene } = this;
 
       // hide anything on stage and show the score
-      scene.clear();
+      // scene.clear();
       Score.reset();
 
       return this;
@@ -454,12 +437,39 @@ export class GameScene extends BaseScene {
   constructor(game: IGame) {
     super(game);
 
-    const ship = new Ship();
+    this.ship = new Ship();
+    this.rockBelt = new Entity(this);
+    this.gameGroup = new Entity(this);
+    this.bulletStream = new Entity(this);
 
-    align(ship, this, Position.CENTER);
+    Bounds.align(this.ship, this, Position.CENTER);
 
-    this.add(ship);
+    this.reset();
+
+    const score = new ScoreLabel()
+      .setStyle({
+        font: "16px Verdana",
+        fillStyle: Color.White
+      })
+      .setPosition(8);
+
+    this.add(score, this.rockBelt, this.gameGroup, this.bulletStream);
+
+    this.reset();
   }
+
+  reset = () => {
+    const { rockBelt, gameGroup, bulletStream } = this;
+
+    [rockBelt, gameGroup, bulletStream].forEach(g => g.clear());
+    Score.reset();
+
+    this.ship = new Ship();
+    Bounds.align(this.ship, this, Position.CENTER);
+    this.gameGroup.add(this.ship);
+
+    return this;
+  };
 }
 
 export class SpaceRockGame extends BaseGame {
@@ -467,6 +477,23 @@ export class SpaceRockGame extends BaseGame {
 
   constructor(screen: IScreen) {
     super(screen, 60);
+
+    const style = document.createElement("style");
+    document.head.appendChild(style);
+
+    style.innerText = `
+      body {
+        background: ${Color.Black};
+      }
+      
+      canvas {
+        top: 50%;
+        left: 50%;
+        position: absolute;
+        border: 1px solid ${Color.White};
+        transform: translate(-50%, -50%);
+      }
+    `;
 
     this.scene = new GameScene(this);
   }

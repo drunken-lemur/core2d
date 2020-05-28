@@ -359,6 +359,8 @@ export class Drawer implements IDrawer {
   }
 
   closePath() {
+    this.ctx.closePath();
+
     return this;
   }
 

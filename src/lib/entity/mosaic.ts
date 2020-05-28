@@ -1,6 +1,6 @@
 import { Entity, ISizeData, Size, Point, BaseView, Color, IDrawer } from "core";
 
-import { Square } from "entity";
+import { Square } from "lib/entity";
 
 export class Mosaic extends Entity {
   private static View = class extends BaseView<Mosaic> {

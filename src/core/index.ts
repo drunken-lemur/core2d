@@ -13,7 +13,6 @@ export * from "./input";
 export * from "./point";
 export * from "./position";
 export * from "./scene";
-export * from "./score";
 export * from "./screen";
 export * from "./size";
 export * from "./timer";

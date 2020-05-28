@@ -16,10 +16,10 @@ import {
   Key,
   NetView,
   Point,
-  Score,
   Size
 } from "core";
-import { Label } from "entity";
+import { Score } from "lib";
+import { ScoreLabel } from "lib/entity";
 
 const Config = {
   fps: 60,
@@ -28,19 +28,6 @@ const Config = {
   startSnakeSize: 4,
   worldSize: Size.valueOf(20, 15)
 };
-
-class ScoreLabel extends Label {
-  style = {
-    font: "20px Verdana",
-    fillStyle: Color.Black
-  };
-
-  update(deltaTime: number): this {
-    this.text = `Score: ${Score.get()}`;
-
-    return super.update(deltaTime);
-  }
-}
 
 class Apple extends Entity {
   private static View = class View extends BaseView<Apple> {
