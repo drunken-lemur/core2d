@@ -11,7 +11,7 @@ export interface IPoint extends IPointData, IWithToArray<number> {
   plus: (x: number | IPointData, y?: number) => this;
   minus: (x: number | IPointData, y?: number) => this;
   multiply: (x: number | IPointData, y?: number) => this;
-  divide: (x: number | IPointData, y?: number) => this;
+  divide: (x: number | IPointData, y?: number, euclidean?: boolean) => this;
   invert: () => this;
   swap: () => this;
   clone: () => IPoint;
@@ -86,11 +86,16 @@ export class Point implements IPoint {
     return this;
   };
 
-  divide = (x: number | IPointData, y?: number) => {
+  divide = (x: number | IPointData, y?: number, euclidean = false) => {
     const point = Point.valueOf(x, y);
 
-    this.x /= point.x;
-    this.y /= point.y;
+    if (!euclidean) {
+      this.x /= point.x;
+      this.y /= point.y;
+    } else {
+      this.x %= point.x;
+      this.y %= point.y;
+    }
 
     return this;
   };

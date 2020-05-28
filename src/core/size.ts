@@ -11,7 +11,7 @@ export interface ISize extends ISizeData, IWithToArray<number> {
   plus: (w: number | ISizeData, h?: number) => this;
   minus: (w: number | ISizeData, h?: number) => this;
   multiply: (w: number | ISizeData, h?: number) => this;
-  divide: (w: number | ISizeData, h?: number) => this;
+  divide: (w: number | ISizeData, h?: number, euclidean?: boolean) => this;
   invert: () => this;
   swap: () => this;
   clone: () => ISize;
@@ -86,11 +86,16 @@ export class Size implements ISize {
     return this;
   };
 
-  divide = (w: number | ISizeData, h?: number) => {
+  divide = (w: number | ISizeData, h?: number, euclidean = false) => {
     const size = Size.valueOf(w, h);
 
-    this.w /= size.w;
-    this.h /= size.h;
+    if (!euclidean) {
+      this.w /= size.w;
+      this.h /= size.h;
+    } else {
+      this.w %= size.w;
+      this.h %= size.h;
+    }
 
     return this;
   };

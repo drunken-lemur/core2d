@@ -49,8 +49,12 @@ export interface IBounds extends IBoundsData, IWithToArray {
     w?: number,
     h?: number
   ) => this;
-  divideSize: (w: number | ISizeData, h?: number) => this;
-  dividePosition: (x: number | IPointData, y?: number) => this;
+  divideSize: (w: number | ISizeData, h?: number, euclidean?: boolean) => this;
+  dividePosition: (
+    x: number | IPointData,
+    y?: number,
+    euclidean?: boolean
+  ) => this;
   invertBounds: () => this;
   invertSize: () => this;
   invertPosition: () => this;
@@ -204,7 +208,6 @@ export class Bounds implements IBounds {
         break;
       }
       default: {
-        return bounds;
       }
     }
   };
@@ -420,14 +423,14 @@ export class Bounds implements IBounds {
     return this;
   };
 
-  divideSize = (w: number | ISizeData, h?: number) => {
-    this.size.divide(Size.valueOf(w, h));
+  divideSize = (w: number | ISizeData, h?: number, euclidean = false) => {
+    this.size.divide(Size.valueOf(w, h), undefined, euclidean);
 
     return this;
   };
 
-  dividePosition = (x: number | IPointData, y?: number) => {
-    this.position.divide(Point.valueOf(x, y));
+  dividePosition = (x: number | IPointData, y?: number, euclidean = false) => {
+    this.position.divide(Point.valueOf(x, y), undefined, euclidean);
 
     return this;
   };
@@ -708,4 +711,10 @@ export class Bounds implements IBounds {
   };
 
   toArray = () => [...this.position.toArray(), ...this.size.toArray()];
+
+  align = (bounds: IBoundsData, position: Position) => {
+    Bounds.align(this, bounds, position);
+
+    return this;
+  };
 }
