@@ -137,8 +137,9 @@ class Snake extends Entity {
     this.body.forEach(bodyPart => {
       const tmp = bodyPart.getPosition();
 
-      bodyPart.x = (prevPosition.x + parent.w) % parent.w;
-      bodyPart.y = (prevPosition.y + parent.h) % parent.h;
+      // bodyPart.x = (prevPosition.x + parent.w) % parent.w;
+      // bodyPart.y = (prevPosition.y + parent.h) % parent.h;
+      bodyPart.plusPosition(parent).dividePosition(parent, undefined, true);
 
       prevPosition = tmp;
     });

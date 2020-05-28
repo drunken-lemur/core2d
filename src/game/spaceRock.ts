@@ -20,8 +20,9 @@ import {
 } from "core";
 import { Score } from "lib";
 import { ScoreLabel } from "lib/entity";
+import { IRotatable, Unit } from "core/rotatable";
 
-const { PI, sin, cos, min, max } = Math;
+const { PI, sin, cos } = Math;
 const Deg = PI / 180;
 
 const Config = {
@@ -30,8 +31,8 @@ const Config = {
   turnFactor: 7, // how far the ship turns per frame
   thrustFactor: 0.1,
   subRockCount: 4, // how many small rocks to make on rock death
-  bulletTime: 5, // ticks between bullets
-  bulletSpeed: 17, // how fast the bullets move
+  bulletTime: 15, // ticks between bullets
+  bulletSpeed: 5, // how fast the bullets move
   bulletEntropy: 100 // how much energy a bullet has before it runs out.
 };
 
@@ -90,6 +91,81 @@ class Rock extends Entity {
   }
 }
 
+class Bullet extends Entity implements IRotatable {
+  private static Size = Size.valueOf(2);
+
+  // todo:
+  // o.entropy = BULLET_ENTROPY;
+  // o.active = true;
+
+  speed: number;
+  rotation: number;
+
+  style = { fillStyle: Color.White };
+
+  constructor(position: IPointData, angle: number) {
+    super();
+
+    this.rotation = angle;
+    this.speed = Config.bulletSpeed;
+    this.setSize(Bullet.Size).setPosition(position);
+  }
+
+  moveByRotation = (length: number) => {
+    return this.moveToAngle(this.rotation, length);
+  };
+
+  moveToAngle = (angle: number, length: number, unit = Unit.deg) => {
+    this.position.x += length * sin(angle * -(unit === Unit.deg ? Deg : PI));
+    this.position.y += length * cos(angle * -(unit === Unit.deg ? Deg : PI));
+
+    return this;
+  };
+
+  rotate = (angle: number, unit = Unit.deg) => {
+    this.rotation += angle * -(unit === Unit.deg ? Deg : PI);
+
+    return this;
+  };
+
+  view = new (class extends BaseView<Bullet> {
+    draw(d: IDrawer, dt: number) {
+      const { x, y, w, h } = this.parent;
+
+      d.beginPath()
+        .ellipse(x, y, w / 2, h / 2, 0, 0, 2 * PI)
+        .closePath()
+        .fill();
+
+      return this;
+    }
+  })(this);
+
+  behavior = new (class extends BaseBehavior<Bullet> {
+    update(dt: number) {
+      const { parent: bullet } = this;
+
+      const { parent: bulletStream, x, y, w, h } = bullet;
+
+      bullet.moveByRotation(bullet.speed);
+
+      const w2 = w / 2;
+      const h2 = h / 2;
+
+      if (
+        x + w2 < 0 ||
+        x - w2 > bulletStream!.w ||
+        y + h2 < 0 ||
+        y - h2 > bulletStream!.h
+      ) {
+        bullet.remove(); // self-remove
+      }
+
+      return this;
+    }
+  })(this);
+}
+
 class Ship extends Entity {
   static TOGGLE = 60;
   static MAX_THRUST = 5;
@@ -101,14 +177,17 @@ class Ship extends Entity {
   rotation: number;
   velocity: IPoint;
 
-  constructor() {
+  private readonly bulletStream: Entity;
+
+  constructor(bulletStream: Entity) {
     super();
 
-    this.alive = true;
     this.thrust = 0;
+    this.alive = true;
     this.rotation = 180;
     this.speed = new Point();
     this.velocity = new Point();
+    this.bulletStream = bulletStream;
   }
 
   style = { strokeStyle: Color.White };
@@ -175,6 +254,14 @@ class Ship extends Entity {
     }
 
     fire = () => {
+      const { parent: ship } = this;
+
+      // create the bullet
+      ship.bulletStream.add(new Bullet(ship, ship.rotation));
+
+      // todo: play the shot sound
+      // createjs.Sound.play("laser", { interrupt: createjs.Sound.INTERUPT_LATE });
+
       return this;
     };
 
@@ -202,6 +289,7 @@ class Ship extends Entity {
 
 class GameScene extends BaseScene {
   private ship!: Ship;
+  private nextBulletTime: number;
   private readonly rockBelt: Entity;
   private readonly gameGroup: Entity;
   private readonly bulletStream: Entity;
@@ -221,6 +309,7 @@ class GameScene extends BaseScene {
     this.rockBelt = new Entity(this);
     this.gameGroup = new Entity(this);
     this.bulletStream = new Entity(this);
+    this.nextBulletTime = Config.bulletTime;
 
     this.reset();
 
@@ -231,7 +320,7 @@ class GameScene extends BaseScene {
       })
       .setPosition(8);
 
-    this.add(score, this.rockBelt, this.gameGroup, this.bulletStream);
+    this.add(this.rockBelt, this.gameGroup, this.bulletStream, score);
   }
 
   reset = () => {
@@ -240,7 +329,7 @@ class GameScene extends BaseScene {
     [rockBelt, gameGroup, bulletStream].forEach(group => group.clear());
     Score.reset();
 
-    this.ship = new Ship();
+    this.ship = new Ship(this.bulletStream);
     Bounds.align(this.ship, this, Position.CENTER);
     this.gameGroup.add(this.ship);
     // @ts-ignore
@@ -276,6 +365,16 @@ class GameScene extends BaseScene {
     };
 
     private firing = () => {
+      const { parent: scene } = this;
+      const { ship, control } = scene;
+
+      if (scene.nextBulletTime <= 0) {
+        if (ship.alive && control.shoot) ship.fire();
+        scene.nextBulletTime = Config.bulletTime;
+      } else {
+        scene.nextBulletTime--;
+      }
+
       return this;
     };
 
