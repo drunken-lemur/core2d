@@ -142,6 +142,7 @@ export class Entity extends Bounds implements IEntity {
 
   clear = () => {
     this.children.forEach(sceneObject => (sceneObject.parent = undefined));
+    this.children.clear();
 
     return this;
   };

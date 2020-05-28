@@ -34,7 +34,7 @@ const Config = {
   bulletEntropy: 100 // how much energy a bullet has before it runs out.
 };
 
-class SpaceRock extends Entity {
+class Rock extends Entity {
   static SML_ROCK = 10;
   static MED_ROCK = 20;
   static LRG_ROCK = 40;
@@ -49,7 +49,7 @@ class SpaceRock extends Entity {
 
   // private active; //is it active
 
-  view = new (class extends BaseView<SpaceRock> {
+  view = new (class extends BaseView<Rock> {
     draw(d: IDrawer, dt: number) {
       const { parent: self } = this;
 
@@ -65,7 +65,7 @@ class SpaceRock extends Entity {
     }
   })(this);
 
-  behavior = new (class extends BaseBehavior<SpaceRock> {
+  behavior = new (class extends BaseBehavior<Rock> {
     update(dt: number) {
       const { parent: self } = this;
 
@@ -198,15 +198,23 @@ class SpaceRock extends Entity {
   // };
 }
 
-class ShipBody extends Entity {
-  parent!: Ship;
+class Ship extends Entity {
+  static TOGGLE = 60;
+  static MAX_THRUST = 60;
+  static MAX_VELOCITY = 60;
+
+  speed: IPoint;
+  rotation: number;
 
   style = { strokeStyle: Color.White };
 
-  view = new (class extends BaseView<ShipBody> {
+  view = new (class extends BaseView<Ship> {
     draw = (d: IDrawer, dt: number) => {
-      const { parent: ship } = this.parent;
+      const { parent: ship } = this;
 
+      d.translate(ship.x, ship.y);
+
+      // ship frame
       d.beginPath()
         .scale(1, 1)
         .rotate(ship.rotation * Deg)
@@ -215,142 +223,39 @@ class ShipBody extends Entity {
         .lineTo(0, -2)
         .lineTo(-5, -6)
         .closePath()
-
         .stroke();
 
-      return this;
-    };
-  })(this);
-}
-
-class ShipFlame extends Entity {
-  parent!: Ship;
-
-  style = { strokeStyle: Color.Blue };
-
-  view = new (class extends BaseView<ShipFlame> {
-    draw = (d: IDrawer, dt: number) => {
-      const { parent: ship } = this.parent;
-
-      d.scale(.8, .8)
+      // flame
+      d.beginPath()
+        .scale(1, 1)
         .rotate(ship.rotation * Deg)
-        .translate(0, -5)
-
-        .beginPath()
-        .moveTo(2, 0)
-        .lineTo(4, -3)
-        .lineTo(0, -5)
-        .lineTo(-4, -3)
-        .lineTo(-2, -0)
-        .closePath()
-
-        .stroke();
+        .moveTo(0, 10)
+        .lineTo(5, -6)
+        .lineTo(0, -2)
+        .lineTo(-5, -6)
+        .closePath();
 
       return this;
-    };
-  })(this);
-}
-
-export class Ship extends Entity {
-  static TOGGLE = 60;
-  static MAX_THRUST = 60;
-  static MAX_VELOCITY = 60;
-
-  shipBody: ShipBody;
-  shipFlame: ShipFlame;
-
-  speed: IPoint;
-  thrust: number;
-  timeout: number;
-  rotation: number;
-
-  hit: any;
-  bounds: any;
-
-  behavior = new (class extends BaseBehavior<Ship> {
-    update = (dt: number) => {
-      const { parent } = this;
-
-      // move by velocity
-      parent.plusPosition(parent.speed);
-
-      // with thrust flicker a flame every Ship.TOGGLE frames, attenuate thrust
-      if (parent.thrust > 0) {
-        parent.timeout++;
-        // this.shipFlame.alpha = 1; // todo:
-
-        if (parent.timeout > Ship.TOGGLE) {
-          // this.shipFlame.scale = 0.5; // todo:
-        } else {
-          // this.shipFlame.scale = 1; // todo:
-        }
-      } else {
-        // this.shipFlame.alpha = 0 // todo:
-        parent.thrust = 0;
-      }
-
-      parent.rotation++;
-      parent.rotation %= 360;
-
-      super.update(dt);
-
-      return this;
-    };
-
-    accelerate = () => {
-      const { parent } = this;
-      const { sin, cos, PI, min, max } = Math;
-      const { MAX_VELOCITY } = Ship;
-
-      // increase push amount for acceleration
-      parent.thrust += parent.thrust + 0.6;
-
-      if (parent.thrust >= Ship.MAX_THRUST) {
-        parent.thrust = Ship.MAX_THRUST;
-      }
-
-      // accelerate
-      parent.plusPosition(
-        sin(parent.rotation * (PI / -180)) * parent.thrust,
-        cos(parent.rotation * (PI / -180)) * parent.thrust
-      );
-
-      // cap max speeds
-      parent.speed.set(min(MAX_VELOCITY, max(-MAX_VELOCITY, parent.speed.x)));
     };
   })(this);
 
   constructor() {
     super();
 
-    this.thrust = 0;
-    this.timeout = 0;
     this.rotation = 0;
     this.speed = new Point();
-
-    this.shipBody = new ShipBody();
-    this.shipFlame = new ShipFlame();
-
-    this.add(this.shipFlame, this.shipBody);
   }
-
-  accelerate = () => {
-    // increase push amount for acceleration
-    (this.behavior as any).accelerate(); // todo: isDone types
-
-    return this;
-  };
 }
 
-export class GameScene extends BaseScene {
+class GameScene extends BaseScene {
   private control = {
     shoot: false,
     left: false,
     right: false,
-    forward: true
+    forward: false
   };
 
-  private ship: Ship;
+  private ship!: Ship;
   private readonly rockBelt: Entity;
   private readonly gameGroup: Entity;
   private readonly bulletStream: Entity;
@@ -358,38 +263,15 @@ export class GameScene extends BaseScene {
   style = { fillStyle: Color.Black };
 
   behavior = new (class extends BaseBehavior<GameScene> {
-    constructor(parent: GameScene) {
-      super(parent);
-    }
-
     update(dt: number) {
-      const { parent: self } = this;
-
-      this.input()
+      return this.input()
         .firing()
         .turning()
-        .thrust()
         .newSpaceRocks()
         .shipLooping()
         .bulletMovement()
         .nested();
-
-      //   call sub ticks
-      //   ship.tick(event);
-      //   stage.update(event);
-
-      return this;
     }
-
-    private restart = () => {
-      const { parent: scene } = this;
-
-      // hide anything on stage and show the score
-      // scene.clear();
-      Score.reset();
-
-      return this;
-    };
 
     private input = () => {
       const {
@@ -410,10 +292,16 @@ export class GameScene extends BaseScene {
     };
 
     private turning = () => {
-      return this;
-    };
+      const { ship, control } = this.parent;
 
-    private thrust = () => {
+      if (ship && control.left) {
+        ship.rotation -= Config.turnFactor;
+      }
+
+      if (ship && control.right) {
+        ship.rotation += Config.turnFactor;
+      }
+
       return this;
     };
 
@@ -437,13 +325,11 @@ export class GameScene extends BaseScene {
   constructor(game: IGame) {
     super(game);
 
-    this.ship = new Ship();
     this.rockBelt = new Entity(this);
     this.gameGroup = new Entity(this);
     this.bulletStream = new Entity(this);
 
-    Bounds.align(this.ship, this, Position.CENTER);
-
+    this.reset();
     this.reset();
 
     const score = new ScoreLabel()
@@ -454,19 +340,19 @@ export class GameScene extends BaseScene {
       .setPosition(8);
 
     this.add(score, this.rockBelt, this.gameGroup, this.bulletStream);
-
-    this.reset();
   }
 
   reset = () => {
-    const { rockBelt, gameGroup, bulletStream } = this;
+    const { rockBelt, gameGroup, bulletStream, control } = this;
 
-    [rockBelt, gameGroup, bulletStream].forEach(g => g.clear());
+    [rockBelt, gameGroup, bulletStream].forEach(group => group.clear());
     Score.reset();
 
     this.ship = new Ship();
     Bounds.align(this.ship, this, Position.CENTER);
     this.gameGroup.add(this.ship);
+    // @ts-ignore
+    Object.keys(control).forEach(key => (this.control[key] = false));
 
     return this;
   };
