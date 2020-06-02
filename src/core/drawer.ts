@@ -297,9 +297,11 @@ export class Drawer implements IDrawer {
     this.ctx.textBaseline = textBaseline;
   }
 
-  private readonly ctx: CanvasRenderingContext2D;
+  readonly ctx: CanvasRenderingContext2D;
 
   constructor(ctx: CanvasRenderingContext2D) {
+    if (!ctx) throw new Error("No Context!");
+
     this.ctx = ctx;
   }
 

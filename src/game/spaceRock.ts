@@ -5,6 +5,7 @@ import {
   BaseView,
   Bounds,
   Color,
+  Drawer,
   Entity,
   IDrawer,
   IGame,
@@ -22,7 +23,7 @@ import { Score } from "lib";
 import { ScoreLabel } from "lib/entity";
 import { IRotatable, Unit } from "core/rotatable";
 
-const { PI, sin, cos } = Math;
+const { PI, sin, cos, random } = Math;
 const Deg = PI / 180;
 
 const Config = {
@@ -31,64 +32,144 @@ const Config = {
   turnFactor: 7, // how far the ship turns per frame
   thrustFactor: 0.1,
   subRockCount: 4, // how many small rocks to make on rock death
-  bulletTime: 15, // ticks between bullets
+  bulletTime: 10, // ticks between bullets
   bulletSpeed: 5, // how fast the bullets move
   bulletEntropy: 100 // how much energy a bullet has before it runs out.
 };
 
 class Rock extends Entity {
-  static SML_ROCK = 10;
-  static MED_ROCK = 20;
-  static LRG_ROCK = 40;
+  static Small = Size.valueOf(10);
+  static Medium = Size.valueOf(20);
+  static Large = Size.valueOf(40);
 
   private hit: number; // average radial disparity
-  // private bounds; //visual radial size
-
   private spin: number;
   private score: number;
+  private bounds: number;
   private rotation: number;
-  private velocity: IPointData;
+  private velocity: IPoint = new Point(1);
+  // private active; //is it active // todo:
 
-  // private active; //is it active
+  style = { strokeStyle: Color.White };
+
+  constructor(size: ISizeData) {
+    super();
+
+    this.hit = 0;
+    // this.spin = 0;
+    this.spin = random() + 0.1; // * this.vX;
+    this.score = 0;
+    this.bounds = 0;
+    this.rotation = 0;
+    this.velocity = new Point(1);
+
+    this.setSize(size);
+  }
 
   view = new (class extends BaseView<Rock> {
+    private isCached = false;
+    private cacheCanvas!: HTMLCanvasElement;
+    private cacheDrawer!: Drawer;
+
+    private createCacheCanvas = () => {
+      const { parent: rock } = this;
+
+      const canvas = document.createElement("canvas");
+      canvas.width = 300;
+      canvas.height = 300;
+
+      this.cacheCanvas = canvas;
+      this.cacheDrawer = new Drawer(canvas.getContext("2d")!);
+    };
+
+    private writeCacheCanvas = () => {
+      this.cacheDrawer
+        .save()
+        .setStyle({ fillStyle: Color.Green })
+        .fillRect(50, 50, 50, 50)
+        .restore();
+
+      this.isCached = true;
+    };
+
+    private readCacheCanvas = (d: Drawer, dt: number) => {
+      d.ctx.drawImage(this.cacheCanvas, 0, 0, 200, 200);
+    };
+
     draw(d: IDrawer, dt: number) {
-      const { parent: self } = this;
+      const { parent: rock } = this;
 
-      const angle = 0;
-      const radius = new Size(self).divide(2);
+      if (!this.isCached) {
+        if (!this.cacheDrawer) {
+          this.createCacheCanvas();
+        }
+        this.writeCacheCanvas();
+      } else {
+        d.translate(rock.x, rock.y).rotate(rock.rotation);
+        this.readCacheCanvas(d as any, dt);
 
-      // todo: finish
-      // this.size = size;
-      // this.hit = size;
-      // this.bounds = 0;
+        return this;
+      }
+
+      const size = rock.w;
+      let angle = 0;
+      let radius = size;
+
+      rock.hit = size;
+      rock.bounds = 0;
+
+      // draw spaceRock
+      d.translate(rock.x, rock.y)
+        .rotate(rock.rotation)
+        .beginPath()
+        .moveTo(0, size);
+      while (angle < PI * 2 - 0.5) {
+        angle += 0.25 + (random() * 100) / 500;
+        radius = size + (size / 2) * random();
+        d.lineTo(sin(angle) * radius, cos(angle) * radius);
+
+        // track visual depiction for interaction
+        if (radius > rock.bounds) {
+          rock.bounds = radius;
+        }
+
+        rock.hit = (rock.hit + radius) / 2;
+      }
+      d.closePath().stroke();
+
+      rock.hit *= 1.1;
 
       return this;
     }
   })(this);
 
   behavior = new (class extends BaseBehavior<Rock> {
-    update(dt: number) {
-      const { parent: self } = this;
+    constructor(rock: Rock) {
+      super(rock);
 
-      self.rotation += self.spin;
-      self.plusPosition(self.velocity);
+      const size = rock.w;
+
+      // pick a random direction to move in and base the rotation off of speed
+      const angle = random() * (PI * 2);
+      rock.velocity.set(
+        sin(angle) * (5 - size / 15),
+        cos(angle) * (5 - size / 15)
+      );
+      rock.spin = random() + 0.002 * rock.velocity.x;
+
+      // associate score with size
+      rock.score = (5 - size / 10) * 100;
+    }
+
+    update(dt: number) {
+      const { parent: rock } = this;
+
+      rock.rotation += rock.spin;
+      rock.plusPosition(rock.velocity);
 
       return this;
     }
   })(this);
-
-  constructor(size: ISizeData) {
-    super();
-
-    this.hit = 0;
-    this.spin = 0;
-    this.score = 0;
-    this.rotation = 0;
-    this.velocity = Point.valueOf(1);
-
-    this.setSize(size);
-  }
 }
 
 class Bullet extends Entity implements IRotatable {
@@ -208,11 +289,12 @@ class Ship extends Entity {
     draw = (d: IDrawer, dt: number) => {
       const { parent: ship } = this;
 
-      d.translate(ship.x, ship.y);
+      const { x, y } = ship.clonePosition().round(); // test
+
+      d.translate(x, y);
 
       // ship frame
       d.beginPath()
-        .scale(1, 1)
         .rotate(ship.rotation * Deg)
         .moveTo(0, 10)
         .lineTo(5, -6)
@@ -223,7 +305,6 @@ class Ship extends Entity {
 
       // flame
       d.beginPath()
-        .scale(1, 1)
         .rotate(ship.rotation * Deg)
         .moveTo(0, 10)
         .lineTo(5, -6)
@@ -315,7 +396,7 @@ class GameScene extends BaseScene {
 
     const score = new ScoreLabel()
       .setStyle({
-        font: "16px Verdana",
+        font: "12px Verdana",
         fillStyle: Color.White
       })
       .setPosition(8);
@@ -334,6 +415,8 @@ class GameScene extends BaseScene {
     this.gameGroup.add(this.ship);
     // @ts-ignore
     Object.keys(control).forEach(key => (this.control[key] = false));
+
+    rockBelt.add(new Rock(Rock.Large));
 
     return this;
   };
