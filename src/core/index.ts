@@ -6,7 +6,7 @@ export * from "./composite";
 export * from "./delay";
 export * from "./direction";
 export * from "./drawable";
-export * from "./drawer";
+export * from "./brush";
 export * from "./entity";
 export * from "./game";
 export * from "./input";

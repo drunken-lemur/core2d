@@ -1,5 +1,5 @@
-import { IDrawer } from "./drawer";
+import { IBrush } from "./brush";
 
 export interface IDrawable {
-  draw(drawer: IDrawer, deltaTime: number): this;
+  draw(brush: IBrush, deltaTime: number): this;
 }

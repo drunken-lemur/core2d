@@ -1,4 +1,4 @@
-import { Fps, IFps } from "core/fps";
+import { Fps, IFps } from "./fps";
 
 export const Second = 1000;
 

@@ -1,17 +1,17 @@
 import {
   Color,
   Entity,
-  IDrawer,
+  IBrush,
   BaseView,
   IBoundsData,
   BaseBehavior
 } from "core";
 
 class View extends BaseView<Box> {
-  draw = (d: IDrawer, dt: number) => {
+  draw = (b: IBrush, dt: number) => {
     const { x, y, w, h } = this.parent;
 
-    d.setStyle({
+    b.setStyle({
       fillStyle: Color.random(),
       strokeStyle: Color.random()
     })

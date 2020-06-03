@@ -1,3 +1,5 @@
+import { ISizeData } from "./size";
+
 interface CanvasFillStrokeStylesData {
   fillStyle: string | CanvasGradient | CanvasPattern;
   strokeStyle: string | CanvasGradient | CanvasPattern;
@@ -20,10 +22,12 @@ export interface IDrawerData
     CanvasShadowStyles,
     CanvasTextDrawingStyles {
   noTranslate?: boolean;
-  setStyle(style: IDrawerStyle): this;
+  setStyle(style: IBrushStyle): this;
 }
 
-export interface IDrawer extends IDrawerData {
+export interface IBrushStyle extends Partial<IDrawerData> {}
+
+export interface IBrush extends IDrawerData {
   arc(
     x: number,
     y: number,
@@ -154,9 +158,7 @@ export interface IDrawer extends IDrawerData {
   translate(x: number, y: number): this;
 }
 
-export interface IDrawerStyle extends Partial<IDrawerData> {}
-
-export class Drawer implements IDrawer {
+export class Brush implements IBrush {
   get direction() {
     return this.ctx.direction;
   }
@@ -297,9 +299,23 @@ export class Drawer implements IDrawer {
     this.ctx.textBaseline = textBaseline;
   }
 
-  readonly ctx: CanvasRenderingContext2D;
+  get context2D() {
+    return this.ctx;
+  }
 
-  constructor(ctx: CanvasRenderingContext2D) {
+  readonly canvas: HTMLCanvasElement;
+
+  private readonly ctx: CanvasRenderingContext2D;
+
+  constructor(canvas: HTMLCanvasElement, size?: ISizeData) {
+    this.canvas = canvas;
+
+    if (size) {
+      this.canvas.width = size.w;
+      this.canvas.height = size.h;
+    }
+
+    const ctx = canvas.getContext("2d");
     if (!ctx) throw new Error("No Context!");
 
     this.ctx = ctx;
@@ -616,7 +632,7 @@ export class Drawer implements IDrawer {
     return this;
   }
 
-  setStyle(style: IDrawerStyle) {
+  setStyle(style: IBrushStyle) {
     Object.assign(this, style);
 
     return this;
@@ -668,4 +684,10 @@ export class Drawer implements IDrawer {
 
     return this;
   }
+
+  new = (): IBrush => {
+    const { width: w, height: h } = this.ctx.canvas;
+
+    return new Brush(document.createElement("canvas"), { w, h });
+  };
 }

@@ -3,7 +3,7 @@ import {
   BaseView,
   Entity,
   IBoundsData,
-  IDrawer,
+  IBrush,
   Delay,
   IDelay
 } from "core";
@@ -47,10 +47,10 @@ export class TypingLabelBehavior extends BaseBehavior<Label> {
 
 export class Label extends Entity {
   private static View = class extends BaseView<Label> {
-    draw(d: IDrawer, dt: number) {
+    draw(b: IBrush, dt: number) {
       const { x, y } = this.parent;
 
-      const width = d.measureText(this.parent.text).width;
+      const width = b.measureText(this.parent.text).width;
       const height =
         Number(`${this.parent.style.font}`.replace(/[^0-9]/g, "")) ||
         this.parent.h ||
@@ -63,9 +63,9 @@ export class Label extends Entity {
         this.parent.h = height;
       }
 
-      d.fillText(this.parent.text, x, y + height);
+      b.fillText(this.parent.text, x, y + height);
 
-      return super.draw(d, dt);
+      return super.draw(b, dt);
     }
   };
 

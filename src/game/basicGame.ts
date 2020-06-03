@@ -3,7 +3,7 @@ import {
   BaseInput,
   BaseScene,
   Color,
-  IDrawer,
+  IBrush,
   IGame,
   IInput,
   IScene,
@@ -48,11 +48,11 @@ class IntroScene extends BaseScene {
     return this;
   }
 
-  draw(d: IDrawer, dt: number) {
+  draw(b: IBrush, dt: number) {
     const alpha = Math.min(1, this.elapsedTime / this.logoRevealTime);
 
     // fill background
-    d.setStyle({ fillStyle: Color.White })
+    b.setStyle({ fillStyle: Color.White })
       .fillRect(0, 0, this.w, this.h)
 
       // draw big logo text
@@ -64,7 +64,7 @@ class IntroScene extends BaseScene {
 
       .fillText(
         this.bigText,
-        (this.w - d.measureText(this.bigText).width) / 2,
+        (this.w - b.measureText(this.bigText).width) / 2,
         this.h / 2
       );
 
@@ -75,7 +75,7 @@ class IntroScene extends BaseScene {
         (this.elapsedTime - this.logoRevealTime) / this.textTypingTime
       );
 
-      d.setStyle({
+      b.setStyle({
         fillStyle: "#bbb",
         font: "20px Helvetica"
       }).fillText(
@@ -83,7 +83,7 @@ class IntroScene extends BaseScene {
           0,
           Math.floor(this.infoText.length * textProgress)
         ),
-        (this.w - d.measureText(this.infoText).width) / 2,
+        (this.w - b.measureText(this.infoText).width) / 2,
         this.h / 2 + 80
       );
     }
@@ -146,9 +146,9 @@ class MenuScene extends BaseScene {
     return this;
   }
 
-  draw(d: IDrawer, dt: number) {
+  draw(b: IBrush, dt: number) {
     // fill menu background
-    d.setStyle({ fillStyle: "#007" })
+    b.setStyle({ fillStyle: "#007" })
       .fillRect(0, 0, this.w, this.h)
 
       // draw menu title
@@ -159,7 +159,7 @@ class MenuScene extends BaseScene {
       })
       .fillText(
         this.menuTitle,
-        (this.w - d.measureText(this.menuTitle).width) / 2,
+        (this.w - b.measureText(this.menuTitle).width) / 2,
         20
       );
 
@@ -167,21 +167,21 @@ class MenuScene extends BaseScene {
     const fontSize = 30;
     const itemHeight = 50;
 
-    d.setStyle({ font: fontSize + "px Helvetica" });
+    b.setStyle({ font: fontSize + "px Helvetica" });
     this.menuItems.forEach((item, index) => {
       if (index === this.menuIndex) {
-        d.setStyle({
+        b.setStyle({
           fillStyle: "#089cd3",
           globalAlpha: this.menuActiveOpacity
         }).fillRect(0, this.h / 2 + index * itemHeight, this.w, itemHeight);
       }
 
-      d.setStyle({
+      b.setStyle({
         globalAlpha: 1,
         fillStyle: Color.White
       }).fillText(
         item,
-        (this.w - d.measureText(item).width) / 2,
+        (this.w - b.measureText(item).width) / 2,
         this.h / 2 + index * itemHeight + (itemHeight - fontSize) / 2
       );
     });
@@ -232,10 +232,10 @@ class GameScene extends BaseScene {
     return this;
   }
 
-  draw(d: IDrawer, dt: number) {
+  draw(b: IBrush, dt: number) {
     const rectSize = 150;
 
-    d.save()
+    b.save()
       .clearRect(0, 0, this.w, this.h)
       .translate(this.posX, this.posY)
       .rotate((this.angle * Math.PI) / 180)
@@ -263,11 +263,11 @@ class ExitScene extends BaseScene {
     return this;
   }
 
-  draw(d: IDrawer, dt: number) {
+  draw(b: IBrush, dt: number) {
     const gameOverText = "Game Over";
 
     // clear the canvas
-    d.clearRect(0, 0, this.w, this.h)
+    b.clearRect(0, 0, this.w, this.h)
 
       // display "game over" text
       .setStyle({
@@ -277,7 +277,7 @@ class ExitScene extends BaseScene {
       })
       .fillText(
         gameOverText,
-        (this.w - d.measureText(gameOverText).width) / 2,
+        (this.w - b.measureText(gameOverText).width) / 2,
         this.h / 2 - 50
       );
 

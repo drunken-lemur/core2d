@@ -2,17 +2,17 @@ import {
   Color,
   Point,
   Entity,
-  IDrawer,
+  IBrush,
   BaseView,
   ISizeData,
   BaseBehavior
 } from "core";
 
 class View extends BaseView<Square> {
-  draw = (d: IDrawer, dt?: number) => {
+  draw = (b: IBrush, dt?: number) => {
     const { x, y, w, h } = this.parent.getBounds();
 
-    d.setStyle({ fillStyle: this.parent.color }).fillRect(x, y, w, h);
+    b.setStyle({ fillStyle: this.parent.color }).fillRect(x, y, w, h);
 
     return this;
   };

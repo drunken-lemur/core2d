@@ -8,7 +8,7 @@ import {
   Direction,
   Entity,
   IBoundsData,
-  IDrawer,
+  IBrush,
   IGame,
   IPointData,
   IScene,
@@ -31,12 +31,12 @@ const Config = {
 
 class Apple extends Entity {
   private static View = class View extends BaseView<Apple> {
-    draw(d: IDrawer, dt: number) {
+    draw(b: IBrush, dt: number) {
       const { x, y, w, h } = this.parent
         .cloneBounds()
         .multiplyBounds(Config.cellSize);
 
-      d.translate(w / 2, h / 2)
+      b.translate(w / 2, h / 2)
         .beginPath()
         .ellipse(x, y, w / 2, h / 2, 0, 0, 2 * Math.PI)
         .closePath()
@@ -61,12 +61,12 @@ class Apple extends Entity {
 
 class SnakeBody extends Entity {
   private static View = class extends BaseView<SnakeBody> {
-    draw(d: IDrawer, dt: number) {
+    draw(b: IBrush, dt: number) {
       const { x, y, w, h } = this.parent
         .cloneBounds()
         .multiplyBounds(Config.cellSize);
 
-      d.fillRect(x, y, w, h);
+      b.fillRect(x, y, w, h);
 
       return this;
     }

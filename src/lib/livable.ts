@@ -1,4 +1,4 @@
- export interface Livable {
+export interface Livable {
   hp: number;
   maxHp: number;
   lives: number;

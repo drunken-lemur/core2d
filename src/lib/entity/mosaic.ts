@@ -1,15 +1,15 @@
-import { Entity, ISizeData, Size, Point, BaseView, Color, IDrawer } from "core";
+import { Entity, ISizeData, Size, Point, BaseView, Color, IBrush } from "core";
 
 import { Square } from "lib/entity";
 
 export class Mosaic extends Entity {
   private static View = class extends BaseView<Mosaic> {
-    draw(d: IDrawer, dt: number) {
+    draw(b: IBrush, dt: number) {
       const { x, y, w, h } = this.parent;
 
-      d.setStyle({ fillStyle: Color.Blue }).fillRect(x, y, w, h);
+      b.setStyle({ fillStyle: Color.Blue }).fillRect(x, y, w, h);
 
-      return super.draw(d, dt);
+      return super.draw(b, dt);
     }
   };
 

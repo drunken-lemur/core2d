@@ -3,15 +3,15 @@ import { IVisible } from "./visiable";
 import { IDrawable } from "./drawable";
 import { IComposite } from "./composite";
 import { IToggleable } from "./toggleable";
-import { IDrawer, IDrawerStyle } from "./drawer";
+import { IBrush, IBrushStyle } from "./brush";
 import { IView, BaseView, IWithView } from "./view";
 import { IBounds, Bounds, IBoundsData } from "./bounds";
 import { IBehavior, BaseBehavior, IWithBehavior } from "./behavior";
 
 interface IStylable {
-  style: IDrawerStyle;
+  style: IBrushStyle;
 
-  setStyle: (style: IDrawerStyle) => this;
+  setStyle: (style: IBrushStyle) => this;
 }
 
 export interface IEntity
@@ -26,7 +26,7 @@ export interface IEntity
     IComposite<IEntity> {}
 
 export class Entity extends Bounds implements IEntity {
-  style: IDrawerStyle = {};
+  style: IBrushStyle = {};
   private static DefaultEntity = new Entity();
   private static DefaultView = new BaseView(Entity.DefaultEntity);
   private static DefaultBehavior = new BaseBehavior(Entity.DefaultEntity);
@@ -106,25 +106,25 @@ export class Entity extends Bounds implements IEntity {
 
   isHidden = () => !this.isVisibleState;
 
-  draw(drawer: IDrawer, deltaTime: number) {
+  draw(brush: IBrush, deltaTime: number) {
     if (this.isVisibleState) {
-      drawer.save();
+      brush.save();
 
-      Object.assign(drawer, this.style);
+      Object.assign(brush, this.style);
 
-      this.view.draw(drawer, deltaTime);
+      this.view.draw(brush, deltaTime);
 
       if (
         !this.style.noTranslate &&
         this.children.size &&
         this.x + this.y > 0
       ) {
-        drawer.translate(this.x, this.y);
+        brush.translate(this.x, this.y);
       }
 
-      this.children.forEach(children => children.draw(drawer, deltaTime));
+      this.children.forEach(children => children.draw(brush, deltaTime));
 
-      drawer.restore();
+      brush.restore();
     }
 
     return this;
@@ -196,7 +196,7 @@ export class Entity extends Bounds implements IEntity {
     return this;
   };
 
-  setStyle = (style: IDrawerStyle) => {
+  setStyle = (style: IBrushStyle) => {
     Object.assign(this.style, style);
 
     return this;

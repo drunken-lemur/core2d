@@ -1,8 +1,8 @@
+import { IBrush } from "./brush";
 import { IEntity } from "./entity";
-import { IDrawer } from "./drawer";
+import { ISizeData } from "./size";
 import { IDrawable } from "./drawable";
 import { IWithParent } from "./composite";
-import { ISizeData } from "core/size";
 
 export interface IWithView {
   setView: (view: IView) => this;
@@ -18,16 +18,16 @@ export class BaseView<T extends IEntity = IEntity> implements IView<T> {
     this.parent = parent;
   }
 
-  draw(drawer: IDrawer, deltaTime: number) {
+  draw(brush: IBrush, deltaTime: number) {
     return this;
   }
 }
 
 export class RectView<T extends IEntity = IEntity> extends BaseView<T> {
-  draw(drawer: IDrawer, deltaTime: number) {
+  draw(b: IBrush, deltaTime: number) {
     const { x, y, w, h } = this.parent;
 
-    drawer.fillRect(x, y, w, h);
+    b.fillRect(x, y, w, h);
 
     return this;
   }
@@ -42,20 +42,20 @@ export class NetView<T extends IEntity = IEntity> extends RectView<T> {
     this.cellSize = cellSize;
   }
 
-  draw(d: IDrawer, dt: number) {
+  draw(b: IBrush, dt: number) {
     const { x, y, w, h } = this.parent;
 
-    d.fillRect(x, y, w, h);
+    b.fillRect(x, y, w, h);
 
     for (let j = 0; j < w; j += this.cellSize.h) {
-      d.beginPath()
+      b.beginPath()
         .moveTo(0, j)
         .lineTo(w, j)
         .closePath()
         .stroke();
 
       for (let i = 0; i < w; i += this.cellSize.w) {
-        d.beginPath()
+        b.beginPath()
           .moveTo(i, 0)
           .lineTo(i, h)
           .closePath()

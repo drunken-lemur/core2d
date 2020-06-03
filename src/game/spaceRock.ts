@@ -5,9 +5,9 @@ import {
   BaseView,
   Bounds,
   Color,
-  Drawer,
+  Brush,
   Entity,
-  IDrawer,
+  IBrush,
   IGame,
   IPoint,
   IPointData,
@@ -69,47 +69,45 @@ class Rock extends Entity {
   view = new (class extends BaseView<Rock> {
     private isCached = false;
     private cacheCanvas!: HTMLCanvasElement;
-    private cacheDrawer!: Drawer;
+    private cacheDrawer!: Brush;
 
-    private createCacheCanvas = () => {
+    // private createCacheCanvas = () => {
+    //   const { parent: rock } = this;
+    //
+    //   const canvas = document.createElement("canvas");
+    //
+    //   this.cacheCanvas = canvas;
+    //   this.cacheDrawer = new Brush(canvas, Size.valueOf(300));
+    // };
+
+    // private writeCacheCanvas = () => {
+    //   this.cacheDrawer
+    //     .save()
+    //     .setStyle({ fillStyle: Color.Green })
+    //     .fillRect(50, 50, 50, 50)
+    //     .restore();
+    //
+    //   this.isCached = true;
+    // };
+
+    // private readCacheCanvas = (d: Brush, dt: number) => {
+    //   d.ctx.drawImage(this.cacheCanvas, 0, 0, 200, 200);
+    // };
+
+    draw(b: IBrush, dt: number) {
       const { parent: rock } = this;
 
-      const canvas = document.createElement("canvas");
-      canvas.width = 300;
-      canvas.height = 300;
-
-      this.cacheCanvas = canvas;
-      this.cacheDrawer = new Drawer(canvas.getContext("2d")!);
-    };
-
-    private writeCacheCanvas = () => {
-      this.cacheDrawer
-        .save()
-        .setStyle({ fillStyle: Color.Green })
-        .fillRect(50, 50, 50, 50)
-        .restore();
-
-      this.isCached = true;
-    };
-
-    private readCacheCanvas = (d: Drawer, dt: number) => {
-      d.ctx.drawImage(this.cacheCanvas, 0, 0, 200, 200);
-    };
-
-    draw(d: IDrawer, dt: number) {
-      const { parent: rock } = this;
-
-      if (!this.isCached) {
-        if (!this.cacheDrawer) {
-          this.createCacheCanvas();
-        }
-        this.writeCacheCanvas();
-      } else {
-        d.translate(rock.x, rock.y).rotate(rock.rotation);
-        this.readCacheCanvas(d as any, dt);
-
-        return this;
-      }
+      // if (!this.isCached) {
+      //   if (!this.cacheDrawer) {
+      //     this.createCacheCanvas();
+      //   }
+      //   this.writeCacheCanvas();
+      // } else {
+      //   b.translate(rock.x, rock.y).rotate(rock.rotation);
+      //   this.readCacheCanvas(b as any, dt);
+      //
+      //   return this;
+      // }
 
       const size = rock.w;
       let angle = 0;
@@ -119,14 +117,14 @@ class Rock extends Entity {
       rock.bounds = 0;
 
       // draw spaceRock
-      d.translate(rock.x, rock.y)
+      b.translate(rock.x, rock.y)
         .rotate(rock.rotation)
         .beginPath()
         .moveTo(0, size);
       while (angle < PI * 2 - 0.5) {
         angle += 0.25 + (random() * 100) / 500;
         radius = size + (size / 2) * random();
-        d.lineTo(sin(angle) * radius, cos(angle) * radius);
+        b.lineTo(sin(angle) * radius, cos(angle) * radius);
 
         // track visual depiction for interaction
         if (radius > rock.bounds) {
@@ -135,7 +133,7 @@ class Rock extends Entity {
 
         rock.hit = (rock.hit + radius) / 2;
       }
-      d.closePath().stroke();
+      b.closePath().stroke();
 
       rock.hit *= 1.1;
 
@@ -210,10 +208,10 @@ class Bullet extends Entity implements IRotatable {
   };
 
   view = new (class extends BaseView<Bullet> {
-    draw(d: IDrawer, dt: number) {
+    draw(b: IBrush, dt: number) {
       const { x, y, w, h } = this.parent;
 
-      d.beginPath()
+      b.beginPath()
         .ellipse(x, y, w / 2, h / 2, 0, 0, 2 * PI)
         .closePath()
         .fill();
@@ -286,15 +284,15 @@ class Ship extends Entity {
   };
 
   view = new (class extends BaseView<Ship> {
-    draw = (d: IDrawer, dt: number) => {
+    draw = (b: IBrush, dt: number) => {
       const { parent: ship } = this;
 
       const { x, y } = ship.clonePosition().round(); // test
 
-      d.translate(x, y);
+      b.translate(x, y);
 
       // ship frame
-      d.beginPath()
+      b.beginPath()
         .rotate(ship.rotation * Deg)
         .moveTo(0, 10)
         .lineTo(5, -6)
@@ -304,7 +302,7 @@ class Ship extends Entity {
         .stroke();
 
       // flame
-      d.beginPath()
+      b.beginPath()
         .rotate(ship.rotation * Deg)
         .moveTo(0, 10)
         .lineTo(5, -6)

@@ -1,5 +1,5 @@
 import { IScene } from "./scene";
-import { Drawer, IDrawer } from "./drawer";
+import { Brush, IBrush } from "./brush";
 import { Size, ISize, ISizeData } from "./size";
 
 export const Resolutions = {
@@ -44,26 +44,17 @@ export abstract class BaseScreen extends Size implements IScreen {
 }
 
 export class CanvasScreen extends BaseScreen {
-  protected readonly canvas: HTMLCanvasElement;
-  protected readonly ctx: IDrawer;
+  protected readonly brush: IBrush;
 
   constructor(canvas: HTMLCanvasElement, size?: ISizeData) {
     super(size);
 
-    this.canvas = canvas;
-    this.canvas.width = this.w;
-    this.canvas.height = this.h;
-
-    this.ctx = new Drawer(this.canvas.getContext("2d")!);
-
-    if (!this.ctx) {
-      throw new Error("Canvas context not found!");
-    }
+    this.brush = new Brush(canvas, this);
   }
 
   render = (scene: IScene, deltaTime: number) => {
-    scene.draw(this.ctx!, deltaTime);
+    scene.draw(this.brush!, deltaTime);
   };
 
-  clean = () => this.ctx.clearRect(0, 0, this.w, this.h);
+  clean = () => this.brush.clearRect(0, 0, this.w, this.h);
 }
