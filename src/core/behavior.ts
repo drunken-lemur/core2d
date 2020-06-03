@@ -18,6 +18,8 @@ export class BaseBehavior<T extends IEntity = IEntity> implements IBehavior<T> {
   }
 
   update(deltaTime: number) {
+    this.parent.forEach(children => children.update(deltaTime));
+
     return this;
   }
 }

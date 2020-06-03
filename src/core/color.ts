@@ -1,4 +1,6 @@
 enum ColorSet {
+  Transparent = "#000000",
+  None = Transparent,
   Black = "#000",
   White = "#fff",
   Gray = "#ccc",
@@ -10,6 +12,8 @@ enum ColorSet {
 export type Color = ColorSet;
 
 export namespace Color {
+  export const Transparent = ColorSet.Transparent;
+  export const None = ColorSet.None;
   export const Black = ColorSet.Black;
   export const White = ColorSet.White;
   export const Gray = ColorSet.Gray;

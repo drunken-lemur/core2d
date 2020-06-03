@@ -77,14 +77,15 @@ export interface IBrush extends IDrawerData {
   drawFocusIfNeeded(element: Element | Path2D, element_?: Element): this;
   drawImage(
     image:
+      | IBrush
       | HTMLImageElement
       | SVGImageElement
       | HTMLVideoElement
       | HTMLCanvasElement
       | ImageBitmap
       | OffscreenCanvas,
-    dx: number,
-    dy: number,
+    dx?: number,
+    dy?: number,
     dw?: number,
     dh?: number,
     dx_?: number,
@@ -156,6 +157,7 @@ export interface IBrush extends IDrawerData {
     f: number
   ): this;
   translate(x: number, y: number): this;
+  getCacheBrush: () => IBrush;
 }
 
 export class Brush implements IBrush {
@@ -435,14 +437,15 @@ export class Brush implements IBrush {
 
   drawImage(
     image:
+      | Brush
       | HTMLImageElement
       | SVGImageElement
       | HTMLVideoElement
       | HTMLCanvasElement
       | ImageBitmap
       | OffscreenCanvas,
-    dx: number,
-    dy: number,
+    dx: number = 0,
+    dy: number = 0,
     dw?: number,
     dh?: number,
     dx_?: number,
@@ -450,7 +453,17 @@ export class Brush implements IBrush {
     dw_?: number,
     dh_?: number
   ) {
-    this.ctx.drawImage(image, dx, dy, dw!, dh!, dx_!, dy_!, dw_!, dh_!);
+    this.ctx.drawImage(
+      image instanceof Brush ? image.canvas : image,
+      dx,
+      dy,
+      dw!,
+      dh!,
+      dx_!,
+      dy_!,
+      dw_!,
+      dh_!
+    );
 
     return this;
   }
@@ -685,7 +698,7 @@ export class Brush implements IBrush {
     return this;
   }
 
-  new = (): IBrush => {
+  getCacheBrush = (): IBrush => {
     const { width: w, height: h } = this.ctx.canvas;
 
     return new Brush(document.createElement("canvas"), { w, h });

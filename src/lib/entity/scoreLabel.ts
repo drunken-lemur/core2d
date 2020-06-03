@@ -12,7 +12,7 @@ export class ScoreLabel extends Label {
 
     this.template = template;
 
-    this.update(0);
+    this.update(0); // init text label
   }
 
   update(deltaTime: number): this {

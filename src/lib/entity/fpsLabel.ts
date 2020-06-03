@@ -5,13 +5,13 @@ import { Label } from "./label";
 export class FpsLabel extends Label {
   constructor(bounds?: IBoundsData) {
     super("", bounds);
+
+    this.update(0);
   }
 
-  update(deltaTime: number) {
+  update(dt: number) {
     this.text = `${BaseGame.instance.timer.fps}`;
 
-    super.update(deltaTime);
-
-    return this;
+    return super.update(dt);
   }
 }

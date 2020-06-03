@@ -5,30 +5,15 @@ import {
   IBrush,
   BaseView,
   ISizeData,
-  BaseBehavior
+  BaseBehavior,
+  RectView
 } from "core";
 
-class View extends BaseView<Square> {
-  draw = (b: IBrush, dt?: number) => {
-    const { x, y, w, h } = this.parent.getBounds();
-
-    b.setStyle({ fillStyle: this.parent.color }).fillRect(x, y, w, h);
-
-    return this;
-  };
-}
-
-class Behavior extends BaseBehavior<Square> {
+class BorderBouncingBehavior extends BaseBehavior<Square> {
   private speed = new Point(1);
   private deltaSpeed = new Point(1);
 
-  constructor(parent: Square) {
-    super(parent);
-
-    this.changeColor();
-  }
-
-  update = (dt?: number) => {
+  update = (dt: number) => {
     const corners = this.parent.getCorners();
     const sceneCorners = this.parent.parent?.getCorners();
 
@@ -56,26 +41,25 @@ class Behavior extends BaseBehavior<Square> {
 
     this.parent.plusPosition(this.speed.clone().multiply(this.deltaSpeed));
 
-    return this;
+    return super.update(dt);
   };
 
   changeColor = () => {
-    this.parent.color = Color.random();
+    this.parent.style.fillStyle = Color.random();
   };
 }
 
 export class Square extends Entity {
-  color: Color | string = Color.Black;
+  view = new RectView(this); // todo: views: IView[]
+  behavior = new BorderBouncingBehavior(this); // todo: views: IBehavior[]
 
-  constructor(size: ISizeData, color?: Color) {
+  style = { fillStyle: Color.random() };
+
+  constructor(size: ISizeData) {
     super();
 
     this.setSize(size);
-    this.setView(new View(this));
-    this.setBehavior(new Behavior(this));
 
-    if (color) {
-      this.color = color;
-    }
+    console.log(size)
   }
 }

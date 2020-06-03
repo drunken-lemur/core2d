@@ -8,42 +8,6 @@ import {
   IDelay
 } from "core";
 
-export class TypingLabelBehavior extends BaseBehavior<Label> {
-  private delay: IDelay;
-  private originalText: string;
-
-  constructor(
-    label: Label,
-    typingSec: number,
-    delaySec = 0,
-    onDone?: () => void
-  ) {
-    super(label);
-
-    this.delay = new Delay(typingSec, onDone, delaySec);
-    this.originalText = label.text;
-  }
-
-  update(dt: number) {
-    const { delay, originalText, parent } = this;
-
-    delay.update(dt);
-
-    if (delay.isStart) {
-      parent.show().text = originalText.substr(
-        0,
-        Math.floor(originalText.length * delay.factor)
-      );
-    } else {
-      parent.hide();
-    }
-
-    if (delay.isDone) {
-    }
-
-    return super.update(dt);
-  }
-}
 
 export class Label extends Entity {
   private static View = class extends BaseView<Label> {

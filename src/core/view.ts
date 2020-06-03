@@ -1,35 +1,61 @@
-import { IBrush } from "./brush";
 import { IEntity } from "./entity";
 import { ISizeData } from "./size";
 import { IDrawable } from "./drawable";
 import { IWithParent } from "./composite";
+import { IBrush, IBrushStyle } from "./brush";
 
 export interface IWithView {
   setView: (view: IView) => this;
 }
+
+export interface IStylable {
+  style: IBrushStyle;
+
+  setStyle: (style: IBrushStyle) => this;
+}
+
 export interface IView<T extends IEntity = IEntity>
   extends IDrawable,
+    IStylable,
     IWithParent<T> {}
 
 export class BaseView<T extends IEntity = IEntity> implements IView<T> {
   parent: T;
+
+  style: IBrushStyle = {};
 
   constructor(parent: T) {
     this.parent = parent;
   }
 
   draw(brush: IBrush, deltaTime: number) {
+    const { parent: e, style } = this;
+
+    Object.assign(brush, style);
+
+    if (!style.noTranslate && e.length && e.x + e.y > 0) {
+      brush.translate(e.x, e.y);
+    }
+
+    this.parent.forEach(children => children.draw(brush, deltaTime));
+
     return this;
   }
+
+  setStyle = (style: IBrushStyle) => {
+    this.style = { ...this.style, ...style };
+
+    return this;
+  };
 }
 
 export class RectView<T extends IEntity = IEntity> extends BaseView<T> {
-  draw(b: IBrush, deltaTime: number) {
+  draw(brush: IBrush, deltaTime: number) {
     const { x, y, w, h } = this.parent;
 
-    b.fillRect(x, y, w, h);
+    brush.fillRect(x, y, w, h);
 
-    return this;
+    return super.draw(brush, deltaTime);
   }
 }
 

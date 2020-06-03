@@ -39,13 +39,15 @@ class IntroScene extends BaseScene {
 
   update(dt: number) {
     this.elapsedTime += dt;
-    this.delay.update(dt);
 
-    if (this.delay.isDone || this.game.input.isKeyPressed(Key.Enter)) {
+    if (
+      this.delay.update(dt).isDone ||
+      this.game.input.isKeyPressed(Key.Enter)
+    ) {
       this.game.scene = new MenuScene(this.game);
     }
 
-    return this;
+    return super.update(dt);
   }
 
   draw(b: IBrush, dt: number) {

@@ -12,12 +12,13 @@ export interface ITimer {
   stop: () => this;
 }
 
+type Draw = (deltaTime: number) => void;
 type Update = (deltaTime: number) => void;
 
 export class Timer implements ITimer {
   private readonly fpsMeter: IFps;
   private readonly step: number;
-  private readonly draw: Update;
+  private readonly draw: Draw;
   private readonly update: Update;
   private readonly fpsLimit: number;
 
@@ -29,7 +30,7 @@ export class Timer implements ITimer {
     return this.fpsMeter.value;
   }
 
-  constructor(fpsLimit: number, update: Update, draw: Update) {
+  constructor(fpsLimit: number, update: Update, draw: Draw) {
     this.draw = draw;
     this.update = update;
     this.step = 1 / fpsLimit;

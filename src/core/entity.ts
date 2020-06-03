@@ -4,15 +4,9 @@ import { IDrawable } from "./drawable";
 import { IComposite } from "./composite";
 import { IToggleable } from "./toggleable";
 import { IBrush, IBrushStyle } from "./brush";
-import { IView, BaseView, IWithView } from "./view";
 import { IBounds, Bounds, IBoundsData } from "./bounds";
+import { IView, BaseView, IWithView, IStylable } from "./view";
 import { IBehavior, BaseBehavior, IWithBehavior } from "./behavior";
-
-interface IStylable {
-  style: IBrushStyle;
-
-  setStyle: (style: IBrushStyle) => this;
-}
 
 export interface IEntity
   extends IBounds,
@@ -26,18 +20,13 @@ export interface IEntity
     IComposite<IEntity> {}
 
 export class Entity extends Bounds implements IEntity {
-  style: IBrushStyle = {};
-  private static DefaultEntity = new Entity();
-  private static DefaultView = new BaseView(Entity.DefaultEntity);
-  private static DefaultBehavior = new BaseBehavior(Entity.DefaultEntity);
+  parent?: IEntity;
 
   private isEnabledState = true;
   private isVisibleState = true;
   protected readonly children: Set<IEntity>;
-  protected view: IView = Entity.DefaultView;
-  protected behavior: IBehavior = Entity.DefaultBehavior;
-
-  parent?: IEntity;
+  protected view: IView = new BaseView(this);
+  protected behavior: IBehavior = new BaseBehavior(this);
 
   get length() {
     return this.children.size;
@@ -45,6 +34,14 @@ export class Entity extends Bounds implements IEntity {
 
   get values() {
     return Array.from(this.children);
+  }
+
+  get style() {
+    return this.view.style;
+  }
+
+  set style(style: IBrushStyle) {
+    this.view.style = style;
   }
 
   constructor(bounds?: IBoundsData) {
@@ -78,7 +75,6 @@ export class Entity extends Bounds implements IEntity {
   update(deltaTime: number) {
     if (this.isEnabledState) {
       this.behavior.update(deltaTime);
-      this.children.forEach(children => children.update(deltaTime));
     }
 
     return this;
@@ -110,19 +106,8 @@ export class Entity extends Bounds implements IEntity {
     if (this.isVisibleState) {
       brush.save();
 
-      Object.assign(brush, this.style);
-
+      brush.setStyle(this.style);
       this.view.draw(brush, deltaTime);
-
-      if (
-        !this.style.noTranslate &&
-        this.children.size &&
-        this.x + this.y > 0
-      ) {
-        brush.translate(this.x, this.y);
-      }
-
-      this.children.forEach(children => children.draw(brush, deltaTime));
 
       brush.restore();
     }
@@ -197,7 +182,7 @@ export class Entity extends Bounds implements IEntity {
   };
 
   setStyle = (style: IBrushStyle) => {
-    Object.assign(this.style, style);
+    this.view.setStyle(style);
 
     return this;
   };

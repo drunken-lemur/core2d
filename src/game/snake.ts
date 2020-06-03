@@ -90,7 +90,7 @@ class Snake extends Entity {
     update(dt: number) {
       this.parent.move();
 
-      return this;
+      return super.update(dt);
     }
   };
 
@@ -290,12 +290,6 @@ class GameScene extends BaseScene {
     this.setView(view)
       .setBehavior(new GameScene.Behavior(this))
       .add(this.gameGroup.add(this.apple, this.snake), new ScoreLabel());
-  }
-
-  update(dt: number) {
-    this.behavior.update(dt);
-
-    return this;
   }
 }
 
