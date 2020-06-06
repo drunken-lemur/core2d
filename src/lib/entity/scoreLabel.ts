@@ -1,4 +1,4 @@
-import { IBoundsData } from "core";
+import { IBehavior } from "core";
 
 import { Label } from "./label";
 import { Score } from "../score";
@@ -7,17 +7,11 @@ export class ScoreLabel extends Label {
   replaceChar = "$";
   template: string = "Score: $";
 
-  constructor(template: string = "Score: $", bounds?: IBoundsData) {
-    super("", bounds);
+  behaviors: IBehavior<Label>[] = [
+    label => {
+      const { template, replaceChar } = this;
 
-    this.template = template;
-
-    this.update(0); // init text label
-  }
-
-  update(deltaTime: number): this {
-    this.text = this.template.replace(this.replaceChar, `${Score.get()}`);
-
-    return super.update(deltaTime);
-  }
+      label.text = template.replace(replaceChar, `${Score.get()}`);
+    }
+  ];
 }

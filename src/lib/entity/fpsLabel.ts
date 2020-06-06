@@ -1,17 +1,17 @@
-import { BaseGame, IBoundsData } from "core";
+import { BaseGame, IBehavior } from "core";
 
 import { Label } from "./label";
 
 export class FpsLabel extends Label {
-  constructor(bounds?: IBoundsData) {
-    super("", bounds);
+  replaceChar = "$";
+  template: string = "FPS: $";
 
-    this.update(0);
-  }
+  behaviors: IBehavior<Label>[] = [
+    label => {
+      const { fps } = BaseGame.instance.timer;
+      const { replaceChar, template } = this;
 
-  update(dt: number) {
-    this.text = `${BaseGame.instance.timer.fps}`;
-
-    return super.update(dt);
-  }
+      label.text = template.replace(replaceChar, `${fps}`);
+    }
+  ];
 }

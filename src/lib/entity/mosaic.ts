@@ -1,22 +1,26 @@
-import { BaseView, Color, Entity, IBrush, ISizeData, Point, Size } from "core";
+import {
+  baseBehavior,
+  childrenView,
+  Color,
+  Entity,
+  IBehavior,
+  ISizeData,
+  Point,
+  rectView,
+  Size
+} from "core";
 
 import { Square } from "lib/entity";
 
 export class Mosaic extends Entity {
-  private static View = class extends BaseView<Mosaic> {
-    draw(b: IBrush, dt: number) {
-      const { x, y, w, h } = this.parent;
+  style = { fillStyle: Color.Blue };
 
-      b.setStyle({ fillStyle: Color.Blue }).fillRect(x, y, w, h);
+  views = [rectView, childrenView];
 
-      return super.draw(b, dt);
-    }
-  };
+  // behaviors: IBehavior[] = [(e: any) => console.log(e.views.length), baseBehavior];
 
   constructor(size: ISizeData, cells: ISizeData) {
-    super();
-
-    this.setSize(size).addViews(new Mosaic.View(this));
+    super(size);
 
     const cellSize = new Size(size).divide(cells);
     const { w, h } = cellSize;

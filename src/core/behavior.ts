@@ -30,7 +30,9 @@ export class BaseBehavior<T extends IEntity = IEntity>
 
   update(deltaTime: number) {
     this.parent.forEach(children => children.update(deltaTime));
-
-    return this;
   }
 }
+
+export const baseBehavior: IBehaviorFunction = (entity, deltaTime) => {
+  entity.forEach(children => children.update(deltaTime));
+};

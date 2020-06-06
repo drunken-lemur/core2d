@@ -41,14 +41,10 @@ class IntroScene extends BaseScene {
   update(dt: number) {
     this.elapsedTime += dt;
 
-    if (
-      this.delay.update(dt).isDone ||
-      this.game.input.isKeyPressed(Key.Enter)
-    ) {
+    this.delay.update(dt);
+    if (this.delay.isDone || this.game.input.isKeyPressed(Key.Enter)) {
       this.game.scene = new MenuScene(this.game);
     }
-
-    return super.update(dt);
   }
 
   draw(b: IBrush, dt: number) {
@@ -90,8 +86,6 @@ class IntroScene extends BaseScene {
         this.h / 2 + 80
       );
     }
-
-    return this;
   }
 }
 
@@ -145,8 +139,6 @@ class MenuScene extends BaseScene {
           break;
       }
     }
-
-    return this;
   }
 
   draw(b: IBrush, dt: number) {
@@ -188,8 +180,6 @@ class MenuScene extends BaseScene {
         this.h / 2 + index * itemHeight + (itemHeight - fontSize) / 2
       );
     });
-
-    return this;
   }
 }
 
@@ -231,8 +221,6 @@ class GameScene extends BaseScene {
     if (this.game.input.isKeyPressed(Key.Escape)) {
       this.game.scene = new MenuScene(this.game);
     }
-
-    return this;
   }
 
   draw(b: IBrush, dt: number) {
@@ -246,8 +234,6 @@ class GameScene extends BaseScene {
       .setStyle({ fillStyle: "#0d0" })
       .fillRect(0, 0, rectSize, rectSize)
       .restore();
-
-    return this;
   }
 }
 
@@ -262,8 +248,6 @@ class ExitScene extends BaseScene {
     if (this.game.input.isKeyPressed(Key.Escape)) {
       this.game.scene = new IntroScene(this.game);
     }
-
-    return this;
   }
 
   draw(b: IBrush, dt: number) {
@@ -283,8 +267,6 @@ class ExitScene extends BaseScene {
         (this.w - b.measureText(gameOverText).width) / 2,
         this.h / 2 - 50
       );
-
-    return this;
   }
 }
 

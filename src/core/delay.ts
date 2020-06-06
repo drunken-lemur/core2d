@@ -48,8 +48,6 @@ export class Delay implements IDelay {
     if (passed - ignore < delay) {
       this.passed += deltaTime;
     }
-
-    return this;
   }
 
   add = (value: number) => {

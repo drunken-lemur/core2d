@@ -2,7 +2,7 @@ import { IBrush } from "./brush";
 import { IEntity } from "core/entity";
 
 export interface IDrawable {
-  draw(brush: IBrush, deltaTime: number): this;
+  draw(brush: IBrush, deltaTime: number): void;
 }
 
 export interface IDrawableFunction {

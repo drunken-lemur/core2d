@@ -80,7 +80,7 @@ export class TypingLabel extends Entity {
           label
             .setPosition(0, fontSize * key + fontSize)
             .setStyle(this.style)
-            .addBehaviors(behavior)
+            // .addBehaviors(behavior)
         );
       });
   }

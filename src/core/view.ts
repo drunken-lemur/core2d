@@ -1,11 +1,14 @@
 import { Color } from "./color";
 import { IEntity } from "./entity";
 import { ISizeData } from "./size";
+import { IBehavior } from "./behavior";
 import { IDrawable } from "./drawable";
 import { IWithParent } from "./composite";
 import { IBrush, IBrushStyle } from "./brush";
 
 export interface IWithView {
+  // views: IView<IEntity>[];
+  // behaviors: IBehavior<IEntity>[];
   addViews: (...views: IView[]) => this;
   removeViews: (...views: IView[]) => this;
 }
@@ -14,6 +17,7 @@ export interface IStylable {
   style: IBrushStyle;
 
   setStyle: (style: IBrushStyle) => this;
+  // removeStyle: (...rules: (keyof IBrushStyle)[]) => this; // todo: fix it
 }
 
 export interface IViewClass<T extends IEntity = IEntity>
@@ -58,12 +62,10 @@ export class BaseView<T extends IEntity = IEntity> implements IViewClass<T> {
     }
 
     this.parent.forEach(children => children.draw(brush, deltaTime));
-
-    return this;
   }
 
   setStyle = (style: IBrushStyle) => {
-    this.style = { ...this.style, ...style };
+    this._style = { ...this._style, ...style };
 
     return this;
   };
@@ -80,8 +82,6 @@ export class RectView<T extends IEntity = IEntity> extends BaseView<T> {
     if (brush.strokeStyle !== Color.None) {
       brush.strokeRect(x, y, w, h);
     }
-
-    return super.draw(brush, deltaTime);
   }
 }
 
@@ -114,10 +114,14 @@ export class NetView<T extends IEntity = IEntity> extends RectView<T> {
           .stroke();
       }
     }
-
-    return this;
   }
 }
+
+export const childrenView: IViewFunction = (entity, brush, deltaTime) => {
+  brush.setStyle(entity.style).translate(entity.x, entity.y);
+
+  entity.forEach(children => children.draw(brush, deltaTime));
+};
 
 export const rectView: IViewFunction = (entity, brush) => {
   const { x, y, w, h } = entity;

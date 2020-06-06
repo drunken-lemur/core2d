@@ -41,8 +41,6 @@ class Apple extends Entity {
         .ellipse(x, y, w / 2, h / 2, 0, 0, 2 * Math.PI)
         .closePath()
         .fill();
-
-      return this;
     }
   };
 
@@ -67,8 +65,6 @@ class SnakeBody extends Entity {
         .multiplyBounds(Config.cellSize);
 
       b.fillRect(x, y, w, h);
-
-      return this;
     }
   };
 
@@ -89,8 +85,6 @@ class Snake extends Entity {
   private static Behavior = class extends BaseBehavior<Snake> {
     update(dt: number) {
       this.parent.move();
-
-      return super.update(dt);
     }
   };
 
@@ -182,7 +176,8 @@ class GameScene extends BaseScene {
     update(dt: number) {
       const { delay } = this;
 
-      if (delay.update(dt).isDone) {
+      delay.update(dt);
+      if (delay.isDone) {
         delay.add(-delay.delay);
 
         this.processInput();
@@ -192,8 +187,6 @@ class GameScene extends BaseScene {
 
         this.parent.children.forEach(c => c.update(dt));
       }
-
-      return this;
     }
 
     private processInput = () => {

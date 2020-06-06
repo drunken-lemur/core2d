@@ -1,3 +1,3 @@
 export interface IUpdated {
-  update(deltaTime: number): this;
+  update(deltaTime: number): void;
 }

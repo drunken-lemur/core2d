@@ -28,8 +28,8 @@ export class Entity extends Bounds implements IEntity {
     strokeStyle: Color.None
   };
   parent?: IEntity;
-  views: IView[] = [];
-  behaviors: IBehavior[] = [];
+  views: IView<IEntity | any>[] = [];
+  behaviors: IBehavior<IEntity | any>[] = [];
   protected readonly children: Set<IEntity>;
   private isEnabledState = true;
   private isVisibleState = true;
@@ -37,9 +37,19 @@ export class Entity extends Bounds implements IEntity {
   constructor(bounds?: IPointData | ISizeData | IBoundsData) {
     super();
 
-    this.setPosition(bounds as IPointData)
-      .setSize(bounds as ISizeData)
-      .setStyle(Entity.DefaultStyle);
+    if (bounds) {
+      const { x, y, w, h } = bounds as IBounds;
+
+      if (x || y) {
+        this.setPosition(x, y);
+      }
+
+      if (w || h) {
+        this.setSize(w, h);
+      }
+    }
+
+    this.setStyle(Entity.DefaultStyle);
 
     this.children = new Set();
     this.views.push(new BaseView(this));
@@ -96,8 +106,6 @@ export class Entity extends Bounds implements IEntity {
         }
       });
     }
-
-    return this;
   }
 
   toggleView = () => {
@@ -128,24 +136,8 @@ export class Entity extends Bounds implements IEntity {
 
       brush.setStyle(this.style); // todo: ? move to BaseView or StyledView
 
-      this.views.forEach(view => {
-        brush.save();
-
-        if (typeof view === "function") {
-          view(this, brush, deltaTime);
-        } else {
-          brush.setStyle(view.style);
-
-          view.draw(brush, deltaTime);
-        }
-
-        brush.restore();
-      });
-
-      brush.restore();
+      this.views.forEach(view => this.drawView(view, brush, deltaTime));
     }
-
-    return this;
   }
 
   add = (...sceneObjects: IEntity[]) => {
@@ -237,8 +229,28 @@ export class Entity extends Bounds implements IEntity {
   };
 
   setStyle = (style: IBrushStyle) => {
-    this.style = { ...this.style, ...style };
+    this._style = { ...this._style, ...style };
 
     return this;
   };
+
+  private drawView = (view: IView, brush: IBrush, deltaTime: number) => {
+    brush.save();
+
+    if (typeof view === "function") {
+      view(this, brush, deltaTime);
+    } else {
+      brush.setStyle(view.style);
+
+      view.draw(brush, deltaTime);
+    }
+
+    brush.restore();
+  };
+  //
+  // removeStyle = (...rules: (keyof IBrushStyle)[]) => {
+  //   rules.forEach(rule => delete this._style[rule]);
+  //
+  //   return this;
+  // };
 }
