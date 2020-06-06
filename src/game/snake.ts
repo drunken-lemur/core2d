@@ -108,19 +108,23 @@ class Snake extends Entity {
       .addBehaviors(new Snake.Behavior(this));
   }
 
+  grow = () => {
+    const bodyPart = new SnakeBody(this);
+
+    this.add(bodyPart).body.push(bodyPart);
+
+    return this;
+  };
+
+  setPosition = (x: number | IPointData, y?: number) => {
+    return this.forEach(body => body.setPosition(x, y));
+  };
+
   private createBody = (length: number) => {
     const head = new SnakeHead(this);
 
     this.add(head).body.push(head);
     [...Array(Math.max(0, length - 1))].forEach(this.grow);
-
-    return this;
-  };
-
-  grow = () => {
-    const bodyPart = new SnakeBody(this);
-
-    this.add(bodyPart).body.push(bodyPart);
 
     return this;
   };
@@ -145,10 +149,6 @@ class Snake extends Entity {
     });
 
     return this;
-  };
-
-  setPosition = (x: number | IPointData, y?: number) => {
-    return this.forEach(body => body.setPosition(x, y));
   };
 }
 
@@ -268,12 +268,10 @@ class GameScene extends BaseScene {
       game.scene = new GameOverScene(game);
     };
   };
-
+  style = { fillStyle: Color.White, strokeStyle: Color.Gray };
   private readonly apple: Apple;
   private readonly snake: Snake;
   private readonly gameGroup: Entity;
-
-  style = { fillStyle: Color.White, strokeStyle: Color.Gray };
 
   constructor(game: IGame) {
     super(game);

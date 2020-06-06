@@ -1,4 +1,4 @@
-import { Entity, ISizeData, Size, Point, BaseView, Color, IBrush } from "core";
+import { BaseView, Color, Entity, IBrush, ISizeData, Point, Size } from "core";
 
 import { Square } from "lib/entity";
 

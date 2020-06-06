@@ -12,6 +12,7 @@ export * from "./game";
 export * from "./input";
 export * from "./point";
 export * from "./position";
+export * from "./rotatable";
 export * from "./scene";
 export * from "./screen";
 export * from "./size";

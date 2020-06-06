@@ -3,14 +3,15 @@ import {
   BaseInput,
   BaseScene,
   Color,
+  Delay,
   IBrush,
+  IDelay,
   IGame,
   IInput,
   IScene,
   IScreen,
   Key
 } from "core";
-import { Delay, IDelay } from "core/delay";
 
 class IntroScene extends BaseScene {
   private infoText: string;

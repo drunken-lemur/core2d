@@ -7,22 +7,23 @@ import {
   Color,
   Entity,
   IBrush,
+  IBrushStyle,
   IGame,
   IPoint,
   IPointData,
+  IRotatable,
   IScene,
   IScreen,
   ISizeData,
   Key,
   Point,
   Position,
+  RectView,
   Size,
-  IBrushStyle,
-  RectView
+  Unit
 } from "core";
 import { Score } from "lib";
 import { ScoreLabel } from "lib/entity";
-import { IRotatable, Unit } from "core/rotatable";
 
 const { PI, sin, cos, random } = Math;
 const Deg = PI / 180;
@@ -42,26 +43,11 @@ class Rock extends Entity {
   static Small = Size.valueOf(10);
   static Medium = Size.valueOf(20);
   static Large = Size.valueOf(40);
-
-  private spin: number;
-  private score: number;
-  private rotation: number;
-  private velocity: IPoint = new Point(1);
-
   private static Surface = class Surface extends Entity {
     parent!: Rock;
+    view = new RectView(this);
     private hit: number; // average radial disparity
     private bounds: number;
-
-    get style() {
-      return this.parent.style;
-    }
-
-    set style(style: IBrushStyle) {
-      if (this.parent) {
-        this.parent.style = style;
-      }
-    }
 
     constructor(size: ISizeData) {
       super();
@@ -72,7 +58,15 @@ class Rock extends Entity {
       this.bounds = 0;
     }
 
-    view = new RectView(this);
+    get style() {
+      return this.parent.style;
+    }
+
+    set style(style: IBrushStyle) {
+      if (this.parent) {
+        this.parent.style = style;
+      }
+    }
 
     // view = new (class extends BaseView<Surface> {
     //   private cache!: IBrush;
@@ -113,23 +107,6 @@ class Rock extends Entity {
     //   }
     // })(this);
   };
-
-  // style: IBrushStyle = { strokeStyle: Color.White, fillStyle: Color.Blue };
-
-  constructor(size: ISizeData) {
-    super();
-
-    this.setSize(size);
-
-    // this.spin = 0;
-    this.spin = random() + 0.1; // * this.vX;
-    this.score = 0;
-    this.rotation = 0;
-    this.velocity = new Point(1);
-
-    this.add(new Rock.Surface(this));
-  }
-
   view = new (class extends BaseView<Rock> {
     draw(b: IBrush, dt: number) {
       const { parent: rock } = this;
@@ -145,7 +122,6 @@ class Rock extends Entity {
       return this;
     }
   })(this);
-
   behavior = new (class extends BaseBehavior<Rock> {
     constructor(rock: Rock) {
       super(rock);
@@ -173,6 +149,26 @@ class Rock extends Entity {
       return super.update(dt);
     }
   })(this);
+  private spin: number;
+  private score: number;
+
+  // style: IBrushStyle = { strokeStyle: Color.White, fillStyle: Color.Blue };
+  private rotation: number;
+  private velocity: IPoint = new Point(1);
+
+  constructor(size: ISizeData) {
+    super();
+
+    this.setSize(size);
+
+    // this.spin = 0;
+    this.spin = random() + 0.1; // * this.vX;
+    this.score = 0;
+    this.rotation = 0;
+    this.velocity = new Point(1);
+
+    this.add(new Rock.Surface(this));
+  }
 }
 
 class Bullet extends Entity implements IRotatable {
@@ -186,6 +182,41 @@ class Bullet extends Entity implements IRotatable {
   rotation: number;
 
   style = { fillStyle: Color.White };
+  view = new (class extends BaseView<Bullet> {
+    draw(b: IBrush, dt: number) {
+      const { x, y, w, h } = this.parent;
+
+      b.beginPath()
+        .ellipse(x, y, w / 2, h / 2, 0, 0, 2 * PI)
+        .closePath()
+        .fill();
+
+      return this;
+    }
+  })(this);
+  behavior = new (class extends BaseBehavior<Bullet> {
+    update(dt: number) {
+      const { parent: bullet } = this;
+
+      const { parent: bulletStream, x, y, w, h } = bullet;
+
+      bullet.moveByRotation(bullet.speed);
+
+      const w2 = w / 2;
+      const h2 = h / 2;
+
+      if (
+        x + w2 < 0 ||
+        x - w2 > bulletStream!.w ||
+        y + h2 < 0 ||
+        y - h2 > bulletStream!.h
+      ) {
+        bullet.remove(); // self-remove
+      }
+
+      return super.update(dt);
+    }
+  })(this);
 
   constructor(position: IPointData, angle: number) {
     super();
@@ -211,43 +242,6 @@ class Bullet extends Entity implements IRotatable {
 
     return this;
   };
-
-  view = new (class extends BaseView<Bullet> {
-    draw(b: IBrush, dt: number) {
-      const { x, y, w, h } = this.parent;
-
-      b.beginPath()
-        .ellipse(x, y, w / 2, h / 2, 0, 0, 2 * PI)
-        .closePath()
-        .fill();
-
-      return this;
-    }
-  })(this);
-
-  behavior = new (class extends BaseBehavior<Bullet> {
-    update(dt: number) {
-      const { parent: bullet } = this;
-
-      const { parent: bulletStream, x, y, w, h } = bullet;
-
-      bullet.moveByRotation(bullet.speed);
-
-      const w2 = w / 2;
-      const h2 = h / 2;
-
-      if (
-        x + w2 < 0 ||
-        x - w2 > bulletStream!.w ||
-        y + h2 < 0 ||
-        y - h2 > bulletStream!.h
-      ) {
-        bullet.remove(); // self-remove
-      }
-
-      return super.update(dt);
-    }
-  })(this);
 }
 
 class Ship extends Entity {
@@ -262,32 +256,6 @@ class Ship extends Entity {
   velocity: IPoint;
 
   style = { strokeStyle: Color.White, fillStyle: Color.Gray };
-
-  private readonly bulletStream: Entity;
-
-  constructor(bulletStream: Entity) {
-    super();
-
-    this.thrust = 0;
-    this.alive = true;
-    this.rotation = 180;
-    this.speed = new Point();
-    this.velocity = new Point();
-    this.bulletStream = bulletStream;
-  }
-
-  fire = () => {
-    this.behavior.fire();
-
-    return this;
-  };
-
-  accelerate = () => {
-    this.behavior.accelerate();
-
-    return this;
-  };
-
   view = new (class extends BaseView<Ship> {
     draw = (b: IBrush, dt: number) => {
       const { parent: ship } = this;
@@ -320,7 +288,6 @@ class Ship extends Entity {
       return this;
     };
   })(this);
-
   behavior = new (class extends BaseBehavior<Ship> {
     update(dt: number) {
       const { parent: ship } = this;
@@ -371,61 +338,33 @@ class Ship extends Entity {
       ship.velocity.min(MAX_VELOCITY).max(-MAX_VELOCITY);
     };
   })(this);
-}
-
-class GameScene extends BaseScene {
-  private ship!: Ship;
-  private nextBulletTime: number;
-  private readonly rockBelt: Entity;
-  private readonly gameGroup: Entity;
   private readonly bulletStream: Entity;
 
-  private control = {
-    shoot: false,
-    left: false,
-    right: false,
-    forward: false
-  };
+  constructor(bulletStream: Entity) {
+    super();
 
-  // style = { fillStyle: Color.Blue };
-
-  constructor(game: IGame) {
-    super(game);
-
-    this.rockBelt = new Entity(this);
-    this.gameGroup = new Entity(this);
-    this.bulletStream = new Entity(this);
-    this.nextBulletTime = Config.bulletTime;
-
-    this.reset();
-
-    const score = new ScoreLabel()
-      .setStyle({
-        font: "12px Verdana",
-        fillStyle: Color.White
-      })
-      .setPosition(8);
-
-    this.add(this.rockBelt, this.gameGroup, this.bulletStream, score);
+    this.thrust = 0;
+    this.alive = true;
+    this.rotation = 180;
+    this.speed = new Point();
+    this.velocity = new Point();
+    this.bulletStream = bulletStream;
   }
 
-  reset = () => {
-    const { rockBelt, gameGroup, bulletStream, control } = this;
-
-    [rockBelt, gameGroup, bulletStream].forEach(group => group.clear());
-    Score.reset();
-
-    this.ship = new Ship(this.bulletStream);
-    Bounds.align(this.ship, this, Position.CENTER);
-    this.gameGroup.add(this.ship);
-    // @ts-ignore
-    Object.keys(control).forEach(key => (this.control[key] = false));
-
-    rockBelt.add(new Rock(Rock.Large));
+  fire = () => {
+    this.behavior.fire();
 
     return this;
   };
 
+  accelerate = () => {
+    this.behavior.accelerate();
+
+    return this;
+  };
+}
+
+class GameScene extends BaseScene {
   behavior = new (class extends BaseBehavior<GameScene> {
     update(dt: number) {
       this.input()
@@ -511,6 +450,56 @@ class GameScene extends BaseScene {
       return this;
     };
   })(this);
+  private ship!: Ship;
+  private nextBulletTime: number;
+  private readonly rockBelt: Entity;
+  private readonly gameGroup: Entity;
+  private readonly bulletStream: Entity;
+
+  // style = { fillStyle: Color.Blue };
+  private control = {
+    shoot: false,
+    left: false,
+    right: false,
+    forward: false
+  };
+
+  constructor(game: IGame) {
+    super(game);
+
+    this.rockBelt = new Entity(this);
+    this.gameGroup = new Entity(this);
+    this.bulletStream = new Entity(this);
+    this.nextBulletTime = Config.bulletTime;
+
+    this.reset();
+
+    const score = new ScoreLabel()
+      .setStyle({
+        font: "12px Verdana",
+        fillStyle: Color.White
+      })
+      .setPosition(8);
+
+    this.add(this.rockBelt, this.gameGroup, this.bulletStream, score);
+  }
+
+  reset = () => {
+    const { rockBelt, gameGroup, bulletStream, control } = this;
+
+    [rockBelt, gameGroup, bulletStream].forEach(group => group.clear());
+    Score.reset();
+
+    this.ship = new Ship(this.bulletStream);
+    Bounds.align(this.ship, this, Position.CENTER);
+    this.gameGroup.add(this.ship);
+    // @ts-ignore
+    Object.keys(control).forEach(key => (this.control[key] = false));
+
+    rockBelt.add(new Rock(Rock.Large));
+
+    return this;
+  };
 }
 
 export class SpaceRockGame extends BaseGame {

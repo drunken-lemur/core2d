@@ -1,2 +1,2 @@
-export * from "lib/livable";
+export * from "./livable";
 export * from "./score";

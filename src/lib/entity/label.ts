@@ -1,12 +1,4 @@
-import {
-  BaseBehavior,
-  BaseView,
-  Entity,
-  IBoundsData,
-  IBrush,
-  Delay,
-  IDelay
-} from "core";
+import { BaseView, Entity, IBoundsData, IBrush } from "core";
 
 export class Label extends Entity {
   private static View = class extends BaseView<Label> {

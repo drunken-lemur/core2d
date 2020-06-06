@@ -1,12 +1,6 @@
+import { BaseBehavior, Delay, Entity, IDelay } from "core";
+
 import { Label } from "./label";
-import {
-  BaseBehavior,
-  Delay,
-  Entity,
-  IBoundsData,
-  IDelay,
-  ISizeData
-} from "core";
 
 export class TypingLabelBehavior extends BaseBehavior<Label> {
   private delay: IDelay;

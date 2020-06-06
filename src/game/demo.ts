@@ -1,4 +1,4 @@
-import { BaseGame, IScreen, IScene, IGame, Color, BaseScene, Size } from "core";
+import { BaseGame, BaseScene, Color, IGame, IScene, IScreen, Size } from "core";
 
 import { FpsLabel, Mosaic, Square } from "lib/entity";
 import { TypingLabel } from "lib/entity/typingLabel";
