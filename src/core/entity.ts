@@ -1,12 +1,15 @@
+import { Color } from "./color";
+import { ISizeData } from "./size";
 import { IUpdated } from "./updated";
+import { IPointData } from "./point";
 import { IVisible } from "./visiable";
 import { IDrawable } from "./drawable";
 import { IComposite } from "./composite";
 import { IToggleable } from "./toggleable";
 import { IBrush, IBrushStyle } from "./brush";
-import { IBounds, Bounds, IBoundsData } from "./bounds";
-import { IView, BaseView, IWithView, IStylable } from "./view";
-import { IBehavior, BaseBehavior, IWithBehavior } from "./behavior";
+import { Bounds, IBounds, IBoundsData } from "./bounds";
+import { BaseView, IStylable, IView, IWithView } from "./view";
+import { BaseBehavior, IBehavior, IWithBehavior } from "./behavior";
 
 export interface IEntity
   extends IBounds,
@@ -20,13 +23,38 @@ export interface IEntity
     IComposite<IEntity> {}
 
 export class Entity extends Bounds implements IEntity {
+  private static DefaultStyle: IBrushStyle = {
+    fillStyle: Color.None,
+    strokeStyle: Color.None
+  };
   parent?: IEntity;
-
+  views: IView[] = [];
+  behaviors: IBehavior[] = [];
+  protected readonly children: Set<IEntity>;
   private isEnabledState = true;
   private isVisibleState = true;
-  protected readonly children: Set<IEntity>;
-  protected view: IView = new BaseView(this);
-  protected behavior: IBehavior = new BaseBehavior(this);
+
+  constructor(bounds?: IPointData | ISizeData | IBoundsData) {
+    super();
+
+    this.setPosition(bounds as IPointData)
+      .setSize(bounds as ISizeData)
+      .setStyle(Entity.DefaultStyle);
+
+    this.children = new Set();
+    this.views.push(new BaseView(this));
+    this.behaviors.push(new BaseBehavior(this));
+  }
+
+  private _style: IBrushStyle = {};
+
+  get style() {
+    return this._style;
+  }
+
+  set style(style: IBrushStyle) {
+    this._style = { ...this._style, ...style };
+  }
 
   get length() {
     return this.children.size;
@@ -34,20 +62,6 @@ export class Entity extends Bounds implements IEntity {
 
   get values() {
     return Array.from(this.children);
-  }
-
-  get style() {
-    return this.view.style;
-  }
-
-  set style(style: IBrushStyle) {
-    this.view.style = style;
-  }
-
-  constructor(bounds?: IBoundsData) {
-    super(bounds);
-
-    this.children = new Set();
   }
 
   toggle = () => {
@@ -74,7 +88,13 @@ export class Entity extends Bounds implements IEntity {
 
   update(deltaTime: number) {
     if (this.isEnabledState) {
-      this.behavior.update(deltaTime);
+      this.behaviors.forEach(behavior => {
+        if (typeof behavior === "function") {
+          behavior(this, deltaTime);
+        } else {
+          behavior.update(deltaTime);
+        }
+      });
     }
 
     return this;
@@ -106,8 +126,21 @@ export class Entity extends Bounds implements IEntity {
     if (this.isVisibleState) {
       brush.save();
 
-      brush.setStyle(this.style);
-      this.view.draw(brush, deltaTime);
+      brush.setStyle(this.style); // todo: ? move to BaseView or StyledView
+
+      this.views.forEach(view => {
+        brush.save();
+
+        if (typeof view === "function") {
+          view(this, brush, deltaTime);
+        } else {
+          brush.setStyle(view.style);
+
+          view.draw(brush, deltaTime);
+        }
+
+        brush.restore();
+      });
 
       brush.restore();
     }
@@ -169,20 +202,42 @@ export class Entity extends Bounds implements IEntity {
     return true;
   };
 
-  setView = (view: IView) => {
-    this.view = view;
+  addViews = (...views: IView[]) => {
+    views.forEach(view => this.views.push(view));
 
     return this;
   };
 
-  setBehavior = (behavior: IBehavior) => {
-    this.behavior = behavior;
+  removeViews = (...views: IView[]) => {
+    views.forEach(view => {
+      const index = this.views.indexOf(view);
+      if (index > -1) {
+        this.views.splice(index, 1);
+      }
+    });
+
+    return this;
+  };
+
+  addBehaviors = (...behaviors: IBehavior[]) => {
+    behaviors.forEach(behavior => this.behaviors.push(behavior));
+
+    return this;
+  };
+
+  removeBehaviors = (...behaviors: IBehavior[]) => {
+    behaviors.forEach(behavior => {
+      const index = this.behaviors.indexOf(behavior);
+      if (index > -1) {
+        this.behaviors.splice(index, 1);
+      }
+    });
 
     return this;
   };
 
   setStyle = (style: IBrushStyle) => {
-    this.view.setStyle(style);
+    this.style = { ...this.style, ...style };
 
     return this;
   };

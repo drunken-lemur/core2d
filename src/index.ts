@@ -29,7 +29,7 @@ class App extends BaseApp {
 
     this.canvas = document.createElement("canvas");
 
-    // setStyle(this.canvas, { border: "1px solid black" });
+    setStyle(this.canvas, { border: "1px solid black" });
 
     document.body.appendChild(this.canvas);
   }

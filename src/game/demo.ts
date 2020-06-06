@@ -1,6 +1,6 @@
 import { BaseGame, IScreen, IScene, IGame, Color, BaseScene, Size } from "core";
 
-import { FpsLabel, Mosaic } from "lib/entity";
+import { FpsLabel, Mosaic, Square } from "lib/entity";
 import { TypingLabel } from "lib/entity/typingLabel";
 
 const lorem =
@@ -22,6 +22,8 @@ class IntroScene extends BaseScene {
     const typingText = new TypingLabel(lorem, 2);
 
     this.add(mosaic, typingText, fps);
+
+    this.add(new Square(Size.valueOf(50)));
   }
 }
 
@@ -33,6 +35,6 @@ export class Demo extends BaseGame {
 
     this.scene = new IntroScene(this);
 
-    // setTimeout(this.stop, 100)
+    // setTimeout(this.stop, 100);
   }
 }

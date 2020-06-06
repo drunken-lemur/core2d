@@ -18,6 +18,14 @@ export class Delay implements IDelay {
 
   private passed: number;
 
+  constructor(sec: number, onDone: () => void = () => void 0, ignoreSec = 0) {
+    this.passed = 0;
+
+    this.delay = sec;
+    this.onDone = onDone;
+    this.ignore = ignoreSec;
+  }
+
   get factor() {
     const { passed, ignore, delay } = this;
 
@@ -32,14 +40,6 @@ export class Delay implements IDelay {
 
   get isStart() {
     return this.passed - this.ignore >= 0;
-  }
-
-  constructor(sec: number, onDone: () => void = () => void 0, ignoreSec = 0) {
-    this.passed = 0;
-
-    this.delay = sec;
-    this.onDone = onDone;
-    this.ignore = ignoreSec;
   }
 
   update(deltaTime: number) {

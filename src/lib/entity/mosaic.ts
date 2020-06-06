@@ -16,7 +16,7 @@ export class Mosaic extends Entity {
   constructor(size: ISizeData, cells: ISizeData) {
     super();
 
-    this.setSize(size).setView(new Mosaic.View(this));
+    this.setSize(size).addViews(new Mosaic.View(this));
 
     const cellSize = new Size(size).divide(cells);
     const { w, h } = cellSize;

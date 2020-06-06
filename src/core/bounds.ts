@@ -1,7 +1,7 @@
 import { Position } from "./position";
 import { IWithToArray } from "./toArray";
-import { Size, ISize, ISizeData } from "./size";
-import { Point, IPoint, IPointData } from "./point";
+import { ISize, ISizeData, Size } from "./size";
+import { IPoint, IPointData, Point } from "./point";
 
 export interface ICorners {
   [Position.TOP_LEFT]: IPoint;
@@ -143,6 +143,53 @@ export class Bounds implements IBounds {
   protected readonly size: Size;
   protected readonly position: Point;
 
+  constructor(x: number | IBoundsData = 0, y?: number, w?: number, h?: number) {
+    const bounds = Bounds.valueOf(x, y, w, h);
+
+    this.size = new Size(bounds);
+    this.position = new Point(bounds);
+  }
+
+  // @ts-ignore
+  get x() {
+    return this.position.x;
+  }
+
+  // @ts-ignore
+  set x(x: number) {
+    this.position.x = x;
+  }
+
+  // @ts-ignore
+  get y() {
+    return this.position.y;
+  }
+
+  // @ts-ignore
+  set y(y: number) {
+    this.position.y = y;
+  }
+
+  // @ts-ignore
+  get w() {
+    return this.size.w;
+  }
+
+  // @ts-ignore
+  set w(w: number) {
+    this.size.w = w;
+  }
+
+  // @ts-ignore
+  get h() {
+    return this.size.h;
+  }
+
+  // @ts-ignore
+  set h(h: number) {
+    this.size.h = h;
+  }
+
   static align = (
     bounds: IBoundsData,
     borderBounds: IBoundsData,
@@ -254,53 +301,6 @@ export class Bounds implements IBounds {
       Math.random() * bounds.h
     );
   };
-
-  // @ts-ignore
-  get x() {
-    return this.position.x;
-  }
-
-  // @ts-ignore
-  set x(x: number) {
-    this.position.x = x;
-  }
-
-  // @ts-ignore
-  get y() {
-    return this.position.y;
-  }
-
-  // @ts-ignore
-  set y(y: number) {
-    this.position.y = y;
-  }
-
-  // @ts-ignore
-  get w() {
-    return this.size.w;
-  }
-
-  // @ts-ignore
-  set w(w: number) {
-    this.size.w = w;
-  }
-
-  // @ts-ignore
-  get h() {
-    return this.size.h;
-  }
-
-  // @ts-ignore
-  set h(h: number) {
-    this.size.h = h;
-  }
-
-  constructor(x: number | IBoundsData = 0, y?: number, w?: number, h?: number) {
-    const bounds = Bounds.valueOf(x, y, w, h);
-
-    this.size = new Size(bounds);
-    this.position = new Point(bounds);
-  }
 
   getBounds = (): IBoundsData => {
     const { w, h } = this.size;

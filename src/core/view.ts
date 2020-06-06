@@ -1,3 +1,4 @@
+import { Color } from "./color";
 import { IEntity } from "./entity";
 import { ISizeData } from "./size";
 import { IDrawable } from "./drawable";
@@ -5,7 +6,8 @@ import { IWithParent } from "./composite";
 import { IBrush, IBrushStyle } from "./brush";
 
 export interface IWithView {
-  setView: (view: IView) => this;
+  addViews: (...views: IView[]) => this;
+  removeViews: (...views: IView[]) => this;
 }
 
 export interface IStylable {
@@ -14,18 +16,36 @@ export interface IStylable {
   setStyle: (style: IBrushStyle) => this;
 }
 
-export interface IView<T extends IEntity = IEntity>
+export interface IViewClass<T extends IEntity = IEntity>
   extends IDrawable,
     IStylable,
     IWithParent<T> {}
 
-export class BaseView<T extends IEntity = IEntity> implements IView<T> {
-  parent: T;
+export type IViewFunction<T extends IEntity = IEntity> = (
+  entity: T,
+  brush: IBrush,
+  deltaTime: number
+) => void;
 
-  style: IBrushStyle = {};
+export type IView<T extends IEntity = IEntity> =
+  | IViewClass<T>
+  | IViewFunction<T>;
+
+export class BaseView<T extends IEntity = IEntity> implements IViewClass<T> {
+  parent: T;
 
   constructor(parent: T) {
     this.parent = parent;
+  }
+
+  private _style: IBrushStyle = {};
+
+  get style() {
+    return this._style;
+  }
+
+  set style(style: IBrushStyle) {
+    this._style = { ...this._style, ...style };
   }
 
   draw(brush: IBrush, deltaTime: number) {
@@ -53,7 +73,13 @@ export class RectView<T extends IEntity = IEntity> extends BaseView<T> {
   draw(brush: IBrush, deltaTime: number) {
     const { x, y, w, h } = this.parent;
 
-    brush.fillRect(x, y, w, h);
+    if (brush.fillStyle !== Color.None) {
+      brush.fillRect(x, y, w, h);
+    }
+
+    if (brush.strokeStyle !== Color.None) {
+      brush.strokeRect(x, y, w, h);
+    }
 
     return super.draw(brush, deltaTime);
   }
@@ -92,3 +118,15 @@ export class NetView<T extends IEntity = IEntity> extends RectView<T> {
     return this;
   }
 }
+
+export const rectView: IViewFunction = (entity, brush) => {
+  const { x, y, w, h } = entity;
+
+  if (brush.fillStyle !== Color.None) {
+    brush.fillRect(x, y, w, h);
+  }
+
+  if (brush.strokeStyle !== Color.None) {
+    brush.strokeRect(x, y, w, h);
+  }
+};

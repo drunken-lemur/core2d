@@ -55,7 +55,7 @@ class Apple extends Entity {
 
     this.price = price;
 
-    this.setSize(1).setView(new Apple.View(this));
+    this.setSize(1).addViews(new Apple.View(this));
   }
 }
 
@@ -77,7 +77,7 @@ class SnakeBody extends Entity {
   constructor(bounds?: IBoundsData) {
     super(bounds);
 
-    this.setView(new SnakeBody.View(this));
+    this.addViews(new SnakeBody.View(this));
   }
 }
 
@@ -105,7 +105,7 @@ class Snake extends Entity {
 
     this.setSize(1)
       .createBody(length)
-      .setBehavior(new Snake.Behavior(this));
+      .addBehaviors(new Snake.Behavior(this));
   }
 
   private createBody = (length: number) => {
@@ -287,8 +287,8 @@ class GameScene extends BaseScene {
 
     const view = new NetView(this, Size.valueOf(Config.cellSize)); // todo: remove after debug
 
-    this.setView(view)
-      .setBehavior(new GameScene.Behavior(this))
+    this.addViews(view)
+      .addBehaviors(new GameScene.Behavior(this))
       .add(this.gameGroup.add(this.apple, this.snake), new ScoreLabel());
   }
 }

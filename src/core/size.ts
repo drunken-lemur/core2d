@@ -30,6 +30,13 @@ export class Size implements ISize {
   w: number;
   h: number;
 
+  constructor(w: number | ISizeData = 0, h?: number) {
+    this.w = 0;
+    this.h = 0;
+
+    this.set(Size.valueOf(w, h));
+  }
+
   static valueOf(w: number | ISizeData = 0, h?: number): ISizeData {
     if (typeof w === "number") {
       return { w, h: h === undefined ? w : h };
@@ -42,13 +49,6 @@ export class Size implements ISize {
     const size = Size.valueOf(w, h);
 
     return new Size(Math.random() * size.w, Math.random() * size.h);
-  }
-
-  constructor(w: number | ISizeData = 0, h?: number) {
-    this.w = 0;
-    this.h = 0;
-
-    this.set(Size.valueOf(w, h));
   }
 
   get = (): ISizeData => ({ w: this.w, h: this.h });

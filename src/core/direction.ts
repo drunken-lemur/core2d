@@ -11,6 +11,7 @@ enum CompassDirection {
   West = "West",
   NorthWest = "NorthWest"
 }
+
 enum SimpleDirection {
   North = "North",
   East = "East",

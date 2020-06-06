@@ -538,6 +538,6 @@ export class SpaceRockGame extends BaseGame {
 
     this.scene = new GameScene(this);
 
-    setTimeout(this.stop, 100)
+    setTimeout(this.stop, 100);
   }
 }

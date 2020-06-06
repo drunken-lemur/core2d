@@ -1,5 +1,5 @@
 enum ColorSet {
-  Transparent = "#000000",
+  Transparent = "rgba(0, 0, 0, 0)",
   None = Transparent,
   Black = "#000",
   White = "#fff",

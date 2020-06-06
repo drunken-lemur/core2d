@@ -1,6 +1,6 @@
 import { IScene } from "./scene";
 import { Brush, IBrush } from "./brush";
-import { Size, ISize, ISizeData } from "./size";
+import { ISize, ISizeData, Size } from "./size";
 
 export const Resolutions = {
   $4x3: {

@@ -30,6 +30,13 @@ export class Point implements IPoint {
   x: number;
   y: number;
 
+  constructor(x: number | IPointData = 0, y?: number) {
+    this.x = 0;
+    this.y = 0;
+
+    this.set(Point.valueOf(x, y));
+  }
+
   static valueOf(x: number | IPointData = 0, y?: number): IPointData {
     if (typeof x === "number") {
       return { x, y: y === undefined ? x : y };
@@ -42,13 +49,6 @@ export class Point implements IPoint {
     const point = Point.valueOf(x, y);
 
     return new Point(Math.random() * point.x, Math.random() * point.y);
-  }
-
-  constructor(x: number | IPointData = 0, y?: number) {
-    this.x = 0;
-    this.y = 0;
-
-    this.set(Point.valueOf(x, y));
   }
 
   get = (): IPointData => ({ x: this.x, y: this.y });

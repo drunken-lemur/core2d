@@ -26,10 +26,6 @@ export class Timer implements ITimer {
   private isRunning: boolean = false;
   private lastTime = performance.now();
 
-  get fps() {
-    return this.fpsMeter.value;
-  }
-
   constructor(fpsLimit: number, update: Update, draw: Draw) {
     this.draw = draw;
     this.update = update;
@@ -38,6 +34,22 @@ export class Timer implements ITimer {
 
     this.fpsMeter = new Fps(fpsLimit);
   }
+
+  get fps() {
+    return this.fpsMeter.value;
+  }
+
+  start = () => {
+    this.isRunning = true;
+
+    return this.loop(this.lastTime);
+  };
+
+  stop = () => {
+    this.isRunning = false;
+
+    return this;
+  };
 
   private loop = (now: number) => {
     this.deltaTime += Math.min(1, (now - this.lastTime) / 1000);
@@ -56,18 +68,6 @@ export class Timer implements ITimer {
 
       requestAnimationFrame(this.loop);
     }
-
-    return this;
-  };
-
-  start = () => {
-    this.isRunning = true;
-
-    return this.loop(this.lastTime);
-  };
-
-  stop = () => {
-    this.isRunning = false;
 
     return this;
   };

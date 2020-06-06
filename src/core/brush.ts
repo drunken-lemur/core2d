@@ -22,12 +22,15 @@ export interface IDrawerData
     CanvasShadowStyles,
     CanvasTextDrawingStyles {
   noTranslate?: boolean;
+
   setStyle(style: IBrushStyle): this;
 }
 
 export interface IBrushStyle extends Partial<IDrawerData> {}
 
 export interface IBrush extends IDrawerData {
+  getCacheBrush: () => IBrush;
+
   arc(
     x: number,
     y: number,
@@ -36,8 +39,11 @@ export interface IBrush extends IDrawerData {
     endAngle: number,
     anticlockwise?: boolean
   ): this;
+
   arcTo(x1: number, y1: number, x2: number, y2: number, radius: number): this;
+
   beginPath(): this;
+
   bezierCurveTo(
     cp1x: number,
     cp1y: number,
@@ -46,16 +52,22 @@ export interface IBrush extends IDrawerData {
     x: number,
     y: number
   ): this;
+
   clearRect(x: number, y: number, w: number, h: number): this;
+
   clip(fillRule?: CanvasFillRule | Path2D, fillRule_?: CanvasFillRule): this;
+
   closePath(): this;
+
   createImageData(sw: number | ImageData, sh?: number): ImageData;
+
   createLinearGradient(
     x0: number,
     y0: number,
     x1: number,
     y1: number
   ): CanvasGradient;
+
   createPattern(
     image:
       | HTMLImageElement
@@ -66,6 +78,7 @@ export interface IBrush extends IDrawerData {
       | OffscreenCanvas,
     repetition: string | null
   ): CanvasPattern | null;
+
   createRadialGradient(
     x0: number,
     y0: number,
@@ -74,7 +87,9 @@ export interface IBrush extends IDrawerData {
     y1: number,
     r1: number
   ): CanvasGradient;
+
   drawFocusIfNeeded(element: Element | Path2D, element_?: Element): this;
+
   drawImage(
     image:
       | IBrush
@@ -93,6 +108,7 @@ export interface IBrush extends IDrawerData {
     dw_?: number,
     dh_?: number
   ): this;
+
   ellipse(
     x: number,
     y: number,
@@ -103,22 +119,34 @@ export interface IBrush extends IDrawerData {
     endAngle: number,
     anticlockwise?: boolean
   ): this;
+
   fill(fillRule?: CanvasFillRule | Path2D, fillRule_?: CanvasFillRule): this;
+
   fillRect(x: number, y: number, w: number, h: number): this;
+
   fillText(text: string, x: number, y: number, maxWidth?: number): this;
+
   getImageData(sx: number, sy: number, sw: number, sh: number): ImageData;
+
   getLineDash(): number[];
+
   getTransform(): DOMMatrix;
+
   isPointInPath(
     x: number | Path2D,
     y: number,
     fillRule?: CanvasFillRule | number,
     fillRule_?: CanvasFillRule
   ): boolean;
+
   isPointInStroke(x: number | Path2D, y: number, y_?: number): boolean;
+
   lineTo(x: number, y: number): this;
+
   measureText(text: string): TextMetrics;
+
   moveTo(x: number, y: number): this;
+
   putImageData(
     imagedata: ImageData,
     dx: number,
@@ -128,15 +156,25 @@ export interface IBrush extends IDrawerData {
     dirtyWidth?: number,
     dirtyHeight?: number
   ): this;
+
   quadraticCurveTo(cpx: number, cpy: number, x: number, y: number): this;
+
   rect(x: number, y: number, w: number, h: number): this;
+
   resetTransform(): this;
+
   restore(): this;
+
   rotate(angle: number): this;
+
   save(): this;
+
   scale(x: number, y: number): this;
+
   scrollPathIntoView(path?: Path2D): this;
+
   setLineDash(segments: number[]): this;
+
   setTransform(
     a?: number | DOMMatrix2DInit,
     b?: number,
@@ -145,9 +183,13 @@ export interface IBrush extends IDrawerData {
     e?: number,
     f?: number
   ): this;
+
   stroke(path?: Path2D): this;
+
   strokeRect(x: number, y: number, w: number, h: number): this;
+
   strokeText(text: string, x: number, y: number, maxWidth?: number): this;
+
   transform(
     a: number,
     b: number,
@@ -156,157 +198,12 @@ export interface IBrush extends IDrawerData {
     e: number,
     f: number
   ): this;
+
   translate(x: number, y: number): this;
-  getCacheBrush: () => IBrush;
 }
 
 export class Brush implements IBrush {
-  get direction() {
-    return this.ctx.direction;
-  }
-  set direction(direction: CanvasDirection) {
-    this.ctx.direction = direction;
-  }
-
-  get fillStyle() {
-    return this.ctx.fillStyle;
-  }
-  set fillStyle(fillStyle: string | CanvasGradient | CanvasPattern) {
-    this.ctx.fillStyle = fillStyle;
-  }
-
-  get filter() {
-    return this.ctx.filter;
-  }
-  set filter(filter: string) {
-    this.ctx.filter = filter;
-  }
-
-  get font() {
-    return this.ctx.font;
-  }
-  set font(font: string) {
-    this.ctx.font = font;
-  }
-
-  get globalAlpha() {
-    return this.ctx.globalAlpha;
-  }
-  set globalAlpha(globalAlpha: number) {
-    this.ctx.globalAlpha = globalAlpha;
-  }
-
-  get globalCompositeOperation() {
-    return this.ctx.globalCompositeOperation;
-  }
-  set globalCompositeOperation(globalCompositeOperation: string) {
-    this.ctx.globalCompositeOperation = globalCompositeOperation;
-  }
-
-  get imageSmoothingEnabled() {
-    return this.ctx.imageSmoothingEnabled;
-  }
-  set imageSmoothingEnabled(imageSmoothingEnabled: boolean) {
-    this.ctx.imageSmoothingEnabled = imageSmoothingEnabled;
-  }
-
-  get imageSmoothingQuality() {
-    return this.ctx.imageSmoothingQuality;
-  }
-  set imageSmoothingQuality(imageSmoothingQuality: ImageSmoothingQuality) {
-    this.ctx.imageSmoothingQuality = imageSmoothingQuality;
-  }
-
-  get lineCap() {
-    return this.ctx.lineCap;
-  }
-  set lineCap(lineCap: CanvasLineCap) {
-    this.ctx.lineCap = lineCap;
-  }
-
-  get lineDashOffset() {
-    return this.ctx.lineDashOffset;
-  }
-  set lineDashOffset(lineDashOffset: number) {
-    this.ctx.lineDashOffset = lineDashOffset;
-  }
-
-  get lineJoin() {
-    return this.ctx.lineJoin;
-  }
-  set lineJoin(lineJoin: CanvasLineJoin) {
-    this.ctx.lineJoin = lineJoin;
-  }
-
-  get lineWidth() {
-    return this.ctx.lineWidth;
-  }
-  set lineWidth(lineWidth: number) {
-    this.ctx.lineWidth = lineWidth;
-  }
-
-  get miterLimit() {
-    return this.ctx.miterLimit;
-  }
-  set miterLimit(miterLimit: number) {
-    this.ctx.miterLimit = miterLimit;
-  }
-
-  get shadowBlur() {
-    return this.ctx.shadowBlur;
-  }
-  set shadowBlur(shadowBlur: number) {
-    this.ctx.shadowBlur = shadowBlur;
-  }
-
-  get shadowColor() {
-    return this.ctx.shadowColor;
-  }
-  set shadowColor(shadowColor: string) {
-    this.ctx.shadowColor = shadowColor;
-  }
-
-  get shadowOffsetX() {
-    return this.ctx.shadowOffsetX;
-  }
-  set shadowOffsetX(shadowOffsetX: number) {
-    this.ctx.shadowOffsetX = shadowOffsetX;
-  }
-
-  get shadowOffsetY() {
-    return this.ctx.shadowOffsetY;
-  }
-  set shadowOffsetY(shadowOffsetY: number) {
-    this.ctx.shadowOffsetY = shadowOffsetY;
-  }
-
-  get strokeStyle() {
-    return this.ctx.strokeStyle;
-  }
-  set strokeStyle(strokeStyle: string | CanvasGradient | CanvasPattern) {
-    this.ctx.strokeStyle = strokeStyle;
-  }
-
-  get textAlign() {
-    return this.ctx.textAlign;
-  }
-  set textAlign(textAlign: CanvasTextAlign) {
-    this.ctx.textAlign = textAlign;
-  }
-
-  get textBaseline() {
-    return this.ctx.textBaseline;
-  }
-  set textBaseline(textBaseline: CanvasTextBaseline) {
-    this.ctx.textBaseline = textBaseline;
-  }
-
-  get context2D() {
-    return this.ctx;
-  }
-
   readonly canvas: HTMLCanvasElement;
-
   private readonly ctx: CanvasRenderingContext2D;
 
   constructor(canvas: HTMLCanvasElement, size?: ISizeData) {
@@ -321,6 +218,170 @@ export class Brush implements IBrush {
     if (!ctx) throw new Error("No Context!");
 
     this.ctx = ctx;
+  }
+
+  get direction() {
+    return this.ctx.direction;
+  }
+
+  set direction(direction: CanvasDirection) {
+    this.ctx.direction = direction;
+  }
+
+  get fillStyle() {
+    return this.ctx.fillStyle;
+  }
+
+  set fillStyle(fillStyle: string | CanvasGradient | CanvasPattern) {
+    this.ctx.fillStyle = fillStyle;
+  }
+
+  get filter() {
+    return this.ctx.filter;
+  }
+
+  set filter(filter: string) {
+    this.ctx.filter = filter;
+  }
+
+  get font() {
+    return this.ctx.font;
+  }
+
+  set font(font: string) {
+    this.ctx.font = font;
+  }
+
+  get globalAlpha() {
+    return this.ctx.globalAlpha;
+  }
+
+  set globalAlpha(globalAlpha: number) {
+    this.ctx.globalAlpha = globalAlpha;
+  }
+
+  get globalCompositeOperation() {
+    return this.ctx.globalCompositeOperation;
+  }
+
+  set globalCompositeOperation(globalCompositeOperation: string) {
+    this.ctx.globalCompositeOperation = globalCompositeOperation;
+  }
+
+  get imageSmoothingEnabled() {
+    return this.ctx.imageSmoothingEnabled;
+  }
+
+  set imageSmoothingEnabled(imageSmoothingEnabled: boolean) {
+    this.ctx.imageSmoothingEnabled = imageSmoothingEnabled;
+  }
+
+  get imageSmoothingQuality() {
+    return this.ctx.imageSmoothingQuality;
+  }
+
+  set imageSmoothingQuality(imageSmoothingQuality: ImageSmoothingQuality) {
+    this.ctx.imageSmoothingQuality = imageSmoothingQuality;
+  }
+
+  get lineCap() {
+    return this.ctx.lineCap;
+  }
+
+  set lineCap(lineCap: CanvasLineCap) {
+    this.ctx.lineCap = lineCap;
+  }
+
+  get lineDashOffset() {
+    return this.ctx.lineDashOffset;
+  }
+
+  set lineDashOffset(lineDashOffset: number) {
+    this.ctx.lineDashOffset = lineDashOffset;
+  }
+
+  get lineJoin() {
+    return this.ctx.lineJoin;
+  }
+
+  set lineJoin(lineJoin: CanvasLineJoin) {
+    this.ctx.lineJoin = lineJoin;
+  }
+
+  get lineWidth() {
+    return this.ctx.lineWidth;
+  }
+
+  set lineWidth(lineWidth: number) {
+    this.ctx.lineWidth = lineWidth;
+  }
+
+  get miterLimit() {
+    return this.ctx.miterLimit;
+  }
+
+  set miterLimit(miterLimit: number) {
+    this.ctx.miterLimit = miterLimit;
+  }
+
+  get shadowBlur() {
+    return this.ctx.shadowBlur;
+  }
+
+  set shadowBlur(shadowBlur: number) {
+    this.ctx.shadowBlur = shadowBlur;
+  }
+
+  get shadowColor() {
+    return this.ctx.shadowColor;
+  }
+
+  set shadowColor(shadowColor: string) {
+    this.ctx.shadowColor = shadowColor;
+  }
+
+  get shadowOffsetX() {
+    return this.ctx.shadowOffsetX;
+  }
+
+  set shadowOffsetX(shadowOffsetX: number) {
+    this.ctx.shadowOffsetX = shadowOffsetX;
+  }
+
+  get shadowOffsetY() {
+    return this.ctx.shadowOffsetY;
+  }
+
+  set shadowOffsetY(shadowOffsetY: number) {
+    this.ctx.shadowOffsetY = shadowOffsetY;
+  }
+
+  get strokeStyle() {
+    return this.ctx.strokeStyle;
+  }
+
+  set strokeStyle(strokeStyle: string | CanvasGradient | CanvasPattern) {
+    this.ctx.strokeStyle = strokeStyle;
+  }
+
+  get textAlign() {
+    return this.ctx.textAlign;
+  }
+
+  set textAlign(textAlign: CanvasTextAlign) {
+    this.ctx.textAlign = textAlign;
+  }
+
+  get textBaseline() {
+    return this.ctx.textBaseline;
+  }
+
+  set textBaseline(textBaseline: CanvasTextBaseline) {
+    this.ctx.textBaseline = textBaseline;
+  }
+
+  get context2D() {
+    return this.ctx;
   }
 
   arc(

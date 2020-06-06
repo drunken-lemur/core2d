@@ -8,7 +8,6 @@ import {
   IDelay
 } from "core";
 
-
 export class Label extends Entity {
   private static View = class extends BaseView<Label> {
     draw(b: IBrush, dt: number) {
@@ -40,6 +39,6 @@ export class Label extends Entity {
 
     this.text = text;
 
-    this.setView(new Label.View(this));
+    this.addViews(new Label.View(this));
   }
 }
