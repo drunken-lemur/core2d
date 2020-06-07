@@ -8,8 +8,6 @@ export class Label extends Entity {
 
   views: IView<Label>[] = [
     (label, brush) => {
-      console.log(label.constructor.name);
-
       brush.fillText(label.text, label.x, label.y);
     }
   ];

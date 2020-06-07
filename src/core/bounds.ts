@@ -424,13 +424,13 @@ export class Bounds implements IBounds {
   };
 
   divideSize = (w: number | ISizeData, h?: number, euclidean = false) => {
-    this.size.divide(Size.valueOf(w, h), undefined, euclidean);
+    this.size.divide(w, h, euclidean);
 
     return this;
   };
 
   dividePosition = (x: number | IPointData, y?: number, euclidean = false) => {
-    this.position.divide(Point.valueOf(x, y), undefined, euclidean);
+    this.position.divide(x, y, euclidean);
 
     return this;
   };

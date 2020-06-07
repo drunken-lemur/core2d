@@ -89,6 +89,12 @@ export class Point implements IPoint {
   divide = (x: number | IPointData, y?: number, euclidean = false) => {
     const point = Point.valueOf(x, y);
 
+    if (!point.x || !point.y) {
+      throw new Error(
+        `Wrong divide arguments { x: ${point.x}, y: ${point.y}} !`
+      );
+    }
+
     if (!euclidean) {
       this.x /= point.x;
       this.y /= point.y;

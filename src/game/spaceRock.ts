@@ -260,9 +260,7 @@ class Ship extends Entity {
     draw = (b: IBrush, dt: number) => {
       const { parent: ship } = this;
 
-      // console.log("Ship.view.draw", this.style)
-
-      const { x, y } = ship.clonePosition().round(); // test
+      const { x, y } = ship.clonePosition().round(); // todo: check round()
 
       b.translate(x, y);
 

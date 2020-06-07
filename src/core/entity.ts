@@ -8,8 +8,8 @@ import { IComposite } from "./composite";
 import { IToggleable } from "./toggleable";
 import { IBrush, IBrushStyle } from "./brush";
 import { Bounds, IBounds, IBoundsData } from "./bounds";
-import { BaseView, IStylable, IView, IWithView } from "./view";
-import { BaseBehavior, IBehavior, IWithBehavior } from "./behavior";
+import { defaultView, IStylable, IView, IWithView } from "./view";
+import { defaultBehavior, IBehavior, IWithBehavior } from "./behavior";
 
 export interface IEntity
   extends IBounds,
@@ -28,9 +28,9 @@ export class Entity extends Bounds implements IEntity {
     strokeStyle: Color.None
   };
   parent?: IEntity;
-  views: IView<IEntity | any>[] = [];
-  behaviors: IBehavior<IEntity | any>[] = [];
-  protected readonly children: Set<IEntity>;
+  views: IView<IEntity | any>[] = [defaultView];
+  behaviors: IBehavior<IEntity | any>[] = [defaultBehavior];
+  protected readonly children: Set<IEntity> = new Set();
   private isEnabledState = true;
   private isVisibleState = true;
 
@@ -50,10 +50,6 @@ export class Entity extends Bounds implements IEntity {
     }
 
     this.setStyle(Entity.DefaultStyle);
-
-    this.children = new Set();
-    this.views.push(new BaseView(this));
-    this.behaviors.push(new BaseBehavior(this));
   }
 
   private _style: IBrushStyle = {};
@@ -137,6 +133,8 @@ export class Entity extends Bounds implements IEntity {
       brush.setStyle(this.style); // todo: ? move to BaseView or StyledView
 
       this.views.forEach(view => this.drawView(view, brush, deltaTime));
+
+      brush.restore();
     }
   }
 
@@ -194,6 +192,12 @@ export class Entity extends Bounds implements IEntity {
     return true;
   };
 
+  setViews = (...views: IView[]) => {
+    this.views = views;
+
+    return this;
+  };
+
   addViews = (...views: IView[]) => {
     views.forEach(view => this.views.push(view));
 
@@ -211,6 +215,18 @@ export class Entity extends Bounds implements IEntity {
     return this;
   };
 
+  clearViews = () => {
+    this.views = [];
+
+    return this;
+  };
+
+  setBehaviors = (...behaviors: IBehavior[]) => {
+    this.behaviors = behaviors;
+
+    return this;
+  };
+
   addBehaviors = (...behaviors: IBehavior[]) => {
     behaviors.forEach(behavior => this.behaviors.push(behavior));
 
@@ -224,6 +240,12 @@ export class Entity extends Bounds implements IEntity {
         this.behaviors.splice(index, 1);
       }
     });
+
+    return this;
+  };
+
+  clearBehaviors = () => {
+    this.behaviors = [];
 
     return this;
   };

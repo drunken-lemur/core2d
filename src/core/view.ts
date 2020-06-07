@@ -1,16 +1,15 @@
 import { Color } from "./color";
 import { IEntity } from "./entity";
 import { ISizeData } from "./size";
-import { IBehavior } from "./behavior";
 import { IDrawable } from "./drawable";
 import { IWithParent } from "./composite";
 import { IBrush, IBrushStyle } from "./brush";
 
 export interface IWithView {
-  // views: IView<IEntity>[];
-  // behaviors: IBehavior<IEntity>[];
   addViews: (...views: IView[]) => this;
+  setViews: (...views: IView[]) => this;
   removeViews: (...views: IView[]) => this;
+  clearViews: () => this;
 }
 
 export interface IStylable {
@@ -118,12 +117,32 @@ export class NetView<T extends IEntity = IEntity> extends RectView<T> {
 }
 
 export const childrenView: IViewFunction = (entity, brush, deltaTime) => {
-  brush.setStyle(entity.style).translate(entity.x, entity.y);
-
-  entity.forEach(children => children.draw(brush, deltaTime));
+  entity.forEach(children => {
+    brush.save();
+    children.draw(brush, deltaTime);
+    brush.restore();
+  });
 };
 
-export const rectView: IViewFunction = (entity, brush) => {
+export const reverseView: IViewFunction = (entity, brush, deltaTime) => {
+  entity.values.reverse().forEach(children => {
+    brush.save();
+    children.draw(brush, deltaTime);
+    brush.restore();
+  });
+};
+
+export const styledView: IViewFunction = (entity, brush, deltaTime) => {
+  brush.setStyle(entity.style);
+};
+
+export const translatedView: IViewFunction = (entity, brush, deltaTime) => {
+  if (!entity.style.noTranslate && entity.length && entity.x + entity.y > 0) {
+    brush.translate(entity.x, entity.y);
+  }
+};
+
+export const rectView: IViewFunction = (entity, brush, deltaTime) => {
   const { x, y, w, h } = entity;
 
   if (brush.fillStyle !== Color.None) {
@@ -132,5 +151,55 @@ export const rectView: IViewFunction = (entity, brush) => {
 
   if (brush.strokeStyle !== Color.None) {
     brush.strokeRect(x, y, w, h);
+  }
+};
+
+export const ellipseView: IViewFunction = (entity, brush, deltaTime) => {
+  const { x, y, w, h } = entity;
+
+  brush
+    .translate(w / 2, h / 2)
+    .beginPath()
+    .ellipse(x, y, w / 2, h / 2, 0, 0, 2 * Math.PI);
+
+  if (brush.fillStyle !== Color.None) brush.fill();
+  if (brush.strokeStyle !== Color.None) brush.stroke();
+};
+
+export const defaultView: IViewFunction = (entity, brush, deltaTime) => {
+  styledView(entity, brush, deltaTime);
+  translatedView(entity, brush, deltaTime);
+  childrenView(entity, brush, deltaTime);
+};
+
+export const sceneView: IViewFunction = (entity, brush, deltaTime) => {
+  rectView(entity, brush, deltaTime);
+  defaultView(entity, brush, deltaTime);
+};
+
+export const netView = (cellSize: ISizeData): IViewFunction => (
+  entity,
+  brush
+) => {
+  const { x, y, w, h } = entity;
+
+  // brush.fillRect(x, y, w, h);
+
+  for (let j = 0; j < w; j += cellSize.h) {
+    brush
+      .beginPath()
+      .moveTo(0, j)
+      .lineTo(w, j)
+      .closePath()
+      .stroke();
+
+    for (let i = 0; i < w; i += cellSize.w) {
+      brush
+        .beginPath()
+        .moveTo(i, 0)
+        .lineTo(i, h)
+        .closePath()
+        .stroke();
+    }
   }
 };

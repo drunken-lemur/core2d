@@ -1,23 +1,11 @@
-import {
-  baseBehavior,
-  childrenView,
-  Color,
-  Entity,
-  IBehavior,
-  ISizeData,
-  Point,
-  rectView,
-  Size
-} from "core";
+import { Color, Entity, ISizeData, Point, sceneView, Size } from "core";
 
 import { Square } from "lib/entity";
 
 export class Mosaic extends Entity {
   style = { fillStyle: Color.Blue };
 
-  views = [rectView, childrenView];
-
-  // behaviors: IBehavior[] = [(e: any) => console.log(e.views.length), baseBehavior];
+  views = [sceneView];
 
   constructor(size: ISizeData, cells: ISizeData) {
     super(size);

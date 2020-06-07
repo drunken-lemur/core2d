@@ -4,7 +4,9 @@ import { IWithParent } from "./composite";
 
 export interface IWithBehavior {
   addBehaviors: (...behaviors: IBehavior[]) => this;
+  setBehaviors: (...behaviors: IBehavior[]) => this;
   removeBehaviors: (...behaviors: IBehavior[]) => this;
+  clearBehaviors: () => this;
 }
 
 export interface IBehaviorClass<T extends IEntity = IEntity>
@@ -33,6 +35,14 @@ export class BaseBehavior<T extends IEntity = IEntity>
   }
 }
 
-export const baseBehavior: IBehaviorFunction = (entity, deltaTime) => {
+export const childrenBehavior: IBehaviorFunction = (entity, deltaTime) => {
   entity.forEach(children => children.update(deltaTime));
+};
+
+export const defaultBehavior: IBehaviorFunction = (entity, deltaTime) => {
+  childrenBehavior(entity, deltaTime);
+};
+
+export const sceneBehavior: IBehaviorFunction = (entity, deltaTime) => {
+  defaultBehavior(entity, deltaTime);
 };
