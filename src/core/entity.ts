@@ -132,7 +132,13 @@ export class Entity extends Bounds implements IEntity {
 
       brush.setStyle(this.style); // todo: ? move to BaseView or StyledView
 
-      this.views.forEach(view => this.drawView(view, brush, deltaTime));
+      this.views.forEach(view => {
+        brush.save();
+
+        this.drawView(view, brush, deltaTime);
+
+        brush.restore();
+      });
 
       brush.restore();
     }
@@ -257,8 +263,6 @@ export class Entity extends Bounds implements IEntity {
   };
 
   private drawView = (view: IView, brush: IBrush, deltaTime: number) => {
-    brush.save();
-
     if (typeof view === "function") {
       view(this, brush, deltaTime);
     } else {
@@ -266,10 +270,8 @@ export class Entity extends Bounds implements IEntity {
 
       view.draw(brush, deltaTime);
     }
-
-    brush.restore();
   };
-  //
+
   // removeStyle = (...rules: (keyof IBrushStyle)[]) => {
   //   rules.forEach(rule => delete this._style[rule]);
   //

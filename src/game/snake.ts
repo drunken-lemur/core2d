@@ -162,7 +162,6 @@ class SnakeHead extends SnakeBody {
 
 class Snake extends Entity {
   direction: Direction;
-  style = { noTranslate: true }; // todo: refine
   views: IView<Snake>[] = [reverseView];
   behaviors: IBehavior<Snake>[] = [snake => snake.move()];
 
@@ -341,7 +340,7 @@ class GameScene extends BaseScene {
     };
   };
   views = [sceneView, netView(Size.valueOf(Config.cellSize))];
-  style = { fillStyle: Color.White, strokeStyle: `1px solid ${Color.Black}` };
+  style = { fillStyle: Color.White, strokeStyle: Color.Black };
   private readonly apple: Apple;
   private readonly snake: Snake;
   private readonly gameGroup: Entity;
