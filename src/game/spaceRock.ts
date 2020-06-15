@@ -49,6 +49,7 @@ class Rock extends Entity {
   static Small = Size.valueOf(10);
   static Medium = Size.valueOf(20);
   static Large = Size.valueOf(40);
+
   private static Surface = class Surface extends Entity {
     parent!: Rock;
     views = [rectView];
@@ -60,10 +61,10 @@ class Rock extends Entity {
     constructor(size: ISizeData) {
       super();
 
-      this.setSize(size);
-
       this.hit = 0;
       this.bounds = 0;
+
+      this.setSize(size);
     }
 
     // get style() {
@@ -146,7 +147,8 @@ class Rock extends Entity {
         rock.rotation += rock.spin;
         rock.plusPosition(rock.velocity);
       }
-    })(this)
+    })(this),
+    defaultBehavior
   ];
   private spin: number;
   private score: number;
