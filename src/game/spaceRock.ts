@@ -5,7 +5,11 @@ import {
   BaseView,
   Bounds,
   Color,
+  defaultBehavior,
+  defaultView,
+  ellipseView,
   Entity,
+  IBehavior,
   IBrush,
   IBrushStyle,
   IGame,
@@ -15,9 +19,11 @@ import {
   IScene,
   IScreen,
   ISizeData,
+  IView,
   Key,
   Point,
   Position,
+  rectView,
   RectView,
   Size,
   Unit
@@ -45,9 +51,11 @@ class Rock extends Entity {
   static Large = Size.valueOf(40);
   private static Surface = class Surface extends Entity {
     parent!: Rock;
-    view = new RectView(this);
+    views = [rectView];
     private hit: number; // average radial disparity
     private bounds: number;
+
+    style = { strokeStyle: Color.Red, fillStyle: Color.Red };
 
     constructor(size: ISizeData) {
       super();
@@ -58,15 +66,15 @@ class Rock extends Entity {
       this.bounds = 0;
     }
 
-    get style() {
-      return this.parent.style;
-    }
+    // get style() {
+    //   return this.parent.style;
+    // }
 
-    set style(style: IBrushStyle) {
-      if (this.parent) {
-        this.parent.style = style;
-      }
-    }
+    // set style(style: IBrushStyle) {
+    //   if (this.parent) {
+    //     this.parent.style = style;
+    //   }
+    // }
 
     // view = new (class extends BaseView<Surface> {
     //   private cache!: IBrush;
@@ -107,52 +115,43 @@ class Rock extends Entity {
     //   }
     // })(this);
   };
-  view = new (class extends BaseView<Rock> {
-    draw(b: IBrush, dt: number) {
-      const { parent: rock } = this;
+  views: IView<Rock>[] = [
+    (rock, brush) => {
+      brush.rotate(rock.rotation);
+    },
+    defaultView
+  ];
+  behaviors: IBehavior<Rock>[] = [
+    new (class extends BaseBehavior<Rock> {
+      constructor(rock: Rock) {
+        super(rock);
 
-      // b.save()
-      //   // .translate(rock.x, rock.y)
-      //   .rotate(rock.rotation);
+        const size = rock.w;
 
-      // super.draw(b, dt);
+        // pick a random direction to move in and base the rotation off of speed
+        const angle = random() * (PI * 2);
+        rock.velocity.set(
+          sin(angle) * (5 - size / 15),
+          cos(angle) * (5 - size / 15)
+        );
+        rock.spin = random() + 0.002 * rock.velocity.x;
 
-      b.rotate(rock.rotation);
+        // associate score with size
+        rock.score = (5 - size / 10) * 100;
+      }
 
-      return this;
-    }
-  })(this);
-  behavior = new (class extends BaseBehavior<Rock> {
-    constructor(rock: Rock) {
-      super(rock);
+      update(dt: number) {
+        const { parent: rock } = this;
 
-      const size = rock.w;
-
-      // pick a random direction to move in and base the rotation off of speed
-      const angle = random() * (PI * 2);
-      rock.velocity.set(
-        sin(angle) * (5 - size / 15),
-        cos(angle) * (5 - size / 15)
-      );
-      rock.spin = random() + 0.002 * rock.velocity.x;
-
-      // associate score with size
-      rock.score = (5 - size / 10) * 100;
-    }
-
-    update(dt: number) {
-      const { parent: rock } = this;
-
-      rock.rotation += rock.spin;
-      rock.plusPosition(rock.velocity);
-
-      return super.update(dt);
-    }
-  })(this);
+        rock.rotation += rock.spin;
+        rock.plusPosition(rock.velocity);
+      }
+    })(this)
+  ];
   private spin: number;
   private score: number;
 
-  // style: IBrushStyle = { strokeStyle: Color.White, fillStyle: Color.Blue };
+  style: IBrushStyle = { strokeStyle: Color.White, fillStyle: Color.Blue };
   private rotation: number;
   private velocity: IPoint = new Point(1);
 
@@ -182,22 +181,9 @@ class Bullet extends Entity implements IRotatable {
   rotation: number;
 
   style = { fillStyle: Color.White };
-  view = new (class extends BaseView<Bullet> {
-    draw(b: IBrush, dt: number) {
-      const { x, y, w, h } = this.parent;
-
-      b.beginPath()
-        .ellipse(x, y, w / 2, h / 2, 0, 0, 2 * PI)
-        .closePath()
-        .fill();
-
-      return this;
-    }
-  })(this);
-  behavior = new (class extends BaseBehavior<Bullet> {
-    update(dt: number) {
-      const { parent: bullet } = this;
-
+  views: IView<Bullet>[] = [ellipseView];
+  behaviors = [
+    (bullet: Bullet) => {
       const { parent: bulletStream, x, y, w, h } = bullet;
 
       bullet.moveByRotation(bullet.speed);
@@ -213,10 +199,8 @@ class Bullet extends Entity implements IRotatable {
       ) {
         bullet.remove(); // self-remove
       }
-
-      return super.update(dt);
     }
-  })(this);
+  ];
 
   constructor(position: IPointData, angle: number) {
     super();
@@ -255,17 +239,15 @@ class Ship extends Entity {
   rotation: number;
   velocity: IPoint;
 
-  style = { strokeStyle: Color.White, fillStyle: Color.Gray };
-  view = new (class extends BaseView<Ship> {
-    draw = (b: IBrush, dt: number) => {
-      const { parent: ship } = this;
-
+  views: IView<Ship>[] = [
+    (ship, brush) => {
       const { x, y } = ship.clonePosition().round(); // todo: check round()
 
-      b.translate(x, y);
+      brush.translate(x, y);
 
       // ship frame
-      b.beginPath()
+      brush
+        .beginPath()
         .rotate(ship.rotation * Deg)
         .moveTo(0, 10)
         .lineTo(5, -6)
@@ -274,68 +256,41 @@ class Ship extends Entity {
         .closePath()
         .stroke();
 
-      // flame
-      b.beginPath()
-        .rotate(ship.rotation * Deg)
-        .moveTo(0, 10)
-        .lineTo(5, -6)
-        .lineTo(0, -2)
-        .lineTo(-5, -6)
-        .closePath();
-
-      return this;
-    };
-  })(this);
-  behavior = new (class extends BaseBehavior<Ship> {
-    update(dt: number) {
-      const { parent: ship } = this;
-
+      if (ship.thrust !== 0) {
+        // todo: fix it
+        // flame
+        brush
+          .beginPath()
+          .moveTo(2, 0)
+          .lineTo(4, -3)
+          .lineTo(2, -2)
+          .lineTo(0, -5)
+          .lineTo(-2, -2)
+          .lineTo(-4, -3)
+          .lineTo(-2, -0)
+          .stroke()
+          .closePath();
+      }
+    }
+  ];
+  behaviors: IBehavior<Ship>[] = [
+    (ship, dt: number) => {
       // move by velocity
       ship.plusPosition(ship.velocity);
+
+      // console.log("behaviors ship.thrust", ship.thrust);
 
       // with thrust flicker a flame every Ship.TOGGLE frames, attenuate thrust
       if (ship.thrust > 0) {
         // todo:
-        ship.thrust -= Config.thrustFactor;
+        ship.thrust -= Config.thrustFactor + 0.01;
       } else {
         ship.thrust = 0;
       }
-
-      return super.update(dt);
     }
+  ];
+  style = { strokeStyle: Color.White, fillStyle: Color.Gray };
 
-    fire = () => {
-      const { parent: ship } = this;
-
-      // create the bullet
-      ship.bulletStream.add(new Bullet(ship, ship.rotation));
-
-      // todo: play the shot sound
-      // createjs.Sound.play("laser", { interrupt: createjs.Sound.INTERUPT_LATE });
-
-      return this;
-    };
-
-    accelerate = () => {
-      const { MAX_THRUST, MAX_VELOCITY } = Ship;
-      const { parent: ship } = this;
-
-      // increase push amount for acceleration
-      ship.thrust += ship.thrust + Config.thrustFactor;
-      if (ship.thrust >= MAX_THRUST) {
-        ship.thrust = MAX_THRUST;
-      }
-
-      // accelerate
-      ship.velocity.plus(
-        sin(ship.rotation * -Deg) * ship.thrust,
-        cos(ship.rotation * -Deg) * ship.thrust
-      );
-
-      // cap max speeds
-      ship.velocity.min(MAX_VELOCITY).max(-MAX_VELOCITY);
-    };
-  })(this);
   private readonly bulletStream: Entity;
 
   constructor(bulletStream: Entity) {
@@ -350,112 +305,134 @@ class Ship extends Entity {
   }
 
   fire = () => {
-    this.behavior.fire();
+    // create the bullet
+    this.bulletStream.add(new Bullet(this, this.rotation));
+
+    // todo: play the shot sound
+    // createjs.Sound.play("laser", { interrupt: createjs.Sound.INTERUPT_LATE });
 
     return this;
   };
 
   accelerate = () => {
-    this.behavior.accelerate();
+    const { MAX_THRUST, MAX_VELOCITY } = Ship;
 
-    return this;
+    // increase push amount for acceleration
+    // console.log("accelerate ship.thrust", this.thrust);
+    this.thrust += this.thrust + Config.thrustFactor;
+    // console.log("accelerate ship.thrust", this.thrust);
+
+    if (this.thrust >= MAX_THRUST) {
+      this.thrust = MAX_THRUST;
+    }
+
+    // accelerate
+    this.velocity.plus(
+      sin(this.rotation * -Deg) * this.thrust,
+      cos(this.rotation * -Deg) * this.thrust
+    );
+
+    // cap max speeds
+    this.velocity.min(MAX_VELOCITY).max(-MAX_VELOCITY);
   };
 }
 
 class GameScene extends BaseScene {
-  behavior = new (class extends BaseBehavior<GameScene> {
-    update(dt: number) {
-      this.input()
-        .firing()
-        .turning()
-        .thrusting()
-        .newSpaceRocks()
-        .shipLooping()
-        .bulletMovement()
-        .nested();
-
-      return super.update(dt);
-    }
-
-    private input = () => {
-      const {
-        control,
-        game: { input }
-      } = this.parent;
-
-      control.shoot = input.isKeyHold(Key.Space);
-      control.left = input.isKeyHold(Key.a, Key.ArrowLeft);
-      control.right = input.isKeyHold(Key.d, Key.ArrowRight);
-      control.forward = input.isKeyHold(Key.w, Key.ArrowUp);
-
-      return this;
-    };
-
-    private firing = () => {
-      const { parent: scene } = this;
-      const { ship, control } = scene;
-
-      if (scene.nextBulletTime <= 0) {
-        if (ship.alive && control.shoot) ship.fire();
-        scene.nextBulletTime = Config.bulletTime;
-      } else {
-        scene.nextBulletTime--;
+  style = { fillStyle: Color.Black };
+  behaviors = [
+    new (class extends BaseBehavior<GameScene> {
+      update(dt: number) {
+        this.input()
+          .firing()
+          .turning()
+          .thrusting()
+          .newSpaceRocks()
+          .shipLooping()
+          .bulletMovement()
+          .nested();
       }
 
-      return this;
-    };
+      private input = () => {
+        const {
+          control,
+          game: { input }
+        } = this.parent;
 
-    private turning = () => {
-      const { ship, control } = this.parent;
+        control.shoot = input.isKeyHold(Key.Space);
+        control.left = input.isKeyHold(Key.a, Key.ArrowLeft);
+        control.right = input.isKeyHold(Key.d, Key.ArrowRight);
+        control.forward = input.isKeyHold(Key.w, Key.ArrowUp);
 
-      if (ship.alive && control.left) {
-        ship.rotation -= Config.turnFactor;
-      }
+        return this;
+      };
 
-      if (ship.alive && control.right) {
-        ship.rotation += Config.turnFactor;
-      }
+      private firing = () => {
+        const { parent: scene } = this;
+        const { ship, control } = scene;
 
-      return this;
-    };
+        if (scene.nextBulletTime <= 0) {
+          if (ship.alive && control.shoot) ship.fire();
+          scene.nextBulletTime = Config.bulletTime;
+        } else {
+          scene.nextBulletTime--;
+        }
 
-    private thrusting = () => {
-      const { ship, control, w, h } = this.parent;
+        return this;
+      };
 
-      if (ship.alive && control.forward) {
-        ship.accelerate();
-      }
+      private turning = () => {
+        const { ship, control } = this.parent;
 
-      // keep ship on screen
-      ship.plusPosition(w, h).dividePosition(w, h, true);
+        if (ship.alive && control.left) {
+          ship.rotation -= Config.turnFactor;
+        }
 
-      return this;
-    };
+        if (ship.alive && control.right) {
+          ship.rotation += Config.turnFactor;
+        }
 
-    private newSpaceRocks = () => {
-      return this;
-    };
+        return this;
+      };
 
-    private shipLooping = () => {
-      return this;
-    };
+      private thrusting = () => {
+        const { ship, control, w, h } = this.parent;
 
-    private bulletMovement = () => {
-      return this;
-    };
+        if (ship.alive && control.forward) {
+          ship.accelerate();
+        }
 
-    private nested = () => {
-      return this;
-    };
-  })(this);
+        // keep ship on screen
+        ship.plusPosition(w, h).dividePosition(w, h, true);
+
+        return this;
+      };
+
+      private newSpaceRocks = () => {
+        return this;
+      };
+
+      private shipLooping = () => {
+        return this;
+      };
+
+      private bulletMovement = () => {
+        return this;
+      };
+
+      private nested = () => {
+        return this;
+      };
+    })(this),
+    defaultBehavior
+  ];
+
   private ship!: Ship;
   private nextBulletTime: number;
   private readonly rockBelt: Entity;
   private readonly gameGroup: Entity;
   private readonly bulletStream: Entity;
 
-  // style = { fillStyle: Color.Blue };
-  private control = {
+  private readonly control = {
     shoot: false,
     left: false,
     right: false,
@@ -494,7 +471,7 @@ class GameScene extends BaseScene {
     // @ts-ignore
     Object.keys(control).forEach(key => (this.control[key] = false));
 
-    rockBelt.add(new Rock(Rock.Large));
+    // rockBelt.add(new Rock(Rock.Large));
 
     return this;
   };
@@ -506,6 +483,14 @@ export class SpaceRockGame extends BaseGame {
   constructor(screen: IScreen) {
     super(screen, 60);
 
+    this.setStyle();
+
+    this.scene = new GameScene(this);
+
+    // setTimeout(this.stop, 100);
+  }
+
+  private setStyle = () => {
     const style = document.createElement("style");
     document.head.appendChild(style);
 
@@ -522,9 +507,5 @@ export class SpaceRockGame extends BaseGame {
         transform: translate(-50%, -50%);
       }
     `;
-
-    this.scene = new GameScene(this);
-
-    setTimeout(this.stop, 100);
-  }
+  };
 }

@@ -1,7 +1,7 @@
 import { IGame } from "./game";
-import { sceneView } from "./view";
-import { sceneBehavior } from "./behavior";
+import { IView, sceneView } from "./view";
 import { Entity, IEntity } from "./entity";
+import { IBehavior, sceneBehavior } from "./behavior";
 
 export interface IScene extends IEntity {
   game: IGame;
@@ -10,8 +10,8 @@ export interface IScene extends IEntity {
 export class BaseScene extends Entity implements IScene {
   game: IGame;
 
-  views = [sceneView];
-  behaviors = [sceneBehavior];
+  views: IView<IEntity | any>[] = [sceneView];
+  behaviors: IBehavior<IEntity | any>[] = [sceneBehavior];
 
   constructor(game: IGame) {
     super();

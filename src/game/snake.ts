@@ -339,7 +339,7 @@ class GameScene extends BaseScene {
       game.scene = new GameOverScene(game);
     };
   };
-  views = [sceneView, netView(Size.valueOf(Config.cellSize))];
+  views = [sceneView];//, netView(Size.valueOf(Config.cellSize))];
   style = { fillStyle: Color.White, strokeStyle: Color.Black };
   private readonly apple: Apple;
   private readonly snake: Snake;

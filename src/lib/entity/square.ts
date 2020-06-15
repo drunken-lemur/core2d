@@ -1,7 +1,7 @@
 import { BaseBehavior, Color, Entity, Point, rectView } from "core";
 import { Score } from "lib/score";
 
-class BorderBouncingBehavior extends BaseBehavior<Square> {
+export class BorderBouncingBehavior extends BaseBehavior<Square> {
   private speed = new Point(1);
   private deltaSpeed = new Point(1);
 
