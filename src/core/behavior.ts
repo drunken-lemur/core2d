@@ -46,3 +46,12 @@ export const defaultBehavior: IBehaviorFunction = (entity, deltaTime) => {
 export const sceneBehavior: IBehaviorFunction = (entity, deltaTime) => {
   defaultBehavior(entity, deltaTime);
 };
+
+export const parentSphere: IBehaviorFunction = (entity, deltaTime) => {
+  const parent = entity.parent!;
+
+  entity
+    .plusPosition(parent.w, parent.h)
+    .dividePosition(parent.w, parent.h, true)
+    // .minusPosition(entity.w, entity.h);
+};

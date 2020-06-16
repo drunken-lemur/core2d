@@ -2,11 +2,11 @@ import {
   BaseBehavior,
   BaseGame,
   BaseScene,
-  BaseView,
   Bounds,
+  childrenView,
   Color,
   defaultBehavior,
-  defaultView,
+  Deg,
   ellipseView,
   Entity,
   IBehavior,
@@ -21,18 +21,18 @@ import {
   ISizeData,
   IView,
   Key,
+  parentSphere,
   Point,
+  pointByAngle,
   Position,
-  rectView,
-  RectView,
   Size,
+  styledView,
   Unit
 } from "core";
 import { Score } from "lib";
-import { ScoreLabel } from "lib/entity";
+import { Label, ScoreLabel } from "lib/entity";
 
 const { PI, sin, cos, random } = Math;
-const Deg = PI / 180;
 
 const Config = {
   rockTime: 110, // approx tick count until a new asteroid gets introduced
@@ -45,133 +45,127 @@ const Config = {
   bulletEntropy: 100 // how much energy a bullet has before it runs out.
 };
 
+const infoLabel = new Label().setStyle({
+  font: "24px Verdana",
+  fillStyle: Color.White
+});
+
+// todo: move implements IRotatable to Entity & IEntity
 class Rock extends Entity {
-  static Small = Size.valueOf(10);
-  static Medium = Size.valueOf(20);
-  static Large = Size.valueOf(40);
+  static Small = Size.valueOf(20);
+  static Medium = Size.valueOf(40);
+  static Large = Size.valueOf(80);
 
   private static Surface = class Surface extends Entity {
+    private static Edges = 36;
+    private static DamageDeep = 0.2;
+
     parent!: Rock;
-    views = [rectView];
+    views: IView<Surface>[] = [
+      (surface, brush) => {
+        const {
+          w,
+          h,
+          parent: { rotation }
+        } = surface;
+
+        const wd2 = w / 2;
+        const hd2 = h / 2;
+
+        if (!surface.cache) {
+          surface.cache = brush.getCacheBrush().setStyle(surface.style);
+
+          const { cache } = surface;
+
+          let angle = 0;
+          const r = wd2;
+          const edgeStep = 360 / Surface.Edges;
+          cache.translate(wd2, hd2).beginPath();
+          while (angle < 360) {
+            const radius =
+              r * (1 - Surface.DamageDeep) + random() * r * Surface.DamageDeep;
+            angle += edgeStep + random() * edgeStep;
+
+            const { x, y } = pointByAngle(angle, radius);
+            cache.lineTo(x, y);
+          }
+          cache.closePath().stroke();
+        }
+
+        brush
+          .translate(-wd2, -hd2)
+          .rotate(rotation)
+          .translate(wd2, hd2)
+          .drawCache(surface.cache, -w, -h);
+      }
+    ];
+    style = { strokeStyle: Color.White };
+
     private hit: number; // average radial disparity
     private bounds: number;
-
-    style = { strokeStyle: Color.Red, fillStyle: Color.Red };
+    private cache!: IBrush;
 
     constructor(size: ISizeData) {
       super();
 
+      this.setSize(size);
+
       this.hit = 0;
       this.bounds = 0;
-
-      this.setSize(size);
     }
-
-    // get style() {
-    //   return this.parent.style;
-    // }
-
-    // set style(style: IBrushStyle) {
-    //   if (this.parent) {
-    //     this.parent.style = style;
-    //   }
-    // }
-
-    // view = new (class extends BaseView<Surface> {
-    //   private cache!: IBrush;
-    //
-    //   draw(b: IBrush, dt: number) {
-    //     if (!this.cache) {
-    //       this.cache = b.getCacheBrush();
-    //
-    //       const { parent: surface } = this;
-    //       const size = surface.w;
-    //
-    //       let angle = 0;
-    //       let radius = size / 2;
-    //       surface.hit = size;
-    //       surface.bounds = 0;
-    //       this.cache.beginPath().moveTo(0, size);
-    //       while (angle < PI * 2 - 0.5) {
-    //         angle += 0.25 + (random() * 100) / 500;
-    //         radius = size + (size / 2) * random();
-    //         b.lineTo(sin(angle) * radius, cos(angle) * radius);
-    //
-    //         // track visual depiction for interaction // todo:
-    //         if (radius > surface.bounds) {
-    //           surface.bounds = radius;
-    //         }
-    //
-    //         surface.hit = (surface.hit + radius) / 2;
-    //       }
-    //
-    //       b.closePath().stroke();
-    //
-    //       surface.hit *= 1.1;
-    //     }
-    //
-    //     b.drawImage(this.cache);
-    //
-    //     return this;
-    //   }
-    // })(this);
   };
+
   views: IView<Rock>[] = [
+    styledView,
     (rock, brush) => {
-      brush.rotate(rock.rotation);
+      const { x, y, w, h } = rock;
+      brush.translate(x + w, y + h);
     },
-    defaultView
+    childrenView
   ];
   behaviors: IBehavior<Rock>[] = [
-    new (class extends BaseBehavior<Rock> {
-      constructor(rock: Rock) {
-        super(rock);
-
-        const size = rock.w;
-
-        // pick a random direction to move in and base the rotation off of speed
-        const angle = random() * (PI * 2);
-        rock.velocity.set(
-          sin(angle) * (5 - size / 15),
-          cos(angle) * (5 - size / 15)
-        );
-        rock.spin = random() + 0.002 * rock.velocity.x;
-
-        // associate score with size
-        rock.score = (5 - size / 10) * 100;
-      }
-
-      update(dt: number) {
-        const { parent: rock } = this;
-
-        rock.rotation += rock.spin;
-        rock.plusPosition(rock.velocity);
-      }
-    })(this),
-    defaultBehavior
+    rock => {
+      rock.rotation += rock.spin;
+      rock.plusPosition(rock.velocity);
+    },
+    defaultBehavior,
+    parentSphere
   ];
+  style: IBrushStyle = { strokeStyle: Color.White, fillStyle: Color.Blue };
+
   private spin: number;
   private score: number;
-
-  style: IBrushStyle = { strokeStyle: Color.White, fillStyle: Color.Blue };
   private rotation: number;
-  private velocity: IPoint = new Point(1);
+  private velocity: IPoint;
 
   constructor(size: ISizeData) {
     super();
 
-    this.setSize(size);
+    this.setSize(size)
+      .setPosition(size.w, size.h)
+      .invertPosition();
 
-    // this.spin = 0;
-    this.spin = random() + 0.1; // * this.vX;
-    this.score = 0;
     this.rotation = 0;
-    this.velocity = new Point(1);
+
+    const { w } = size;
+
+    // pick a random direction to move in and base the rotation off of speed
+    const angle = random() * (PI * 2);
+    this.velocity = new Point(
+      sin(angle) * (6 - w / 15),
+      cos(angle) * (6 - w / 15)
+    );
+
+    this.spin = random() * 0.05 * this.velocity.x;
+
+    // associate score with size
+    this.score = (5 - w / 10) * 100; // todo: magic formula
 
     this.add(new Rock.Surface(this));
   }
 }
 
+// todo: move implements IRotatable to Entity & IEntity
 class Bullet extends Entity implements IRotatable {
   private static Size = Size.valueOf(2);
 
@@ -365,6 +359,12 @@ class GameScene extends BaseScene {
         control.right = input.isKeyHold(Key.d, Key.ArrowRight);
         control.forward = input.isKeyHold(Key.w, Key.ArrowUp);
 
+        if (input.isKeyPressed(Key.Escape)) {
+          const { game } = this.parent;
+
+          game.scene = new GameScene(game);
+        }
+
         return this;
       };
 
@@ -458,7 +458,17 @@ class GameScene extends BaseScene {
       })
       .setPosition(8);
 
-    this.add(this.rockBelt, this.gameGroup, this.bulletStream, score);
+    infoLabel
+      .setStyle({ textBaseline: "middle", textAlign: "center" })
+      .align(this, Position.CENTER);
+
+    this.add(
+      this.rockBelt,
+      this.gameGroup,
+      this.bulletStream,
+      score,
+      infoLabel
+    );
   }
 
   reset = () => {
@@ -473,7 +483,28 @@ class GameScene extends BaseScene {
     // @ts-ignore
     Object.keys(control).forEach(key => (this.control[key] = false));
 
-    // rockBelt.add(new Rock(Rock.Large));
+    rockBelt.add(
+      new Rock(Rock.Large)
+      // // .setPosition(Rock.Large.w, Rock.Large.h)
+      // .addBehaviors((rock, dt) => {
+      //   const { isKeyHold, isKeyPressed } = this.game.input;
+      //   const { w, a, s, d, u, h, j, k } = Key;
+      //
+      //   const speed = 60 * dt;
+      //
+      //   if (isKeyHold(w)) rock.y -= speed;
+      //   if (isKeyHold(a)) rock.x -= speed;
+      //   if (isKeyHold(s)) rock.y += speed;
+      //   if (isKeyHold(d)) rock.x += speed;
+      //
+      //   if (isKeyPressed(u)) rock.y -= speed;
+      //   if (isKeyPressed(h)) rock.x -= speed;
+      //   if (isKeyPressed(j)) rock.y += speed;
+      //   if (isKeyPressed(k)) rock.x += speed;
+      //
+      //   rock.roundPosition();
+      // })
+    );
 
     return this;
   };

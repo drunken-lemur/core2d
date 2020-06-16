@@ -28,8 +28,14 @@ export interface IDrawerData
 
 export interface IBrushStyle extends Partial<IDrawerData> {}
 
-export interface IBrush extends IDrawerData {
-  getCacheBrush: () => IBrush;
+interface ICacheBrush {
+  canvas: HTMLCanvasElement;
+  getCacheBrush: () => ICacheBrush & IBrush;
+  drawCache: (cache: ICacheBrush, dx?: number, dy?: number) => this;
+}
+
+export interface IBrush extends IDrawerData, ICacheBrush {
+  canvas: HTMLCanvasElement;
 
   arc(
     x: number,
@@ -92,7 +98,6 @@ export interface IBrush extends IDrawerData {
 
   drawImage(
     image:
-      | IBrush
       | HTMLImageElement
       | SVGImageElement
       | HTMLVideoElement
@@ -498,7 +503,6 @@ export class Brush implements IBrush {
 
   drawImage(
     image:
-      | Brush
       | HTMLImageElement
       | SVGImageElement
       | HTMLVideoElement
@@ -514,17 +518,7 @@ export class Brush implements IBrush {
     dw_?: number,
     dh_?: number
   ) {
-    this.ctx.drawImage(
-      image instanceof Brush ? image.canvas : image,
-      dx,
-      dy,
-      dw!,
-      dh!,
-      dx_!,
-      dy_!,
-      dw_!,
-      dh_!
-    );
+    this.ctx.drawImage(image, dx, dy, dw!, dh!, dx_!, dy_!, dw_!, dh_!);
 
     return this;
   }
@@ -759,9 +753,17 @@ export class Brush implements IBrush {
     return this;
   }
 
-  getCacheBrush = (): IBrush => {
+  getCacheBrush = () => {
     const { width: w, height: h } = this.ctx.canvas;
 
+    // todo: setStyle
+
     return new Brush(document.createElement("canvas"), { w, h });
+  };
+
+  drawCache = (cache: ICacheBrush, dx: number = 0, dy: number = 0) => {
+    this.ctx.drawImage(cache.canvas, dx, dy);
+
+    return this;
   };
 }

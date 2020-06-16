@@ -158,12 +158,15 @@ export const ellipseView: IViewFunction = (entity, brush, deltaTime) => {
   const { x, y, w, h } = entity;
 
   brush
+    .save()
     .translate(w / 2, h / 2)
     .beginPath()
     .ellipse(x, y, w / 2, h / 2, 0, 0, 2 * Math.PI);
 
   if (brush.fillStyle !== Color.None) brush.fill();
   if (brush.strokeStyle !== Color.None) brush.stroke();
+
+  brush.restore();
 };
 
 export const defaultView: IViewFunction = (entity, brush, deltaTime) => {
@@ -181,9 +184,7 @@ export const netView = (cellSize: ISizeData): IViewFunction => (
   entity,
   brush
 ) => {
-  const { x, y, w, h } = entity;
-
-  // brush.fillRect(x, y, w, h);
+  const { w, h } = entity;
 
   for (let j = 0; j < w; j += cellSize.h) {
     brush

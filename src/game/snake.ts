@@ -10,7 +10,6 @@ import {
   IBehavior,
   IBounds,
   IBoundsData,
-  IEntity,
   IGame,
   IPointData,
   IScene,
@@ -18,15 +17,14 @@ import {
   IView,
   IViewFunction,
   Key,
-  netView,
   Point,
   reverseView,
-  sceneView,
-  Size
+  sceneView
 } from "core";
 import { Score } from "lib";
 import { ScoreLabel } from "lib/entity";
 
+// eslint-disable-next-line
 const dump = (label: string, ...entities: Entity[]) => {
   console.log(label);
 
@@ -86,8 +84,6 @@ class SnakeBody extends Entity {
 }
 
 class SnakeHead extends SnakeBody {
-  style = { fillStyle: "#3e7f00" };
-
   private static HeadViews: Partial<
     Record<Direction, IViewFunction<SnakeHead>>
   > = {
@@ -144,7 +140,7 @@ class SnakeHead extends SnakeBody {
       brush.fillRect(x, y - h / 2, w / 2, h);
     }
   };
-
+  style = { fillStyle: "#3e7f00" };
   views: IView<SnakeHead>[] = [
     (head, brush, deltaTime) => {
       const snake = head.parent as Snake;
@@ -269,7 +265,7 @@ class GameScene extends BaseScene {
 
     private processInput = () => {
       const { game, snake } = this.parent;
-      const { isKeyHold, isKeyPressed } = game.input;
+      const { isKeyPressed } = game.input;
 
       if (isKeyPressed(Key.ArrowUp)) snake.direction = Direction.North;
       if (isKeyPressed(Key.ArrowRight)) snake.direction = Direction.East;
@@ -282,7 +278,7 @@ class GameScene extends BaseScene {
     };
 
     private isEmptyPosition = (position: IPointData, ignoreHead = false) => {
-      // noinspection JSUnusedLocalSymbols
+      // eslint-disable-next-line
       let [head, ...body] = this.parent.snake.values;
 
       if (!ignoreHead) {
@@ -339,7 +335,7 @@ class GameScene extends BaseScene {
       game.scene = new GameOverScene(game);
     };
   };
-  views = [sceneView];//, netView(Size.valueOf(Config.cellSize))];
+  views = [sceneView]; //, netView(Size.valueOf(Config.cellSize))];
   style = { fillStyle: Color.White, strokeStyle: Color.Black };
   private readonly apple: Apple;
   private readonly snake: Snake;

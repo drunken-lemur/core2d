@@ -14,6 +14,10 @@ export enum Key {
   d = "d",
   q = "q",
   e = "e",
+  u = "u",
+  h = "h",
+  j = "j",
+  k = "k",
   Escape = "Escape",
   Enter = "Enter",
   Space = " "

@@ -133,11 +133,11 @@ export class Entity extends Bounds implements IEntity {
       brush.setStyle(this.style); // todo: ? move to BaseView or StyledView
 
       this.views.forEach(view => {
-        brush.save();
+        // brush.save();
 
         this.drawView(view, brush, deltaTime);
 
-        brush.restore();
+        // brush.restore();
       });
 
       brush.restore();
