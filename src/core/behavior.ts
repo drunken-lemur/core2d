@@ -49,29 +49,26 @@ export const sceneBehavior: IBehaviorFunction = (entity, deltaTime) => {
 };
 
 export const parentSphereBehavior: IBehaviorFunction = (entity, deltaTime) => {
-  const parent = entity.parent!;
+  const { parent } = entity;
 
-  if (entity.x > parent.w) entity.x = -entity.w;
-  if (entity.x < -entity.w) entity.x = parent.w;
-  if (entity.y > parent.h) entity.y = -entity.h;
-  if (entity.y < -entity.h) entity.y = parent.h;
+  if (parent) {
+    if (entity.x > parent.w) entity.x = -entity.w;
+    if (entity.x < -entity.w) entity.x = parent.w;
+    if (entity.y > parent.h) entity.y = -entity.h;
+    if (entity.y < -entity.h) entity.y = parent.h;
+  }
 };
 
 export const removeAfterDelayBehavior = (
   delaySec: number
-): IBehaviorFunction => (entity, deltaTime) => {
+): IBehaviorFunction => {
   const delay = new Delay(delaySec);
-  console.log("removeAfterDelayBehavior", { deltaTime });
 
-  const behavior: IBehaviorFunction = (entity, deltaTime) => {
+  return (entity, deltaTime) => {
     delay.update(deltaTime);
-
-    console.log("removeAfterDelayBehavior.behavior", {delay});
 
     if (delay.isDone) {
       entity.remove();
     }
   };
-
-  return behavior;
 };

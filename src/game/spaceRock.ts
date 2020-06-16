@@ -199,7 +199,7 @@ class Bullet extends Entity implements IRotatable {
       //   }
     },
     parentSphereBehavior,
-    removeAfterDelayBehavior(3)
+    removeAfterDelayBehavior(2)
   ];
 
   constructor(position: IPointData, angle: number) {
@@ -287,7 +287,8 @@ class Ship extends Entity {
       } else {
         ship.thrust = 0;
       }
-    }
+    },
+    parentSphereBehavior
   ];
   style = { strokeStyle: Color.White, fillStyle: Color.Gray };
 
@@ -407,9 +408,6 @@ class GameScene extends BaseScene {
           ship.accelerate();
         }
 
-        // keep ship on screen
-        ship.plusPosition(w, h).dividePosition(w, h, true);
-
         return this;
       };
 
@@ -489,7 +487,7 @@ class GameScene extends BaseScene {
 
     rockBelt.add(
       new Rock(Rock.Large)
-      // // .setPosition(Rock.Large.w, Rock.Large.h)
+      // .setPosition(Rock.Large.w, Rock.Large.h)
       // .addBehaviors((rock, dt) => {
       //   const { isKeyHold, isKeyPressed } = this.game.input;
       //   const { w, a, s, d, u, h, j, k } = Key;
