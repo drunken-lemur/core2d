@@ -1,11 +1,12 @@
 import { IWithToArray } from "./toArray";
+import { Deg, IRotatable, Unit } from "./rotatable";
 
 export interface IPointData {
   x: number;
   y: number;
 }
 
-export interface IPoint extends IPointData, IWithToArray<number> {
+export interface IPoint extends IPointData, IRotatable, IWithToArray<number> {
   get: () => IPointData;
   set: (x: number | IPointData, y?: number) => this;
   plus: (x: number | IPointData, y?: number) => this;
@@ -29,10 +30,12 @@ export interface IPoint extends IPointData, IWithToArray<number> {
 export class Point implements IPoint {
   x: number;
   y: number;
+  r: number;
 
   constructor(x: number | IPointData = 0, y?: number) {
     this.x = 0;
     this.y = 0;
+    this.r = 0;
 
     this.set(Point.valueOf(x, y));
   }
@@ -50,6 +53,13 @@ export class Point implements IPoint {
 
     return new Point(Math.random() * point.x, Math.random() * point.y);
   }
+
+  static byAngle = (angle: number, length: number = 1) => {
+    const x = length * Math.sin(angle * -Deg);
+    const y = length * Math.cos(angle * -Deg);
+
+    return Point.valueOf(x, y);
+  };
 
   get = (): IPointData => ({ x: this.x, y: this.y });
 
@@ -170,6 +180,23 @@ export class Point implements IPoint {
     } else {
       return this.x < point.x && this.y < point.y;
     }
+  };
+
+  moveByRotation = (length: number) => {
+    return this.moveToAngle(this.r, length);
+  };
+
+  moveToAngle = (angle: number, length: number, unit = Unit.deg) => {
+    this.x += length * Math.sin(angle * -(unit === Unit.deg ? Deg : Math.PI));
+    this.y += length * Math.cos(angle * -(unit === Unit.deg ? Deg : Math.PI));
+
+    return this;
+  };
+
+  rotate = (angle: number, unit = Unit.deg) => {
+    this.r += angle * -(unit === Unit.deg ? Deg : Math.PI);
+
+    return this;
   };
 
   toArray = () => [this.x, this.y];

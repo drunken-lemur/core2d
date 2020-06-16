@@ -15,18 +15,16 @@ import {
   IGame,
   IPoint,
   IPointData,
-  IRotatable,
   IScene,
   IScreen,
   ISizeData,
   IView,
   Key,
+  moveByKeyboard,
   parentSphereBehavior,
   Point,
-  pointByAngle,
   Position,
   removeAfterDelayBehavior,
-  Second,
   Size,
   styledView,
   Unit
@@ -88,7 +86,7 @@ class Rock extends Entity {
               r * (1 - Surface.DamageDeep) + random() * r * Surface.DamageDeep;
             angle += edgeStep + random() * edgeStep;
 
-            const { x, y } = pointByAngle(angle, radius);
+            const { x, y } = Point.byAngle(angle, radius);
             cache.lineTo(x, y);
           }
           cache.closePath().stroke();
@@ -168,7 +166,7 @@ class Rock extends Entity {
 }
 
 // todo: move implements IRotatable to Entity & IEntity
-class Bullet extends Entity implements IRotatable {
+class Bullet extends Entity {
   private static Size = Size.valueOf(2);
 
   // todo:
@@ -176,28 +174,10 @@ class Bullet extends Entity implements IRotatable {
   // o.active = true;
 
   speed: number;
-  rotation: number;
-
   style = { fillStyle: Color.White };
   views: IView<Bullet>[] = [ellipseView];
-  behaviors = [
-    (bullet: Bullet) => {
-      //   const { parent: bulletStream, x, y, w, h } = bullet;
-      //
-      bullet.moveByRotation(bullet.speed);
-      //
-      //   const w2 = w / 2;
-      //   const h2 = h / 2;
-      //
-      //   if (
-      //     x + w2 < 0 ||
-      //     x - w2 > bulletStream!.w ||
-      //     y + h2 < 0 ||
-      //     y - h2 > bulletStream!.h
-      //   ) {
-      //     bullet.remove(); // self-remove
-      //   }
-    },
+  behaviors: IBehavior<Bullet>[] = [
+    bullet => bullet.moveByRotation(bullet.speed),
     parentSphereBehavior,
     removeAfterDelayBehavior(2)
   ];
@@ -205,13 +185,13 @@ class Bullet extends Entity implements IRotatable {
   constructor(position: IPointData, angle: number) {
     super();
 
-    this.rotation = angle;
+    this.r = angle;
     this.speed = Config.bulletSpeed;
     this.setSize(Bullet.Size).setPosition(position);
   }
 
   moveByRotation = (length: number) => {
-    return this.moveToAngle(this.rotation, length);
+    return this.moveToAngle(this.r, length);
   };
 
   moveToAngle = (angle: number, length: number, unit = Unit.deg) => {
@@ -222,7 +202,7 @@ class Bullet extends Entity implements IRotatable {
   };
 
   rotate = (angle: number, unit = Unit.deg) => {
-    this.rotation += angle * -(unit === Unit.deg ? Deg : PI);
+    this.r += angle * -(unit === Unit.deg ? Deg : PI);
 
     return this;
   };
@@ -278,8 +258,6 @@ class Ship extends Entity {
       // move by velocity
       ship.plusPosition(ship.velocity);
 
-      // console.log("behaviors ship.thrust", ship.thrust);
-
       // with thrust flicker a flame every Ship.TOGGLE frames, attenuate thrust
       if (ship.thrust > 0) {
         // todo:
@@ -319,9 +297,7 @@ class Ship extends Entity {
     const { MAX_THRUST, MAX_VELOCITY } = Ship;
 
     // increase push amount for acceleration
-    // console.log("accelerate ship.thrust", this.thrust);
     this.thrust += this.thrust + Config.thrustFactor;
-    // console.log("accelerate ship.thrust", this.thrust);
 
     if (this.thrust >= MAX_THRUST) {
       this.thrust = MAX_THRUST;
@@ -485,28 +461,7 @@ class GameScene extends BaseScene {
     // @ts-ignore
     Object.keys(control).forEach(key => (this.control[key] = false));
 
-    rockBelt.add(
-      new Rock(Rock.Large)
-      // .setPosition(Rock.Large.w, Rock.Large.h)
-      // .addBehaviors((rock, dt) => {
-      //   const { isKeyHold, isKeyPressed } = this.game.input;
-      //   const { w, a, s, d, u, h, j, k } = Key;
-      //
-      //   const speed = 60 * dt;
-      //
-      //   if (isKeyHold(w)) rock.y -= speed;
-      //   if (isKeyHold(a)) rock.x -= speed;
-      //   if (isKeyHold(s)) rock.y += speed;
-      //   if (isKeyHold(d)) rock.x += speed;
-      //
-      //   if (isKeyPressed(u)) rock.y -= speed;
-      //   if (isKeyPressed(h)) rock.x -= speed;
-      //   if (isKeyPressed(j)) rock.y += speed;
-      //   if (isKeyPressed(k)) rock.x += speed;
-      //
-      //   rock.roundPosition();
-      // })
-    );
+    rockBelt.add(new Rock(Rock.Large));
 
     return this;
   };

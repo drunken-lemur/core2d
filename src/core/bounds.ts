@@ -1,5 +1,6 @@
 import { Position } from "./position";
 import { IWithToArray } from "./toArray";
+import { IRotatable, Unit } from "./rotatable";
 import { ISize, ISizeData, Size } from "./size";
 import { IPoint, IPointData, Point } from "./point";
 
@@ -12,7 +13,7 @@ export interface ICorners {
 
 export interface IBoundsData extends ISizeData, IPointData {}
 
-export interface IBounds extends IBoundsData, IWithToArray {
+export interface IBounds extends IBoundsData, IRotatable, IWithToArray {
   getBounds: () => IBoundsData;
   getSize: () => ISizeData;
   getPosition: () => IPointData;
@@ -154,7 +155,6 @@ export class Bounds implements IBounds {
   get x() {
     return this.position.x;
   }
-
   // @ts-ignore
   set x(x: number) {
     this.position.x = x;
@@ -164,17 +164,24 @@ export class Bounds implements IBounds {
   get y() {
     return this.position.y;
   }
-
   // @ts-ignore
   set y(y: number) {
     this.position.y = y;
   }
 
   // @ts-ignore
+  get r() {
+    return this.position.r;
+  }
+  // @ts-ignore
+  set r(r: number) {
+    this.position.r = r;
+  }
+
+  // @ts-ignore
   get w() {
     return this.size.w;
   }
-
   // @ts-ignore
   set w(w: number) {
     this.size.w = w;
@@ -184,7 +191,6 @@ export class Bounds implements IBounds {
   get h() {
     return this.size.h;
   }
-
   // @ts-ignore
   set h(h: number) {
     this.size.h = h;
@@ -714,6 +720,24 @@ export class Bounds implements IBounds {
 
   align = (bounds: IBoundsData, position: Position) => {
     Bounds.align(this, bounds, position);
+
+    return this;
+  };
+
+  moveByRotation = (length: number) => {
+    this.position.moveByRotation(length);
+
+    return this;
+  };
+
+  moveToAngle = (angle: number, length: number, unit = Unit.deg) => {
+    this.position.moveToAngle(angle, length, unit);
+
+    return this;
+  };
+
+  rotate = (angle: number, unit = Unit.deg) => {
+    this.position.rotate(angle, unit);
 
     return this;
   };

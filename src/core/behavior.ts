@@ -1,3 +1,4 @@
+import { Key } from "./input";
 import { Delay } from "./delay";
 import { IEntity } from "./entity";
 import { IUpdated } from "./updated";
@@ -70,5 +71,21 @@ export const removeAfterDelayBehavior = (
     if (delay.isDone) {
       entity.remove();
     }
+  };
+};
+
+export const moveByKeyboard = (
+  fn: (...keys: Key[]) => boolean,
+  speed: number,
+  up: Key,
+  left: Key,
+  down: Key,
+  right: Key
+): IBehaviorFunction => {
+  return (entity, deltaTime) => {
+    if (fn(up)) entity.y -= speed * deltaTime;
+    if (fn(left)) entity.x -= speed * deltaTime;
+    if (fn(down)) entity.y += speed * deltaTime;
+    if (fn(right)) entity.x += speed * deltaTime;
   };
 };
