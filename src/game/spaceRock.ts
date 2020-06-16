@@ -21,10 +21,12 @@ import {
   ISizeData,
   IView,
   Key,
-  parentSphere,
+  parentSphereBehavior,
   Point,
   pointByAngle,
   Position,
+  removeAfterDelayBehavior,
+  Second,
   Size,
   styledView,
   Unit
@@ -129,7 +131,7 @@ class Rock extends Entity {
       rock.plusPosition(rock.velocity);
     },
     defaultBehavior,
-    parentSphere
+    parentSphereBehavior
   ];
   style: IBrushStyle = { strokeStyle: Color.White, fillStyle: Color.Blue };
 
@@ -180,22 +182,24 @@ class Bullet extends Entity implements IRotatable {
   views: IView<Bullet>[] = [ellipseView];
   behaviors = [
     (bullet: Bullet) => {
-      const { parent: bulletStream, x, y, w, h } = bullet;
-
+      //   const { parent: bulletStream, x, y, w, h } = bullet;
+      //
       bullet.moveByRotation(bullet.speed);
-
-      const w2 = w / 2;
-      const h2 = h / 2;
-
-      if (
-        x + w2 < 0 ||
-        x - w2 > bulletStream!.w ||
-        y + h2 < 0 ||
-        y - h2 > bulletStream!.h
-      ) {
-        bullet.remove(); // self-remove
-      }
-    }
+      //
+      //   const w2 = w / 2;
+      //   const h2 = h / 2;
+      //
+      //   if (
+      //     x + w2 < 0 ||
+      //     x - w2 > bulletStream!.w ||
+      //     y + h2 < 0 ||
+      //     y - h2 > bulletStream!.h
+      //   ) {
+      //     bullet.remove(); // self-remove
+      //   }
+    },
+    parentSphereBehavior,
+    removeAfterDelayBehavior(3)
   ];
 
   constructor(position: IPointData, angle: number) {

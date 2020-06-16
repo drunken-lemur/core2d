@@ -1,3 +1,4 @@
+import { Delay } from "./delay";
 import { IEntity } from "./entity";
 import { IUpdated } from "./updated";
 import { IWithParent } from "./composite";
@@ -47,11 +48,30 @@ export const sceneBehavior: IBehaviorFunction = (entity, deltaTime) => {
   defaultBehavior(entity, deltaTime);
 };
 
-export const parentSphere: IBehaviorFunction = (entity, deltaTime) => {
+export const parentSphereBehavior: IBehaviorFunction = (entity, deltaTime) => {
   const parent = entity.parent!;
 
-  entity
-    .plusPosition(parent.w, parent.h)
-    .dividePosition(parent.w, parent.h, true)
-    // .minusPosition(entity.w, entity.h);
+  if (entity.x > parent.w) entity.x = -entity.w;
+  if (entity.x < -entity.w) entity.x = parent.w;
+  if (entity.y > parent.h) entity.y = -entity.h;
+  if (entity.y < -entity.h) entity.y = parent.h;
+};
+
+export const removeAfterDelayBehavior = (
+  delaySec: number
+): IBehaviorFunction => (entity, deltaTime) => {
+  const delay = new Delay(delaySec);
+  console.log("removeAfterDelayBehavior", { deltaTime });
+
+  const behavior: IBehaviorFunction = (entity, deltaTime) => {
+    delay.update(deltaTime);
+
+    console.log("removeAfterDelayBehavior.behavior", {delay});
+
+    if (delay.isDone) {
+      entity.remove();
+    }
+  };
+
+  return behavior;
 };
