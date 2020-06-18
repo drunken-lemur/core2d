@@ -35,8 +35,8 @@ import { Label, ScoreLabel } from "lib/entity";
 const { PI, sin, cos, random } = Math;
 
 const Config = {
-  rockTime: 110, // approx tick count until a new asteroid gets introduced
-  difficulty: 2, // how fast the game gets mor difficult
+  rockTime: 500, // approx tick count until a new asteroid gets introduced
+  difficulty: 5, // how fast the game gets mor difficult
   turnFactor: 7, // how far the ship turns per frame
   thrustFactor: 0.1,
   subRockCount: 4, // how many small rocks to make on rock death
@@ -214,8 +214,8 @@ class Ship extends Entity {
   static MAX_VELOCITY = 5;
 
   speed: IPoint;
-  alive: boolean;
   thrust: number;
+  isAlive: boolean;
   rotation: number;
   velocity: IPoint;
 
@@ -276,7 +276,7 @@ class Ship extends Entity {
     super();
 
     this.thrust = 0;
-    this.alive = true;
+    this.isAlive = true;
     this.rotation = 180;
     this.speed = new Point();
     this.velocity = new Point();
@@ -354,7 +354,7 @@ class GameScene extends BaseScene {
         const { ship, control } = scene;
 
         if (scene.nextBulletTime <= 0) {
-          if (ship.alive && control.shoot) ship.fire();
+          if (ship.isAlive && control.shoot) ship.fire();
           scene.nextBulletTime = Config.bulletTime;
         } else {
           scene.nextBulletTime--;
@@ -366,11 +366,11 @@ class GameScene extends BaseScene {
       private turning = () => {
         const { ship, control } = this.parent;
 
-        if (ship.alive && control.left) {
+        if (ship.isAlive && control.left) {
           ship.rotation -= Config.turnFactor;
         }
 
-        if (ship.alive && control.right) {
+        if (ship.isAlive && control.right) {
           ship.rotation += Config.turnFactor;
         }
 
@@ -380,7 +380,7 @@ class GameScene extends BaseScene {
       private thrusting = () => {
         const { ship, control, w, h } = this.parent;
 
-        if (ship.alive && control.forward) {
+        if (ship.isAlive && control.forward) {
           ship.accelerate();
         }
 
@@ -388,6 +388,20 @@ class GameScene extends BaseScene {
       };
 
       private newSpaceRocks = () => {
+        const { parent: scene } = this;
+
+        if (scene.nextRockTime <= 0) {
+          if (scene.ship.isAlive) {
+            scene.timeToRock -= Config.difficulty; // reduce spaceRock spacing slowly to increase difficulty with time
+
+            scene.rockBelt.add(new Rock(Rock.Large));
+
+            scene.nextRockTime = scene.timeToRock + scene.timeToRock * Math.random();
+          }
+        } else {
+          scene.nextRockTime--;
+        }
+
         return this;
       };
 
@@ -407,6 +421,8 @@ class GameScene extends BaseScene {
   ];
 
   private ship!: Ship;
+  private timeToRock: number;
+  private nextRockTime: number;
   private nextBulletTime: number;
   private readonly rockBelt: Entity;
   private readonly gameGroup: Entity;
@@ -425,7 +441,10 @@ class GameScene extends BaseScene {
     this.rockBelt = new Entity(this);
     this.gameGroup = new Entity(this);
     this.bulletStream = new Entity(this);
-    this.nextBulletTime = Config.bulletTime;
+
+    this.nextRockTime = 0;
+    this.nextBulletTime = 0;
+    this.timeToRock = Config.rockTime;
 
     this.reset();
 
@@ -460,8 +479,6 @@ class GameScene extends BaseScene {
     this.gameGroup.add(this.ship);
     // @ts-ignore
     Object.keys(control).forEach(key => (this.control[key] = false));
-
-    rockBelt.add(new Rock(Rock.Large));
 
     return this;
   };
