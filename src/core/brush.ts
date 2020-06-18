@@ -35,6 +35,7 @@ interface ICacheBrush {
 }
 
 export interface IBrush extends IDrawerData, ICacheBrush {
+  ctx: CanvasRenderingContext2D;
   canvas: HTMLCanvasElement;
 
   arc(
@@ -98,6 +99,7 @@ export interface IBrush extends IDrawerData, ICacheBrush {
 
   drawImage(
     image:
+      | IBrush
       | HTMLImageElement
       | SVGImageElement
       | HTMLVideoElement
@@ -208,8 +210,12 @@ export interface IBrush extends IDrawerData, ICacheBrush {
 }
 
 export class Brush implements IBrush {
+  static create = (size?: ISizeData) => {
+    return new Brush(document.createElement("canvas"), size);
+  };
+
   readonly canvas: HTMLCanvasElement;
-  private readonly ctx: CanvasRenderingContext2D;
+  readonly ctx: CanvasRenderingContext2D;
 
   constructor(canvas: HTMLCanvasElement, size?: ISizeData) {
     this.canvas = canvas;
@@ -503,6 +509,7 @@ export class Brush implements IBrush {
 
   drawImage(
     image:
+      | Brush
       | HTMLImageElement
       | SVGImageElement
       | HTMLVideoElement
@@ -518,7 +525,17 @@ export class Brush implements IBrush {
     dw_?: number,
     dh_?: number
   ) {
-    this.ctx.drawImage(image, dx, dy, dw!, dh!, dx_!, dy_!, dw_!, dh_!);
+    this.ctx.drawImage(
+      image instanceof Brush ? image.canvas : image,
+      dx,
+      dy,
+      dw!,
+      dh!,
+      dx_!,
+      dy_!,
+      dw_!,
+      dh_!
+    );
 
     return this;
   }

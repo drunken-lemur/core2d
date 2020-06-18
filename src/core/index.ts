@@ -16,6 +16,8 @@ export * from "./rotatable";
 export * from "./scene";
 export * from "./screen";
 export * from "./size";
+export * from "./sprite";
+export * from "./texture";
 export * from "./timer";
 export * from "./toArray";
 export * from "./toggleable";

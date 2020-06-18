@@ -124,6 +124,14 @@ export const childrenView: IViewFunction = (entity, brush, deltaTime) => {
   });
 };
 
+export const saveBrushView: IViewFunction = (entity, brush, deltaTime) => {
+  brush.save();
+};
+
+export const restoreBrushView: IViewFunction = (entity, brush, deltaTime) => {
+  brush.restore();
+};
+
 export const reverseView: IViewFunction = (entity, brush, deltaTime) => {
   entity.values.reverse().forEach(children => {
     brush.save();

@@ -2,3 +2,4 @@ Sound manager
 Texture scroller
 Refine timer loop
 Refine brush to receive IBoundsData
+refactor move methods to class ( remove arrow functions methods )

@@ -21,7 +21,8 @@ export abstract class BaseGame implements IGame {
 
   readonly timer: ITimer;
 
-  protected constructor(screen: IScreen, fps: number) {
+  // noinspection TypeScriptAbstractClassConstructorCanBeMadeProtected
+  constructor(screen: IScreen, fps: number = 60) {
     BaseGame.instance = this;
 
     this.screen = screen;

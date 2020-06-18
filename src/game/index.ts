@@ -1,3 +1,4 @@
+export * from "./platformer";
 export * from "./basicGame";
 export * from "./demo";
 export * from "./snake";

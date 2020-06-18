@@ -40,13 +40,9 @@ export class Entity extends Bounds implements IEntity {
     if (bounds) {
       const { x, y, w, h } = bounds as IBounds;
 
-      if (x || y) {
-        this.setPosition(x, y);
-      }
+      if (x || y) this.setPosition(x, y);
 
-      if (w || h) {
-        this.setSize(w, h);
-      }
+      if (w || h) this.setSize(w, h);
     }
 
     this.setStyle(Entity.DefaultStyle);

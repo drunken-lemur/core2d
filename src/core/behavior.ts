@@ -3,6 +3,7 @@ import { Delay } from "./delay";
 import { IEntity } from "./entity";
 import { IUpdated } from "./updated";
 import { IWithParent } from "./composite";
+import { IPointData } from "core/point";
 
 export interface IWithBehavior {
   addBehaviors: (...behaviors: IBehavior[]) => this;
@@ -87,5 +88,36 @@ export const moveByKeyboard = (
     if (fn(left)) entity.x -= speed * deltaTime;
     if (fn(down)) entity.y += speed * deltaTime;
     if (fn(right)) entity.x += speed * deltaTime;
+  };
+};
+
+export const borderBouncingBehavior = (
+  onBorder: () => void = () => void 0,
+  speed: IPointData = { x: 1, y: 1 }
+): IBehaviorFunction => {
+  return (entity, deltaTime) => {
+    const parent = entity.parent!;
+
+    if (entity.x < parent.x) {
+      speed.x = 1;
+      onBorder();
+    }
+
+    if (entity.x + entity.w > parent.x + parent.w) {
+      speed.x = -1;
+      onBorder();
+    }
+
+    if (entity.y < parent.y) {
+      speed.y = 1;
+      onBorder();
+    }
+
+    if (entity.y + entity.h > parent.y + parent.h) {
+      speed.y = -1;
+      onBorder();
+    }
+
+    entity.plusPosition(speed);
   };
 };

@@ -1,12 +1,21 @@
-import { BaseBehavior, Color, Entity, Point, rectView } from "core";
+import {
+  BaseBehavior,
+  Color,
+  Entity,
+  IBehavior,
+  IView,
+  Point,
+  rectView
+} from "core";
 import { Score } from "lib/score";
 
-export class BorderBouncingBehavior extends BaseBehavior<Square> {
+export class BorderBouncingBehavior<
+  T extends Entity = Entity
+> extends BaseBehavior<T> {
   private speed = new Point(1);
   private deltaSpeed = new Point(1);
 
-
-  constructor(parent: Square) {
+  constructor(parent: T) {
     super(parent);
 
     this.onBorder();
@@ -49,6 +58,6 @@ export class BorderBouncingBehavior extends BaseBehavior<Square> {
 }
 
 export class Square extends Entity {
-  views = [rectView];
-  behaviors = [new BorderBouncingBehavior(this)];
+  views: IView<Square>[] = [rectView];
+  behaviors: IBehavior<Square>[] = [new BorderBouncingBehavior(this)];
 }
