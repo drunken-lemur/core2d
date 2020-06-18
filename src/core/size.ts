@@ -24,6 +24,7 @@ export interface ISize extends ISizeData, IWithToArray<number> {
   round: () => this;
   floor: () => this;
   lessThan: (orEqual: boolean, w: number | ISizeData, h?: number) => boolean;
+  getMinRadius: () => number;
 }
 
 export class Size implements ISize {
@@ -164,6 +165,13 @@ export class Size implements ISize {
       return this.w < size.w && this.h < size.h;
     }
   };
+
+  getMinRadius = () => {
+    const {w, h} = this;
+    const {min, abs} = Math;
+
+    return Math.min(this.w, this.h) / 2
+  }
 
   toArray = () => [this.w, this.h];
 }

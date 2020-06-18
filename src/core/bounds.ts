@@ -112,6 +112,12 @@ export interface IBounds extends IBoundsData, IRotatable, IWithToArray {
     w?: number,
     h?: number
   ) => boolean;
+  isIntersectByRadius: (
+    x: number | IBoundsData,
+    y?: number,
+    w?: number,
+    h?: number
+  ) => boolean;
   ceilBounds: () => this;
   ceilSize: () => this;
   ceilPosition: () => this;
@@ -634,6 +640,25 @@ export class Bounds implements IBounds {
       this.position.y + this.size.h > bounds.y &&
       this.position.y < bounds.y + bounds.h
     );
+  };
+
+  isIntersectByRadius = (
+    x: number | IBoundsData,
+    y?: number,
+    w?: number,
+    h?: number
+  ) => {
+    const { min, abs, sqrt } = Math;
+    const thisRadius = min(this.w, this.h) / 2;
+
+    const bounds = Bounds.valueOf(x, y, w, h);
+    const boundsRadius = min(bounds.x, bounds.y) / 2;
+
+    const distance = sqrt(
+      abs(this.x - bounds.x) ** 2 + abs(this.y - bounds.y) ** 2
+    );
+
+    return distance < thisRadius + boundsRadius;
   };
 
   ceilBounds = () => {

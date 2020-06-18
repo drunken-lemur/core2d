@@ -25,6 +25,7 @@ export interface IPoint extends IPointData, IRotatable, IWithToArray<number> {
   round: () => this;
   floor: () => this;
   lessThan: (orEqual: boolean, x: number | IPointData, y?: number) => boolean;
+  getDistance: (x: number | IPointData, y?: number) => number;
 }
 
 export class Point implements IPoint {
@@ -180,6 +181,13 @@ export class Point implements IPoint {
     } else {
       return this.x < point.x && this.y < point.y;
     }
+  };
+
+  getDistance = (x: number | IPointData, y?: number) => {
+    const { abs, sqrt } = Math;
+    const point = Point.valueOf(x, y);
+
+    return sqrt(abs(this.x - point.x) ** 2 + abs(this.y - point.y) ** 2);
   };
 
   moveByRotation = (length: number) => {

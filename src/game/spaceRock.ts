@@ -10,6 +10,7 @@ import {
   ellipseView,
   Entity,
   IBehavior,
+  IBoundsData,
   IBrush,
   IBrushStyle,
   IGame,
@@ -20,7 +21,6 @@ import {
   ISizeData,
   IView,
   Key,
-  moveByKeyboard,
   parentSphereBehavior,
   Point,
   Position,
@@ -40,9 +40,9 @@ const Config = {
   turnFactor: 7, // how far the ship turns per frame
   thrustFactor: 0.1,
   subRockCount: 4, // how many small rocks to make on rock death
-  bulletTime: 10, // ticks between bullets
+  bulletTime: 18, // ticks between bullets
   bulletSpeed: 5, // how fast the bullets move
-  bulletEntropy: 100 // how much energy a bullet has before it runs out.
+  bulletEntropy: 400 // how much energy a bullet has before it runs out.
 };
 
 const infoLabel = new Label().setStyle({
@@ -57,8 +57,8 @@ class Rock extends Entity {
   static Large = Size.valueOf(80);
 
   private static Surface = class Surface extends Entity {
-    private static Edges = 36;
-    private static DamageDeep = 0.2;
+    static Edges = 36;
+    static DamageDeep = 0.2;
 
     parent!: Rock;
     views: IView<Surface>[] = [
@@ -134,7 +134,7 @@ class Rock extends Entity {
   style: IBrushStyle = { strokeStyle: Color.White, fillStyle: Color.Blue };
 
   private spin: number;
-  private score: number;
+  private readonly score: number;
   private rotation: number;
   private velocity: IPoint;
 
@@ -152,8 +152,8 @@ class Rock extends Entity {
     // pick a random direction to move in and base the rotation off of speed
     const angle = random() * (PI * 2);
     this.velocity = new Point(
-      sin(angle) * (6 - w / 15),
-      cos(angle) * (6 - w / 15)
+      sin(angle) * (5 - w / 15),
+      cos(angle) * (5 - w / 15)
     );
 
     this.spin = random() * 0.05 * this.velocity.x;
@@ -163,15 +163,26 @@ class Rock extends Entity {
 
     this.add(new Rock.Surface(this));
   }
+
+  explode = () => {
+    if (this.eqSize(Rock.Large)) {
+      [...Array(3)].forEach(() => {
+        this.parent?.add(new Rock(Rock.Medium).setPosition(this));
+      });
+    } else if (this.eqSize(Rock.Medium)) {
+      [...Array(5)].forEach(() => {
+        this.parent?.add(new Rock(Rock.Small).setPosition(this));
+      });
+    }
+
+    Score.add(this.score);
+    this.remove();
+  };
 }
 
 // todo: move implements IRotatable to Entity & IEntity
 class Bullet extends Entity {
   private static Size = Size.valueOf(2);
-
-  // todo:
-  // o.entropy = BULLET_ENTROPY;
-  // o.active = true;
 
   speed: number;
   style = { fillStyle: Color.White };
@@ -179,7 +190,7 @@ class Bullet extends Entity {
   behaviors: IBehavior<Bullet>[] = [
     bullet => bullet.moveByRotation(bullet.speed),
     parentSphereBehavior,
-    removeAfterDelayBehavior(2)
+    removeAfterDelayBehavior(Config.bulletEntropy / 100)
   ];
 
   constructor(position: IPointData, angle: number) {
@@ -324,8 +335,8 @@ class GameScene extends BaseScene {
           .turning()
           .thrusting()
           .newSpaceRocks()
-          .shipLooping()
-          .bulletMovement()
+          .rockShipCollision()
+          .rockBulletCollision()
           .nested();
       }
 
@@ -335,7 +346,8 @@ class GameScene extends BaseScene {
           game: { input }
         } = this.parent;
 
-        control.shoot = input.isKeyHold(Key.Space);
+        control.shoot =
+          input.isKeyPressed(Key.Space) || input.isKeyHold(Key.Space);
         control.left = input.isKeyHold(Key.a, Key.ArrowLeft);
         control.right = input.isKeyHold(Key.d, Key.ArrowRight);
         control.forward = input.isKeyHold(Key.w, Key.ArrowUp);
@@ -396,7 +408,8 @@ class GameScene extends BaseScene {
 
             scene.rockBelt.add(new Rock(Rock.Large));
 
-            scene.nextRockTime = scene.timeToRock + scene.timeToRock * Math.random();
+            scene.nextRockTime =
+              scene.timeToRock + scene.timeToRock * Math.random();
           }
         } else {
           scene.nextRockTime--;
@@ -405,11 +418,47 @@ class GameScene extends BaseScene {
         return this;
       };
 
-      private shipLooping = () => {
+      private rockShipCollision = () => {
+        const { parent: scene } = this;
+
+        if (scene.ship.isAlive) {
+          // alive = false;
+          //
+          // stage.removeChild(ship);
+          // messageField.text = "You're dead:  Click or hit enter to play again";
+          // stage.addChild(messageField);
+          // watchRestart();
+          //
+          // //play death sound
+          // createjs.Sound.play("death", {
+          //   interrupt: createjs.Sound.INTERRUPT_ANY
+          // });
+          // continue;
+          // if ship interact rock
+          //
+        }
+
         return this;
       };
 
-      private bulletMovement = () => {
+      private rockBulletCollision = () => {
+        const { parent: scene } = this;
+
+        scene.bulletStream.forEach(bullet => {
+          scene.rockBelt.forEach(rock => {
+            if (bullet.isIntersect(rock)) {
+              //    bullet attack rock
+              //    bullet remove
+              //    rock remove
+              //    create smallest rock
+
+              bullet.remove();
+
+              (rock as Rock).explode();
+            }
+          });
+        });
+
         return this;
       };
 
