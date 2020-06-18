@@ -20,8 +20,10 @@ export class GameScene extends BaseScene {
           borderBouncingBehavior(() => {
             console.log("Ding !!!");
           })
-        ),
-      new Sprite("kirbywalk.gif", Size.valueOf(23)).setFrames(6, 4)
+        ).setPosition(300),
+      new Sprite("kirbywalk.gif")//, Size.valueOf(23))
+        // .setFrames(6, 4)
+        .setPosition(100)
     );
   }
 }

@@ -26,7 +26,18 @@ export class Sprite extends Entity implements ISprite {
 
         const offset = w * frameIndex;
 
-        brush.ctx.drawImage(this.texture.image, offset, 0, w, h, x, y, w, h);
+        // const scale = { x: -1, y: 1 };
+        // const translate = { x: w, y: 0 };
+        const scale = { x: 1, y: 1 };
+        const translate = { x: w, y: 0 };
+
+        brush
+          .save()
+          .translate(translate.x, translate.y)
+          .scale(scale.x, scale.y);
+        // .drawImage(this.texture.image, offset, 0, w, h, x, y, w, h)
+        brush.ctx.drawImage(this.texture.image, 0, 0);
+        brush.restore();
       }
     }
   ];
