@@ -159,7 +159,7 @@ class Rock extends Entity {
     this.spin = random() * 0.05 * this.velocity.x;
 
     // associate score with size
-    this.score = (5 - w / 10) * 100; // todo: magic formula
+    this.score = Math.round(w + random() * w); // todo: magic formula
 
     this.add(new Rock.Surface(this));
   }
@@ -292,6 +292,8 @@ class Ship extends Entity {
     this.speed = new Point();
     this.velocity = new Point();
     this.bulletStream = bulletStream;
+
+    this.setSize(5);
   }
 
   fire = () => {
@@ -336,8 +338,7 @@ class GameScene extends BaseScene {
           .thrusting()
           .newSpaceRocks()
           .rockShipCollision()
-          .rockBulletCollision()
-          .nested();
+          .rockBulletCollision();
       }
 
       private input = () => {
@@ -422,20 +423,20 @@ class GameScene extends BaseScene {
         const { parent: scene } = this;
 
         if (scene.ship.isAlive) {
-          // alive = false;
-          //
-          // stage.removeChild(ship);
+          scene.rockBelt.forEach(rock => {
+            if (scene.ship.isIntersect(rock)) {
+              scene.ship.remove();
+
+              infoLabel.text = "You're dead!";
+              // todo: scene.gameOver();
+            }
+          });
           // messageField.text = "You're dead:  Click or hit enter to play again";
-          // stage.addChild(messageField);
           // watchRestart();
-          //
           // //play death sound
           // createjs.Sound.play("death", {
           //   interrupt: createjs.Sound.INTERRUPT_ANY
           // });
-          // continue;
-          // if ship interact rock
-          //
         }
 
         return this;
@@ -459,10 +460,6 @@ class GameScene extends BaseScene {
           });
         });
 
-        return this;
-      };
-
-      private nested = () => {
         return this;
       };
     })(this),
@@ -528,6 +525,8 @@ class GameScene extends BaseScene {
     this.gameGroup.add(this.ship);
     // @ts-ignore
     Object.keys(control).forEach(key => (this.control[key] = false));
+
+    infoLabel.text = "";
 
     return this;
   };
