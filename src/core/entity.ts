@@ -179,11 +179,11 @@ export class Entity extends Bounds implements IEntity {
     return this;
   };
 
-  forEach = (
-    callback: (value: IEntity, value2: IEntity, set: Set<IEntity>) => void,
+  forEach = <T extends IEntity>(
+    callback: (value: T, value2: T, set: Set<T>) => void,
     thisArg?: any
   ) => {
-    this.children.forEach(callback, thisArg);
+    this.children.forEach(callback as any, thisArg);
 
     return this;
   };

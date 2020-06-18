@@ -50,7 +50,6 @@ const infoLabel = new Label().setStyle({
   fillStyle: Color.White
 });
 
-// todo: move implements IRotatable to Entity & IEntity
 class Rock extends Entity {
   static Small = Size.valueOf(20);
   static Medium = Size.valueOf(40);
@@ -159,7 +158,7 @@ class Rock extends Entity {
     this.spin = random() * 0.05 * this.velocity.x;
 
     // associate score with size
-    this.score = Math.round(w + random() * w); // todo: magic formula
+    this.score = Math.round(w + random() * w);
 
     this.add(new Rock.Surface(this));
   }
@@ -180,7 +179,6 @@ class Rock extends Entity {
   };
 }
 
-// todo: move implements IRotatable to Entity & IEntity
 class Bullet extends Entity {
   private static Size = Size.valueOf(2);
 
@@ -200,23 +198,6 @@ class Bullet extends Entity {
     this.speed = Config.bulletSpeed;
     this.setSize(Bullet.Size).setPosition(position);
   }
-
-  moveByRotation = (length: number) => {
-    return this.moveToAngle(this.r, length);
-  };
-
-  moveToAngle = (angle: number, length: number, unit = Unit.deg) => {
-    this.position.x += length * sin(angle * -(unit === Unit.deg ? Deg : PI));
-    this.position.y += length * cos(angle * -(unit === Unit.deg ? Deg : PI));
-
-    return this;
-  };
-
-  rotate = (angle: number, unit = Unit.deg) => {
-    this.r += angle * -(unit === Unit.deg ? Deg : PI);
-
-    return this;
-  };
 }
 
 class Ship extends Entity {
@@ -247,9 +228,8 @@ class Ship extends Entity {
         .closePath()
         .stroke();
 
+      // flame
       if (ship.thrust !== 0) {
-        // todo: fix it
-        // flame
         brush
           .beginPath()
           .moveTo(2, 0)
@@ -271,7 +251,7 @@ class Ship extends Entity {
 
       // with thrust flicker a flame every Ship.TOGGLE frames, attenuate thrust
       if (ship.thrust > 0) {
-        // todo:
+        // todo: refine accelerate & brake logic
         ship.thrust -= Config.thrustFactor + 0.01;
       } else {
         ship.thrust = 0;
@@ -301,7 +281,6 @@ class Ship extends Entity {
     this.bulletStream.add(new Bullet(this, this.rotation));
 
     // todo: play the shot sound
-    // createjs.Sound.play("laser", { interrupt: createjs.Sound.INTERUPT_LATE });
 
     return this;
   };
@@ -347,8 +326,7 @@ class GameScene extends BaseScene {
           game: { input }
         } = this.parent;
 
-        control.shoot =
-          input.isKeyPressed(Key.Space) || input.isKeyHold(Key.Space);
+        control.shoot = input.isKeyHold(Key.Space);
         control.left = input.isKeyHold(Key.a, Key.ArrowLeft);
         control.right = input.isKeyHold(Key.d, Key.ArrowRight);
         control.forward = input.isKeyHold(Key.w, Key.ArrowUp);
@@ -423,20 +401,17 @@ class GameScene extends BaseScene {
         const { parent: scene } = this;
 
         if (scene.ship.isAlive) {
-          scene.rockBelt.forEach(rock => {
+          scene.rockBelt.forEach<Rock>(rock => {
             if (scene.ship.isIntersect(rock)) {
+              rock.explode();
               scene.ship.remove();
 
-              infoLabel.text = "You're dead!";
+              infoLabel.text = "You're dead:  Press Esc to play again";
               // todo: scene.gameOver();
             }
           });
-          // messageField.text = "You're dead:  Click or hit enter to play again";
-          // watchRestart();
-          // //play death sound
-          // createjs.Sound.play("death", {
-          //   interrupt: createjs.Sound.INTERRUPT_ANY
-          // });
+          // todo: watchRestart();
+          // todo: play death sound
         }
 
         return this;
@@ -448,11 +423,6 @@ class GameScene extends BaseScene {
         scene.bulletStream.forEach(bullet => {
           scene.rockBelt.forEach(rock => {
             if (bullet.isIntersect(rock)) {
-              //    bullet attack rock
-              //    bullet remove
-              //    rock remove
-              //    create smallest rock
-
               bullet.remove();
 
               (rock as Rock).explode();
