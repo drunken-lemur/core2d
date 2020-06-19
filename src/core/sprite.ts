@@ -5,6 +5,9 @@ import { IPointData } from "./point";
 import { IBehavior } from "./behavior";
 import { ITexture, Texture } from "./texture";
 import { IBounds, IBoundsData } from "./bounds";
+import { Delay } from "core/delay";
+import { Label } from "lib/entity";
+import { Color } from "core/color";
 
 export interface ISprite {
   setTexture: (texture: ITexture) => this;
@@ -16,20 +19,51 @@ export class Sprite extends Entity implements ISprite {
   private frameIndex = 0;
   private texture?: ITexture;
 
+  private stateIndex = 0;
+  private delay = new Delay(0.5);
+
   ticksPerFrame: number = 1;
   numberOfFrames: number = 1;
 
   views: IView<Sprite>[] = [
-    (sprite, brush) => {
+    (sprite, brush, deltaTime) => {
       if (this.texture?.loaded) {
-        const { x, y, w, h, frameIndex } = sprite;
+        const { x, y, w, h, frameIndex, stateIndex, delay } = sprite;
 
-        const offset = w * frameIndex;
+        delay.update(deltaTime);
 
-        // const scale = { x: -1, y: 1 };
-        // const translate = { x: w, y: 0 };
-        const scale = { x: 1, y: 1 };
-        const translate = { x: w, y: 0 };
+        const states = [
+          { scale: { x: -0.25, y: 1 }, translate: { x: w * 0.25, y: 0 } },
+          { scale: { x: -0.5, y: 1 }, translate: { x: w * 0.5, y: 0 } },
+          { scale: { x: -0.75, y: 1 }, translate: { x: w * 0.75, y: 0 } },
+          { scale: { x: -1, y: 1 }, translate: { x: w * 1, y: 0 } },
+
+          { scale: { x: -1.5, y: 1 }, translate: { x: w * 1.5, y: 0 } },
+          { scale: { x: -2, y: 1 }, translate: { x: w * 2, y: 0 } },
+          { scale: { x: -1.5, y: 1 }, translate: { x: w * 1.5, y: 0 } },
+
+          { scale: { x: -1, y: 1 }, translate: { x: w * 1, y: 0 } },
+          { scale: { x: -0.75, y: 1 }, translate: { x: w * 0.75, y: 0 } },
+          { scale: { x: -0.5, y: 1 }, translate: { x: w * 0.5, y: 0 } },
+          { scale: { x: -0.25, y: 1 }, translate: { x: w * 0.25, y: 0 } }
+        ];
+
+        if (delay.isDone) {
+          delay.reset();
+          this.stateIndex = (stateIndex + 1) % states.length;
+        }
+
+        // const offset = w * frameIndex;
+
+        const { scale, translate } = states[this.stateIndex];
+
+        if (scale.x < 0) {
+          translate.x = -scale.x * w;
+        }
+
+        if (scale.y < 0) {
+          translate.y = -scale.y * h;
+        }
 
         brush
           .save()
@@ -96,5 +130,9 @@ export class Sprite extends Entity implements ISprite {
     if (ticksPerFrame) this.ticksPerFrame = ticksPerFrame;
 
     return this;
+  };
+
+  scaleMe = (x: number, y: number) => {
+    // todo:
   };
 }
