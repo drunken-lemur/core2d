@@ -2,7 +2,9 @@ import {
   BaseScene,
   borderBouncingBehavior,
   Color,
+  IBrush,
   IGame,
+  IViewFunction,
   Size,
   Sprite
 } from "core";
@@ -20,10 +22,12 @@ export class GameScene extends BaseScene {
           borderBouncingBehavior(() => {
             console.log("Ding !!!");
           })
-        ).setPosition(300),
-      new Sprite("kirbywalk.gif")//, Size.valueOf(23))
+        )
+        .setPosition(300),
+      new Sprite("kirbywalk.gif") //, Size.valueOf(23))
         // .setFrames(6, 4)
         .setPosition(100)
     );
   }
 }
+

@@ -1,4 +1,4 @@
-import { IView } from "./view";
+import { cacheView, IView, rectView } from "./view";
 import { Entity } from "./entity";
 import { ISizeData } from "./size";
 import { IPointData } from "./point";
@@ -25,55 +25,57 @@ export class Sprite extends Entity implements ISprite {
   ticksPerFrame: number = 1;
   numberOfFrames: number = 1;
 
+  style = { fillStyle: Color.Red };
   views: IView<Sprite>[] = [
-    (sprite, brush, deltaTime) => {
-      if (this.texture?.loaded) {
-        const { x, y, w, h, frameIndex, stateIndex, delay } = sprite;
-
-        delay.update(deltaTime);
-
-        const states = [
-          { scale: { x: -0.25, y: 1 }, translate: { x: w * 0.25, y: 0 } },
-          { scale: { x: -0.5, y: 1 }, translate: { x: w * 0.5, y: 0 } },
-          { scale: { x: -0.75, y: 1 }, translate: { x: w * 0.75, y: 0 } },
-          { scale: { x: -1, y: 1 }, translate: { x: w * 1, y: 0 } },
-
-          { scale: { x: -1.5, y: 1 }, translate: { x: w * 1.5, y: 0 } },
-          { scale: { x: -2, y: 1 }, translate: { x: w * 2, y: 0 } },
-          { scale: { x: -1.5, y: 1 }, translate: { x: w * 1.5, y: 0 } },
-
-          { scale: { x: -1, y: 1 }, translate: { x: w * 1, y: 0 } },
-          { scale: { x: -0.75, y: 1 }, translate: { x: w * 0.75, y: 0 } },
-          { scale: { x: -0.5, y: 1 }, translate: { x: w * 0.5, y: 0 } },
-          { scale: { x: -0.25, y: 1 }, translate: { x: w * 0.25, y: 0 } }
-        ];
-
-        if (delay.isDone) {
-          delay.reset();
-          this.stateIndex = (stateIndex + 1) % states.length;
-        }
-
-        // const offset = w * frameIndex;
-
-        const { scale, translate } = states[this.stateIndex];
-
-        if (scale.x < 0) {
-          translate.x = -scale.x * w;
-        }
-
-        if (scale.y < 0) {
-          translate.y = -scale.y * h;
-        }
-
-        brush
-          .save()
-          .translate(translate.x, translate.y)
-          .scale(scale.x, scale.y);
-        // .drawImage(this.texture.image, offset, 0, w, h, x, y, w, h)
-        brush.ctx.drawImage(this.texture.image, 0, 0);
-        brush.restore();
-      }
-    }
+    cacheView(rectView), rectView
+    // (sprite, brush, deltaTime) => {
+    //   if (this.texture?.loaded) {
+    //     const { x, y, w, h, frameIndex, stateIndex, delay } = sprite;
+    //
+    //     delay.update(deltaTime);
+    //
+    //     const states = [
+    //       { scale: { x: -0.25, y: 1 }, translate: { x: w * 0.25, y: 0 } },
+    //       { scale: { x: -0.5, y: 1 }, translate: { x: w * 0.5, y: 0 } },
+    //       { scale: { x: -0.75, y: 1 }, translate: { x: w * 0.75, y: 0 } },
+    //       { scale: { x: -1, y: 1 }, translate: { x: w * 1, y: 0 } },
+    //
+    //       { scale: { x: -1.5, y: 1 }, translate: { x: w * 1.5, y: 0 } },
+    //       { scale: { x: -2, y: 1 }, translate: { x: w * 2, y: 0 } },
+    //       { scale: { x: -1.5, y: 1 }, translate: { x: w * 1.5, y: 0 } },
+    //
+    //       { scale: { x: -1, y: 1 }, translate: { x: w * 1, y: 0 } },
+    //       { scale: { x: -0.75, y: 1 }, translate: { x: w * 0.75, y: 0 } },
+    //       { scale: { x: -0.5, y: 1 }, translate: { x: w * 0.5, y: 0 } },
+    //       { scale: { x: -0.25, y: 1 }, translate: { x: w * 0.25, y: 0 } }
+    //     ];
+    //
+    //     if (delay.isDone) {
+    //       delay.reset();
+    //       this.stateIndex = (stateIndex + 1) % states.length;
+    //     }
+    //
+    //     // const offset = w * frameIndex;
+    //
+    //     const { scale, translate } = states[this.stateIndex];
+    //
+    //     if (scale.x < 0) {
+    //       translate.x = -scale.x * w;
+    //     }
+    //
+    //     if (scale.y < 0) {
+    //       translate.y = -scale.y * h;
+    //     }
+    //
+    //     brush
+    //       .save()
+    //       .translate(translate.x, translate.y)
+    //       .scale(scale.x, scale.y);
+    //     // .drawImage(this.texture.image, offset, 0, w, h, x, y, w, h)
+    //     brush.ctx.drawImage(this.texture.image, 0, 0);
+    //     brush.restore();
+    //   }
+    // }
   ];
   behaviors: IBehavior<Sprite>[] = [
     sprite => {

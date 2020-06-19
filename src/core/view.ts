@@ -212,3 +212,16 @@ export const netView = (cellSize: ISizeData): IViewFunction => (
     }
   }
 };
+
+export const cacheView = (view: IViewFunction): IViewFunction => {
+  let cache: IBrush;
+
+  return (entity, brush, deltaTime) => {
+    if (!cache) {
+      cache = brush.getCacheBrush();
+      view(entity, cache, deltaTime);
+    }
+
+    brush.drawCache(cache);
+  };
+};
