@@ -18,16 +18,17 @@ export class GameScene extends BaseScene {
     this.add(
       new Sprite("coin-sprite-animation.png", Size.valueOf(44, 40))
         .setFrames(10, 2)
+        .setStyle({ fillStyle: Color.Red })
         .addBehaviors(
           borderBouncingBehavior(() => {
             console.log("Ding !!!");
           })
         )
         .setPosition(300),
-      new Sprite("kirbywalk.gif") //, Size.valueOf(23))
-        // .setFrames(6, 4)
+      new Sprite("kirbywalk.gif", Size.valueOf(23))
+        .setFrames(6, 4)
+        .setStyle({ fillStyle: Color.Red })
         .setPosition(100)
     );
   }
 }
-

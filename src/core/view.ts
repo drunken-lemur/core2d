@@ -213,15 +213,22 @@ export const netView = (cellSize: ISizeData): IViewFunction => (
   }
 };
 
-export const cacheView = (view: IViewFunction): IViewFunction => {
+// todo: refine => copy styles
+export const cacheView = <T extends IEntity = IEntity>(  skip = 1) => (
+  ...views: IViewFunction<T>[]
+): IViewFunction<T> => {
   let cache: IBrush;
 
   return (entity, brush, deltaTime) => {
-    if (!cache) {
-      cache = brush.getCacheBrush();
-      view(entity, cache, deltaTime);
+    if (!--skip && !cache) {
+      cache = brush.getCacheBrush().setStyle(entity.style);
+      views.forEach(view => view(entity, cache, deltaTime));
     }
 
-    brush.drawCache(cache);
+    if (cache) {
+      brush.drawCache(cache);
+    } else {
+      views.forEach(view => view(entity, brush, deltaTime));
+    }
   };
 };
