@@ -4,3 +4,6 @@ Refine timer loop
 Refine brush to receive IBoundsData
 refactor move methods to class ( remove arrow functions methods )
 clone brush with styles
+
+add brush styles
+add brush ISize interface

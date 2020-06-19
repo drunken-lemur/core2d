@@ -31,7 +31,17 @@ export interface IBrushStyle extends Partial<IDrawerData> {}
 interface ICacheBrush {
   canvas: HTMLCanvasElement;
   getCacheBrush: () => ICacheBrush & IBrush;
-  drawCache: (cache: ICacheBrush, dx?: number, dy?: number) => this;
+  drawCache: (
+    cache: ICacheBrush,
+    dx?: number,
+    dy?: number,
+    dw?: number,
+    dh?: number,
+    sx?: number,
+    sy?: number,
+    sw?: number,
+    sh?: number
+  ) => this;
 }
 
 export interface IBrush extends IDrawerData, ICacheBrush {
@@ -110,10 +120,10 @@ export interface IBrush extends IDrawerData, ICacheBrush {
     dy?: number,
     dw?: number,
     dh?: number,
-    dx_?: number,
-    dy_?: number,
-    dw_?: number,
-    dh_?: number
+    sx?: number,
+    sy?: number,
+    sw?: number,
+    sh?: number
   ): this;
 
   ellipse(
@@ -516,26 +526,32 @@ export class Brush implements IBrush {
       | HTMLCanvasElement
       | ImageBitmap
       | OffscreenCanvas,
-    dx: number = 0,
-    dy: number = 0,
+    dx = 0,
+    dy = 0,
     dw?: number,
     dh?: number,
-    dx_?: number,
-    dy_?: number,
-    dw_?: number,
-    dh_?: number
+    sx?: number,
+    sy?: number,
+    sw?: number,
+    sh?: number
   ) {
-    this.ctx.drawImage(
-      image instanceof Brush ? image.canvas : image,
-      dx,
-      dy,
-      dw!,
-      dh!,
-      dx_!,
-      dy_!,
-      dw_!,
-      dh_!
-    );
+    const i = image as any;
+    const toDraw = i.ctx && i.canvas ? i.canvas : i;
+
+    if (dw !== undefined && dh !== undefined) {
+      if (
+        sx !== undefined &&
+        sy !== undefined &&
+        sw !== undefined &&
+        sh !== undefined
+      ) {
+        this.ctx.drawImage(toDraw, dx, dy, dw, dh, sx, sy, sw, sh);
+      } else {
+        this.ctx.drawImage(toDraw, dx, dy, dw, dh);
+      }
+    } else {
+      this.ctx.drawImage(toDraw, dx, dy);
+    }
 
     return this;
   }
@@ -778,8 +794,31 @@ export class Brush implements IBrush {
     return new Brush(document.createElement("canvas"), { w, h });
   };
 
-  drawCache = (cache: ICacheBrush, dx: number = 0, dy: number = 0) => {
-    this.ctx.drawImage(cache.canvas, dx, dy);
+  drawCache = (
+    cache: ICacheBrush,
+    dx = 0,
+    dy = 0,
+    dw?: number,
+    dh?: number,
+    sx?: number,
+    sy?: number,
+    sw?: number,
+    sh?: number
+  ) => {
+    if (dw !== undefined && dh !== undefined) {
+      if (
+        sx !== undefined &&
+        sy !== undefined &&
+        sw !== undefined &&
+        sh !== undefined
+      ) {
+        this.ctx.drawImage(cache.canvas, dx, dy, dw, dh, sx, sy, sw, sh);
+      } else {
+        this.ctx.drawImage(cache.canvas, dx, dy, dw, dh);
+      }
+    } else {
+      this.ctx.drawImage(cache.canvas, dx, dy);
+    }
 
     return this;
   };
