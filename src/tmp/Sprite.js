@@ -6,8 +6,8 @@ class Sprite {
 
     this.frameIndex = 0;
     this.tickCount = 0;
-    this.ticksPerFrame = options.ticksPerFrame || 0;
-    this.numberOfFrames = options.numberOfFrames || 1;
+    this.speed = options.ticksPerFrame || 0;
+    this.frames = options.numberOfFrames || 1;
 
     this.width = options.width;
     this.height = options.height;
@@ -18,9 +18,9 @@ class Sprite {
   update() {
     this.tickCount++;
 
-    if (this.tickCount > this.ticksPerFrame) {
+    if (this.tickCount > this.speed) {
       this.tickCount = 0;
-      if (this.frameIndex < this.numberOfFrames - 1) {
+      if (this.frameIndex < this.frames - 1) {
         this.frameIndex++;
       } else {
         this.frameIndex = 0;
@@ -29,16 +29,16 @@ class Sprite {
   }
 
   render() {
-    this.ctx.clearRect(0, 0, this.width / this.numberOfFrames, this.height);
+    this.ctx.clearRect(0, 0, this.width / this.frames, this.height);
     this.ctx.drawImage(
       this.image,
-      (this.frameIndex * this.width) / this.numberOfFrames,
+      (this.frameIndex * this.width) / this.frames,
       0,
-      this.width / this.numberOfFrames,
+      this.width / this.frames,
       this.height,
       0,
       0,
-      this.width / this.numberOfFrames,
+      this.width / this.frames,
       this.height
     );
   }

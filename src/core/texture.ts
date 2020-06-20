@@ -1,12 +1,13 @@
-import { Entity } from "core/entity";
-import { IView, rectView } from "core/view";
-import { Brush, IBrush } from "core/brush";
-import { Color } from "core/color";
-import { ISizeData, Size } from "core/size";
-import { Bounds, IBoundsData } from "core/bounds";
+import { Color } from "./color";
+import { Entity } from "./entity";
+import { Brush, IBrush } from "./brush";
+import { IView, rectView, restoreBrushView, saveBrushView } from "./view";
+import { Bounds, IBoundsData } from "./bounds";
 
 export interface ITexture {
   loaded: boolean;
+  brush?: IBrush;
+  viewBox: IBoundsData;
   image: HTMLImageElement;
   loadFromFile: (file: string) => this;
 }
@@ -31,14 +32,25 @@ export class Texture extends Entity implements ITexture {
 
   style = { fillStyle: Color.Red };
   views: IView<Texture>[] = [
-    rectView,
+    // rectView,
+    saveBrushView,
     (texture, brush, deltaTime) => {
       const { w, h } = texture;
 
       if (texture.loaded && texture.brush) {
         brush.drawCache(texture.brush, 0, 0, w, h, 0, 0, w, h);
       }
-    }
+    },
+    (texture, brush, deltaTime) => {
+      brush.setStyle({
+        // fillStyle: "white",
+        fillStyle: "#a4e0a0",
+        globalCompositeOperation: "source-in"
+      });
+
+      rectView(texture, brush, deltaTime);
+    },
+    restoreBrushView
   ];
 
   constructor(file?: string, viewBox?: IBoundsData, onLoad?: OnLoad) {
