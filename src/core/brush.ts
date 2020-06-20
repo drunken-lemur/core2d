@@ -1,3 +1,4 @@
+import { Color, IRgbaColor } from "./color";
 import { ISizeData } from "./size";
 
 interface CanvasFillStrokeStylesData {
@@ -44,7 +45,11 @@ interface ICacheBrush {
   ) => this;
 }
 
-export interface IBrush extends IDrawerData, ICacheBrush {
+interface IFilterBrush {
+  removeColor: (hexColor: string) => this;
+}
+
+export interface IBrush extends IDrawerData, ICacheBrush, IFilterBrush {
   ctx: CanvasRenderingContext2D;
   canvas: HTMLCanvasElement;
 
@@ -818,6 +823,40 @@ export class Brush implements IBrush {
       }
     } else {
       this.ctx.drawImage(cache.canvas, dx, dy);
+    }
+
+    return this;
+  };
+
+  removeColor = (hexColor: string) => {
+    const { width, height } = this.canvas;
+    const color = Color.hexToRgb(hexColor);
+    const imageData = this.ctx.getImageData(0, 0, width, height);
+
+    if (color) {
+      const { data } = imageData;
+
+      for (let i = 0; i < data.length; i += 4) {
+        const r = data[i];
+        const g = data[i + 1];
+        const b = data[i + 2];
+        const a = data[i + 3];
+
+        if (
+          r === color.r &&
+          g === color.g &&
+          b === color.b &&
+          (!color.a || a === color.a)
+        ) {
+          data[i] = 0;
+          data[i + 1] = 0;
+          data[i + 2] = 0;
+          data[i + 3] = 0;
+        }
+      }
+
+      this.ctx.clearRect(0, 0, width, height);
+      this.ctx.putImageData(imageData, 0, 0);
     }
 
     return this;

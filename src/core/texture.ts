@@ -32,25 +32,13 @@ export class Texture extends Entity implements ITexture {
 
   style = { fillStyle: Color.Red };
   views: IView<Texture>[] = [
-    // rectView,
-    saveBrushView,
     (texture, brush, deltaTime) => {
       const { w, h } = texture;
 
       if (texture.loaded && texture.brush) {
         brush.drawCache(texture.brush, 0, 0, w, h, 0, 0, w, h);
       }
-    },
-    (texture, brush, deltaTime) => {
-      brush.setStyle({
-        // fillStyle: "white",
-        fillStyle: "#a4e0a0",
-        globalCompositeOperation: "source-in"
-      });
-
-      rectView(texture, brush, deltaTime);
-    },
-    restoreBrushView
+    }
   ];
 
   constructor(file?: string, viewBox?: IBoundsData, onLoad?: OnLoad) {
@@ -103,6 +91,12 @@ export class Texture extends Entity implements ITexture {
 
     this.loaded = true;
     if (onLoad) onLoad(this);
+  };
+
+  removeColor = (hexColor: string) => {
+    this.brush?.removeColor(hexColor);
+
+    return this;
   };
 
   // todo: flip, rotate, scale, resize, etc.
