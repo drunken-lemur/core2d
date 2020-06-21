@@ -7,6 +7,7 @@ tilesetImage.onload = drawImage;
 var canvas = document.getElementById("main");
 var ctx = canvas.getContext("2d");
 var tileSize = 32; // The size of a tile (32x32)
+
 var rowTileCount = 20; // The number of tiles in a row of our background
 var colTileCount = 32; // The number of tiles in a column of our background
 var imageNumTiles = 16; // The number of tiles per row in the tileset image

@@ -10,3 +10,4 @@ add brush ISize interface
 Refine Color class
 Add Brush Filter(s)
 floor by var tileRow = (tile / imageNumTiles) | 0; // Bitwise OR operation
+Brush: refactor logic translate => (calculate inside and add before draw)

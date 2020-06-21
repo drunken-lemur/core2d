@@ -1,5 +1,5 @@
 import { Color } from "./color";
-import { Entity } from "./entity";
+import { Entity, IEntity } from "./entity";
 import { Brush, IBrush } from "./brush";
 import { IView, rectView, restoreBrushView, saveBrushView } from "./view";
 import { Bounds, IBoundsData } from "./bounds";
@@ -10,9 +10,17 @@ export interface ITexture {
   viewBox: IBoundsData;
   image: HTMLImageElement;
   loadFromFile: (file: string) => this;
+  addOnLoad: (...onLoads: OnLoad[]) => this;
+  removeColor: (hexColor: string) => this;
 }
 
 export type OnLoad = (texture: Texture) => void;
+
+export const setSizeOnLoad = (entity: IEntity): OnLoad => texture => {
+  const { width, height } = texture?.image!;
+
+  entity.setSize(width, height);
+};
 
 export class Texture extends Entity implements ITexture {
   static readonly AssetsDir = "assets/";
@@ -29,6 +37,7 @@ export class Texture extends Entity implements ITexture {
   brush?: IBrush;
   viewBox: IBoundsData;
   image: HTMLImageElement;
+  onLoad: OnLoad[] = [];
 
   style = { fillStyle: Color.Red };
   views: IView<Texture>[] = [
@@ -52,13 +61,16 @@ export class Texture extends Entity implements ITexture {
 
   loadFromFile = (file: string, onLoad?: OnLoad) => {
     this.loaded = false;
-    this.image.onload = this.onLoad(onLoad);
+
+    if (onLoad) this.onLoad = [onLoad];
+
+    this.image.onload = this.onLoadHandler;
     this.image.src = Texture.AssetsDir + file;
 
     return this;
   };
 
-  private onLoad = (onLoad?: OnLoad) => () => {
+  private onLoadHandler = () => {
     const { image } = this;
 
     if (!this.viewBox) {
@@ -90,11 +102,26 @@ export class Texture extends Entity implements ITexture {
     );
 
     this.loaded = true;
-    if (onLoad) onLoad(this);
+
+    this.onLoad.forEach(onLoad => onLoad(this));
+  };
+
+  addOnLoad = (...onLoads: OnLoad[]) => {
+    onLoads.forEach(onLoad => {
+      this.onLoad.push(onLoad);
+
+      if (this.loaded) onLoad(this);
+    });
+
+    return this;
   };
 
   removeColor = (hexColor: string) => {
-    this.brush?.removeColor(hexColor);
+    if (this.loaded) {
+      this.brush?.removeColor(hexColor);
+    } else {
+      this.addOnLoad(texture => texture.removeColor(hexColor));
+    }
 
     return this;
   };

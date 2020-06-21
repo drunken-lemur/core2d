@@ -3,8 +3,8 @@ import { ISizeData } from "./size";
 import { IPointData } from "./point";
 import { IBehavior } from "./behavior";
 import { cacheView, IView } from "./view";
-import { ITexture, Texture } from "./texture";
 import { IBounds, IBoundsData } from "./bounds";
+import { ITexture, setSizeOnLoad, Texture } from "./texture";
 
 export interface ISprite {
   setTexture: (texture: ITexture) => this;
@@ -99,18 +99,16 @@ export class Sprite extends Entity implements ISprite {
     if (bounds) {
       const { x, y, w, h } = bounds as IBounds;
 
-      if (x || y) this.setPosition(x, y);
       if (w || h) this.setSize(w, h);
+      if (x || y) this.setPosition(x, y);
     } else {
-      const { width, height } = this.texture?.image!;
-
-      this.setSize(width, height);
+      this.texture.addOnLoad(setSizeOnLoad(this));
     }
 
     return this;
   };
 
-  // todo: refactor use Delay & secMs
+  // todo: refactor speed use Delay & secMs
   setFrames = (frames: number | IBoundsData[], speed?: number) => {
     this.frames = frames;
 

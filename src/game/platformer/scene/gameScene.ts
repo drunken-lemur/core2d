@@ -11,6 +11,8 @@ import {
   Texture
   // Sprite
 } from "core";
+import { TilesetMap } from "lib/entity";
+import { level01 } from "game/platformer/maps/level01";
 
 const greetingFrames = [
   Bounds.valueOf(6, 3, 28, 34),
@@ -30,7 +32,7 @@ const blockingFrames = [
   Bounds.valueOf(4, 42, 27, 29),
   Bounds.valueOf(37, 42, 28, 29),
   Bounds.valueOf(65, 42, 30, 29),
-  Bounds.valueOf(95, 42, 29, 29),
+  Bounds.valueOf(95, 42, 29, 29)
   // REPEAT
   // Bounds.valueOf(65, 42, 30, 29),
   // Bounds.valueOf(37, 42, 28, 29)
@@ -59,6 +61,18 @@ export class GameScene extends BaseScene {
 
   constructor(game: IGame) {
     super(game);
+
+    const texture = new Texture("phpThumb_generated_thumbnail.jpg");
+
+    const tilesetMap = new TilesetMap(texture);
+
+    tilesetMap.addLayers(...level01);
+
+    this.add(tilesetMap);
+  }
+
+  c_onstructor(game: IGame) {
+    // super(game);
 
     const texture = new Texture(
       "NES - Darkwing Duck - Darkwing Duck.gif",
