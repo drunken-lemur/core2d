@@ -7,7 +7,7 @@ clone brush with styles
 
 add brush styles
 add brush ISize interface
-Refine Color class
-Add Brush Filter(s)
+Refine Color class https://github.com/xerysherry/colors.ts
+Add Brush Filter(s) https://www.html5rocks.com/en/tutorials/canvas/imagefilters/
 floor by var tileRow = (tile / imageNumTiles) | 0; // Bitwise OR operation
 Brush: refactor logic translate => (calculate inside and add before draw)
