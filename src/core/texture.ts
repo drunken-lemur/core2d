@@ -23,7 +23,7 @@ export const setSizeOnLoad = (entity: IEntity): OnLoad => texture => {
 };
 
 export class Texture extends Entity implements ITexture {
-  static readonly AssetsDir = "assets/";
+  static readonly AssetsDir = "/assets/images/";
 
   static loadFromFile = (
     file: string,
@@ -60,10 +60,15 @@ export class Texture extends Entity implements ITexture {
   }
 
   loadFromFile = (file: string, onLoad?: OnLoad) => {
+    const { image } = this;
+
     this.loaded = false;
 
     if (onLoad) this.onLoad = [onLoad];
 
+    this.image.onerror = () => {
+      throw new Error(`Failed to load texture${Texture.AssetsDir + file}`);
+    };
     this.image.onload = this.onLoadHandler;
     this.image.src = Texture.AssetsDir + file;
 

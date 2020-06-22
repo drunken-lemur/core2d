@@ -11,8 +11,8 @@ import {
   Texture
   // Sprite
 } from "core";
-import { TilesetMap } from "lib/entity";
 import { level01 } from "game/platformer/maps/level01";
+import { TilesetMap } from "lib";
 
 const greetingFrames = [
   Bounds.valueOf(6, 3, 28, 34),
@@ -59,10 +59,13 @@ const wellDoneFrames = [
 export class GameScene extends BaseScene {
   style = { fillStyle: Color.Blue };
 
-  constructor(game: IGame) {
-    super(game);
+  // constructor(game: IGame) {
+  c_onstructor(game: IGame) {
+    // super(game);
 
-    const texture = new Texture("phpThumb_generated_thumbnail.jpg");
+    const texture = new Texture(
+      "tilesets/other/phpThumb_generated_thumbnail.jpg"
+    );
 
     const tilesetMap = new TilesetMap(texture);
 
@@ -71,11 +74,12 @@ export class GameScene extends BaseScene {
     this.add(tilesetMap);
   }
 
-  c_onstructor(game: IGame) {
-    // super(game);
+  constructor(game: IGame) {
+    // c_onstructor(game: IGame) {
+    super(game);
 
     const texture = new Texture(
-      "NES - Darkwing Duck - Darkwing Duck.gif",
+      "tilesets/darkwingDuck/darkwingDuck.gif",
       Bounds.valueOf(0),
       texture => texture.removeColor("#a4e0a0")
     );

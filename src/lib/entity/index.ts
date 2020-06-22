@@ -4,5 +4,7 @@ export * from "./label";
 export * from "./mosaic";
 export * from "./scoreLabel";
 export * from "./square";
+export * from "./tileset";
 export * from "./tilesetMap";
+export * from "./typingLabel";
 export * from "./typingLabel";
