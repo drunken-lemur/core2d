@@ -6086,14 +6086,32 @@ export class Tileset extends Texture {
   // console.log("world-1-1.json", mapData.layers);
 })();
 
-fetch("/assets/maps/mario/world-1-1.tmx")
-  .then(response => response.text())
-  .then(str => new window.DOMParser().parseFromString(str, "text/xml"))
-  .then((data: Document) =>
-    data.querySelectorAll("layer data").forEach(layer => {
-      const dataString = layer.innerHTML;
-      const data = dataString.split("\n").map(row => row.split(","));
+const fetchXml = (input: string) =>
+  fetch(input)
+    .then(response => response.text())
+    .then(str => new window.DOMParser().parseFromString(str, "text/xml"));
 
-      console.log("world-1-1", data);
-    })
-  );
+fetchXml("/assets/maps/mario/world-1-1.tmx")
+  .then((xml: Document) => {
+    const tilesets = xml.querySelectorAll("tileset");
+    const layers = xml.querySelectorAll("layer");
+    const layerData = Array.from(layers).map(layer =>
+      layer.querySelectorAll("data")
+    );
+
+    console.log(
+      { tilesets, layerData },
+      Array.from(tilesets).map(tileset => {
+        return tileset.getAttribute("source");
+      })
+    );
+    // return xml.querySelectorAll("layer data").forEach(layer => {
+    //   const dataString = layer.innerHTML;
+    //   const data = dataString
+    //     .trim()
+    //     .split("\n")
+    //     .map(row => row.replace(/,$/, "").split(","));
+    //
+    //   console.log("world-1-1", data);
+    // });
+  });

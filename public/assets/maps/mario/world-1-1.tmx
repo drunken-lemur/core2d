@@ -1,5 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <map version="1.4" tiledversion="1.4.0" orientation="orthogonal" renderorder="right-down" width="212" height="14" tilewidth="16" tileheight="16" infinite="0" nextlayerid="3" nextobjectid="1">
+ <editorsettings>
+  <export target="world-1-1.json" format="json"/>
+ </editorsettings>
  <tileset firstgid="1" source="../../tilesets/mario/tileset.tsx"/>
  <tileset firstgid="925" source="../../tilesets/mario/world-1-1.tsx"/>
  <imagelayer id="5" name="World 01" visible="0" locked="1" opacity="0.3">
