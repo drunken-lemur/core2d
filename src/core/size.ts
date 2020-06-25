@@ -167,11 +167,11 @@ export class Size implements ISize {
   };
 
   getMinRadius = () => {
-    const {w, h} = this;
-    const {min, abs} = Math;
+    const { w, h } = this;
+    const { min, abs } = Math;
 
-    return Math.min(this.w, this.h) / 2
-  }
+    return Math.min(this.w, this.h) / 2;
+  };
 
   toArray = () => [this.w, this.h];
 }

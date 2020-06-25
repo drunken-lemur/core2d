@@ -214,7 +214,7 @@ export const netView = (cellSize: ISizeData): IViewFunction => (
 };
 
 // todo: refine => copy styles
-export const cacheView = <T extends IEntity = IEntity>(  skip = 1) => (
+export const cacheView = <T extends IEntity = IEntity>(skip = 1) => (
   ...views: IViewFunction<T>[]
 ): IViewFunction<T> => {
   let cache: IBrush;

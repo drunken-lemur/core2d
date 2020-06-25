@@ -35,7 +35,9 @@ export namespace Color {
   };
 
   export const hexToRgb = (hex: string): IRgbaColor | null => {
-    const result = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})([a-f\d]{0,2})$/i.exec(hex);
+    const result = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})([a-f\d]{0,2})$/i.exec(
+      hex
+    );
 
     return result
       ? {

@@ -1,4 +1,4 @@
-import {BaseBehavior, Color, Delay, Entity, IDelay} from "core";
+import { BaseBehavior, Color, Delay, Entity, IDelay } from "core";
 
 import { Label } from "./label";
 
@@ -41,7 +41,7 @@ const fontSize = 20;
 const maxStrLen = 70;
 
 export class TypingLabel extends Entity {
-  style = { font: `${fontSize}px Georgia`, fillStyle: Color.Black  }; // todo: remove hardcoded
+  style = { font: `${fontSize}px Georgia`, fillStyle: Color.Black }; // todo: remove hardcoded
 
   constructor(
     text: string,

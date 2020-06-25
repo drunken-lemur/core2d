@@ -7,6 +7,8 @@ import { IBounds, IBoundsData } from "./bounds";
 import { ITexture, setSizeOnLoad, Texture } from "./texture";
 
 export interface ISprite {
+  speed: number;
+  frames: number | IBoundsData[];
   setTexture: (texture: ITexture) => this;
   setFrames: (frames: number, speed?: number) => this;
 }

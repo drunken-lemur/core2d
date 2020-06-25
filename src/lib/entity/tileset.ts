@@ -1,4 +1,4 @@
-import {Color, IBoundsData, ISizeData, Texture} from "core";
+import { Color, IBoundsData, ISizeData, Texture } from "core";
 import { loadTiledMap } from "lib/utils";
 
 export class Tileset extends Texture {
@@ -6,7 +6,6 @@ export class Tileset extends Texture {
   spacing!: number;
   tileSize!: ISizeData;
   transparentColor!: Color;
-
 
   constructor(file: string) {
     super(file);
