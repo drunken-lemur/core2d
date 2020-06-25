@@ -1,4 +1,4 @@
-import { Bounds, IBoundsData, Sprite } from "core";
+import { Bounds, Sprite } from "core";
 
 import { darkwingDuckLeftTexture, darkwingDuckRightTexture } from "../texture";
 

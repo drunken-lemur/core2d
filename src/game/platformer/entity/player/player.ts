@@ -4,6 +4,8 @@ import { PlayerState } from "./state";
 import { getSpriteByState } from "./sprites";
 
 export class Player extends Entity {
+  private static DefaultState = PlayerState.StayingRight;
+
   sprite: Sprite;
   state: PlayerState;
 
@@ -11,12 +13,10 @@ export class Player extends Entity {
     super();
 
     // todo: setBounds
-    this.state = PlayerState.WalkingRight;
-
+    this.state = Player.DefaultState;
     this.sprite = getSpriteByState(this.state)!;
 
-    this.add(this.sprite);
-    this.setSize(this.sprite);
+    this.setSize(this.sprite).add(this.sprite);
   }
 
   setState = (state: PlayerState) => {
@@ -24,5 +24,9 @@ export class Player extends Entity {
 
     this.sprite = getSpriteByState(state)!;
     this.setSize(this.sprite);
+
+    console.log("state", state);
+
+    return this;
   };
 }

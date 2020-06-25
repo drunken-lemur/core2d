@@ -1,5 +1,6 @@
 import { Color, IRgbaColor } from "./color";
 import { ISizeData } from "./size";
+import { Bounds, IBoundsData } from "core/bounds";
 
 interface CanvasFillStrokeStylesData {
   fillStyle: string | CanvasGradient | CanvasPattern;
@@ -75,7 +76,7 @@ export interface IBrush extends IDrawerData, ICacheBrush, IFilterBrush {
     y: number
   ): this;
 
-  clearRect(x: number, y: number, w: number, h: number): this;
+  clearRect(x: number | IBoundsData, y?: number, w?: number, h?: number): this;
 
   clip(fillRule?: CanvasFillRule | Path2D, fillRule_?: CanvasFillRule): this;
 
@@ -447,8 +448,10 @@ export class Brush implements IBrush {
     return this;
   }
 
-  clearRect(x: number, y: number, w: number, h: number) {
-    this.ctx.clearRect(x, y, w, h);
+  clearRect(x: number | IBoundsData, y?: number, w?: number, h?: number) {
+    const bounds = Bounds.valueOf(x, y, w, h);
+
+    this.ctx.clearRect(bounds.x, bounds.y, bounds.w, bounds.h);
 
     return this;
   }

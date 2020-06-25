@@ -1,6 +1,7 @@
 import {
   assetsPath,
   Bounds,
+  defaultView,
   Entity,
   IBrush,
   imagesPath,

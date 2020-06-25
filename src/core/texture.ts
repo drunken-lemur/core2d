@@ -1,9 +1,10 @@
+import { IView } from "./view";
 import { Color } from "./color";
-import { Entity, IEntity } from "./entity";
+import { Entity } from "./entity";
+import { ISizeData } from "./size";
 import { Brush, IBrush } from "./brush";
-import { IView, rectView, restoreBrushView, saveBrushView } from "./view";
+import { IPointData, Point } from "./point";
 import { Bounds, IBoundsData } from "./bounds";
-import { ISize, ISizeData } from "core/size";
 
 export interface ITexture {
   isLoaded: boolean;
@@ -64,6 +65,16 @@ export class Texture extends Entity implements ITexture {
     return new Texture(file, viewBox, onLoad);
   };
 
+  removeColor = (hexColor: string) => {
+    if (this.isLoaded) {
+      this.brush?.removeColor(hexColor);
+    } else {
+      this.addOnLoad(texture => texture.removeColor(hexColor));
+    }
+
+    return this;
+  };
+
   loadFromFile = (file: string, onLoad?: OnLoad) => {
     const { image } = this;
 
@@ -86,16 +97,6 @@ export class Texture extends Entity implements ITexture {
 
       if (this.isLoaded) onLoad(this);
     });
-
-    return this;
-  };
-
-  removeColor = (hexColor: string) => {
-    if (this.isLoaded) {
-      this.brush?.removeColor(hexColor);
-    } else {
-      this.addOnLoad(texture => texture.removeColor(hexColor));
-    }
 
     return this;
   };
@@ -134,6 +135,48 @@ export class Texture extends Entity implements ITexture {
     this.isLoaded = true;
 
     this.onLoad.forEach(onLoad => onLoad(this));
+  };
+
+  scale = (x: number | IPointData, y?: number) => {
+    // todo: apply this.viewBox support like in this.onLoadHandler
+    console.log({ x, y });
+    const scale = Point.valueOf(x, y);
+
+    if (this.isLoaded && this.brush) {
+      const { x, y, w, h } = this;
+
+
+      console.log({ x, y, w, h }, scale);
+
+      this.brush.save();
+
+      if (scale.x !== 1 || scale.y !== 1) {
+        const translate = { x: 0, y: 0 };
+
+        if (scale.x < 0) translate.x = -scale.x * w;
+        if (scale.y < 0) translate.y = -scale.y * h;
+
+        this.brush.translate(translate.x, translate.y).scale(scale.x, scale.y);
+      }
+
+      this.brush.drawImage(
+        this.image,
+        0,
+        0,
+        w,
+        h,
+        x * scale.x,
+        y * scale.y,
+        w,
+        h
+      );
+
+      this.brush.restore();
+    } else {
+      this.addOnLoad(() => this.scale(x, y));
+    }
+
+    return this;
   };
 
   // todo: flip, rotate, scale, resize, etc.

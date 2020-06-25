@@ -3,11 +3,12 @@ import { Sprite } from "core";
 import { PlayerState } from "../state";
 import { blockingLeftSprite, blockingRightSprite } from "./blocking";
 import { greetingLeftSprite, greetingRightSprite } from "./greeting";
+import { stayingLeftSprite, stayingRightSprite } from "./staying";
 import { walkingLeftSprite, walkingRightSprite } from "./walking";
 
 const states: Record<PlayerState, Sprite | undefined> = {
-  [PlayerState.StayingLeft]: undefined,
-  [PlayerState.StayingRight]: undefined,
+  [PlayerState.StayingLeft]: stayingLeftSprite,
+  [PlayerState.StayingRight]: stayingRightSprite,
   [PlayerState.GreetingLeft]: greetingLeftSprite,
   [PlayerState.GreetingRight]: greetingRightSprite,
   [PlayerState.BlockingLeft]: blockingLeftSprite,

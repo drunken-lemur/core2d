@@ -13,6 +13,8 @@ export interface ISprite {
   setFrames: (frames: number, speed?: number) => this;
 }
 
+export interface ISpriteFrames extends Array<IBoundsData> {}
+
 export class Sprite extends Entity implements ISprite {
   speed: number = 1;
   frames: number | IBoundsData[] = 1;
@@ -58,6 +60,8 @@ export class Sprite extends Entity implements ISprite {
   ];
   behaviors: IBehavior<Sprite>[] = [
     sprite => {
+      if (sprite.speed < 1) return;
+
       sprite.tickCount++;
 
       if (sprite.tickCount > sprite.speed) {
@@ -111,7 +115,7 @@ export class Sprite extends Entity implements ISprite {
   };
 
   // todo: refactor speed use Delay & secMs
-  setFrames = (frames: number | IBoundsData[], speed?: number) => {
+  setFrames = (frames: number | ISpriteFrames, speed: number = 0) => {
     this.frames = frames;
 
     if (speed) this.speed = speed;
