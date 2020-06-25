@@ -17,7 +17,7 @@ export class Sprite extends Entity implements ISprite {
 
   views: IView<Sprite>[] = [
     cacheView<Sprite>(0)((sprite, brush, deltaTime) => {
-      if (this.texture?.loaded && this.texture.brush) {
+      if (this.texture?.isLoaded && this.texture.brush) {
         const { x, y, w, h, frameIndex, frames } = sprite;
 
         brush.save();

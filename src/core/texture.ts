@@ -3,9 +3,10 @@ import { Entity, IEntity } from "./entity";
 import { Brush, IBrush } from "./brush";
 import { IView, rectView, restoreBrushView, saveBrushView } from "./view";
 import { Bounds, IBoundsData } from "./bounds";
+import { ISize, ISizeData } from "core/size";
 
 export interface ITexture {
-  loaded: boolean;
+  isLoaded: boolean;
   brush?: IBrush;
   viewBox: IBoundsData;
   image: HTMLImageElement;
@@ -16,35 +17,31 @@ export interface ITexture {
 
 export type OnLoad = (texture: Texture) => void;
 
-export const setSizeOnLoad = (entity: IEntity): OnLoad => texture => {
+export const setSizeOnLoad = (
+  size: IBoundsData | ISizeData
+): OnLoad => texture => {
   const { width, height } = texture?.image!;
 
-  entity.setSize(width, height);
+  size.w = width;
+  size.h = height;
+};
+
+export const removeColorOnLoad = (color?: string): OnLoad => texture => {
+  if (color) texture.brush?.removeColor(color);
 };
 
 export class Texture extends Entity implements ITexture {
-  static readonly AssetsDir = "/assets/images/";
-
-  static loadFromFile = (
-    file: string,
-    viewBox?: IBoundsData,
-    onLoad?: OnLoad
-  ) => {
-    return new Texture(file, viewBox, onLoad);
-  };
-
-  loaded = false;
+  isLoaded = false;
   brush?: IBrush;
   viewBox: IBoundsData;
   image: HTMLImageElement;
   onLoad: OnLoad[] = [];
-
   style = { fillStyle: Color.Red };
   views: IView<Texture>[] = [
     (texture, brush, deltaTime) => {
       const { w, h } = texture;
 
-      if (texture.loaded && texture.brush) {
+      if (texture.isLoaded && texture.brush) {
         brush.drawCache(texture.brush, 0, 0, w, h, 0, 0, w, h);
       }
     }
@@ -59,18 +56,46 @@ export class Texture extends Entity implements ITexture {
     if (file) this.loadFromFile(file, onLoad);
   }
 
+  static loadFromFile = (
+    file: string,
+    viewBox?: IBoundsData,
+    onLoad?: OnLoad
+  ) => {
+    return new Texture(file, viewBox, onLoad);
+  };
+
   loadFromFile = (file: string, onLoad?: OnLoad) => {
     const { image } = this;
 
-    this.loaded = false;
+    this.isLoaded = false;
 
     if (onLoad) this.onLoad = [onLoad];
 
-    this.image.onerror = () => {
-      throw new Error(`Failed to load texture${Texture.AssetsDir + file}`);
+    image.onerror = () => {
+      throw new Error(`Failed to load texture ${file}`);
     };
-    this.image.onload = this.onLoadHandler;
-    this.image.src = Texture.AssetsDir + file;
+    image.onload = this.onLoadHandler;
+    image.src = file;
+
+    return this;
+  };
+
+  addOnLoad = (...onLoads: OnLoad[]) => {
+    onLoads.forEach(onLoad => {
+      this.onLoad.push(onLoad);
+
+      if (this.isLoaded) onLoad(this);
+    });
+
+    return this;
+  };
+
+  removeColor = (hexColor: string) => {
+    if (this.isLoaded) {
+      this.brush?.removeColor(hexColor);
+    } else {
+      this.addOnLoad(texture => texture.removeColor(hexColor));
+    }
 
     return this;
   };
@@ -106,29 +131,9 @@ export class Texture extends Entity implements ITexture {
       viewBox.h
     );
 
-    this.loaded = true;
+    this.isLoaded = true;
 
     this.onLoad.forEach(onLoad => onLoad(this));
-  };
-
-  addOnLoad = (...onLoads: OnLoad[]) => {
-    onLoads.forEach(onLoad => {
-      this.onLoad.push(onLoad);
-
-      if (this.loaded) onLoad(this);
-    });
-
-    return this;
-  };
-
-  removeColor = (hexColor: string) => {
-    if (this.loaded) {
-      this.brush?.removeColor(hexColor);
-    } else {
-      this.addOnLoad(texture => texture.removeColor(hexColor));
-    }
-
-    return this;
   };
 
   // todo: flip, rotate, scale, resize, etc.

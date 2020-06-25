@@ -23,7 +23,7 @@ export class Platformer extends BaseGame {
         top: 50%;
         left: 50%;
         position: absolute;
-        border: 1px solid ${Color.White};
+        border: 0px solid ${Color.White};
         transform: translate(-50%, -50%);
       }
     `;

@@ -6,7 +6,8 @@ enum ColorSet {
   Gray = "#ccc",
   Red = "#f00",
   Green = "#0f0",
-  Blue = "#00f"
+  Blue = "#00f",
+  MarioSky = "#6b8cff"
 }
 
 export type Color = ColorSet;
@@ -27,6 +28,7 @@ export namespace Color {
   export const Red = ColorSet.Red;
   export const Green = ColorSet.Green;
   export const Blue = ColorSet.Blue;
+  export const MarioSky = ColorSet.MarioSky;
 
   export const random = (): Color => {
     return ("#" + Math.floor(Math.random() * 16777215).toString(16)) as Color;

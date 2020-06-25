@@ -10,6 +10,7 @@ export * from "./brush";
 export * from "./entity";
 export * from "./game";
 export * from "./input";
+export * from "./path";
 export * from "./point";
 export * from "./position";
 export * from "./rotatable";
