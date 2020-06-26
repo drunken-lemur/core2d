@@ -8,6 +8,10 @@ import {
   duckingBlockingLeftSprite,
   duckingBlockingRightSprite
 } from "./duckingBlocking";
+import {
+  duckingShootingLeftSprite,
+  duckingShootingRightSprite
+} from "./duckingShooting";
 import { greetingLeftSprite, greetingRightSprite } from "./greeting";
 import { stayingLeftSprite, stayingRightSprite } from "./staying";
 import { walkingLeftSprite, walkingRightSprite } from "./walking";
@@ -21,8 +25,8 @@ const states: Record<PlayerState, Sprite | undefined> = {
   [PlayerState.DuckingRight]: duckingRightSprite,
   [PlayerState.DuckingBlockingLeft]: duckingBlockingLeftSprite,
   [PlayerState.DuckingBlockingRight]: duckingBlockingRightSprite,
-  [PlayerState.DuckingShootingLeft]: undefined,
-  [PlayerState.DuckingShootingRight]: undefined,
+  [PlayerState.DuckingShootingLeft]: duckingShootingLeftSprite,
+  [PlayerState.DuckingShootingRight]: duckingShootingRightSprite,
   [PlayerState.GreetingLeft]: greetingLeftSprite,
   [PlayerState.GreetingRight]: greetingRightSprite,
   [PlayerState.HookingLeft]: undefined,

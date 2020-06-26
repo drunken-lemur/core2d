@@ -13,7 +13,7 @@ export class GameScene extends BaseScene {
     super(game);
 
     this.map = new TiledMap("mario/world-1-1.tmx");
-    this.player = new Player().setState(PlayerState.DuckingBlockingLeft );
+    this.player = new Player().setState(PlayerState.DuckingShootingLeft );
 
     this.add(this.map, this.player);
   }
