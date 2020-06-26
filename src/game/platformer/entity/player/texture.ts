@@ -12,4 +12,4 @@ export const darkwingDuckLeftTexture = new Texture(
 
 export const darkwingDuckRightTexture = new Texture(
   imagesPath("tilesets/darkwingDuck/darkwingDuck.gif")
-).addOnLoad(removeColorOnLoad("#a4e0a0"));
+)//.addOnLoad(removeColorOnLoad("#a4e0a0"));
