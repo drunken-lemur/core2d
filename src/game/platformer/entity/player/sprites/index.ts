@@ -4,6 +4,10 @@ import { PlayerState } from "../state";
 import { blockingLeftSprite, blockingRightSprite } from "./blocking";
 import { dieingLeftSprite, dieingRightSprite } from "./dieing";
 import { duckingLeftSprite, duckingRightSprite } from "./ducking";
+import {
+  duckingBlockingLeftSprite,
+  duckingBlockingRightSprite
+} from "./duckingBlocking";
 import { greetingLeftSprite, greetingRightSprite } from "./greeting";
 import { stayingLeftSprite, stayingRightSprite } from "./staying";
 import { walkingLeftSprite, walkingRightSprite } from "./walking";
@@ -15,8 +19,10 @@ const states: Record<PlayerState, Sprite | undefined> = {
   [PlayerState.DieingRight]: dieingRightSprite,
   [PlayerState.DuckingLeft]: duckingLeftSprite,
   [PlayerState.DuckingRight]: duckingRightSprite,
-  [PlayerState.DuckingShootLeft]: undefined,
-  [PlayerState.DuckingShootRight]: undefined,
+  [PlayerState.DuckingBlockingLeft]: duckingBlockingLeftSprite,
+  [PlayerState.DuckingBlockingRight]: duckingBlockingRightSprite,
+  [PlayerState.DuckingShootingLeft]: undefined,
+  [PlayerState.DuckingShootingRight]: undefined,
   [PlayerState.GreetingLeft]: greetingLeftSprite,
   [PlayerState.GreetingRight]: greetingRightSprite,
   [PlayerState.HookingLeft]: undefined,
@@ -36,7 +42,7 @@ const states: Record<PlayerState, Sprite | undefined> = {
   [PlayerState.StayingLeft]: stayingLeftSprite,
   [PlayerState.StayingRight]: stayingRightSprite,
   [PlayerState.WalkingLeft]: walkingLeftSprite,
-  [PlayerState.WalkingRight]: walkingRightSprite,
+  [PlayerState.WalkingRight]: walkingRightSprite
 };
 
 export const getSpriteByState = (state: PlayerState) => states[state];
