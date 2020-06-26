@@ -31,6 +31,13 @@ export const removeColorOnLoad = (color?: string): OnLoad => texture => {
   if (color) texture.brush?.removeColor(color);
 };
 
+export const scaleOnLoad = (
+  x: number | IPointData,
+  y?: number
+): OnLoad => texture => {
+  texture.scale(x, y);
+};
+
 export class Texture extends Entity implements ITexture {
   isLoaded = false;
   brush?: IBrush;
@@ -69,7 +76,7 @@ export class Texture extends Entity implements ITexture {
     if (this.isLoaded) {
       this.brush?.removeColor(hexColor);
     } else {
-      this.addOnLoad(texture => texture.removeColor(hexColor));
+      this.addOnLoad(texture => texture.brush?.removeColor(hexColor));
     }
 
     return this;
@@ -139,39 +146,39 @@ export class Texture extends Entity implements ITexture {
 
   scale = (x: number | IPointData, y?: number) => {
     // todo: apply this.viewBox support like in this.onLoadHandler
-    console.log({ x, y });
     const scale = Point.valueOf(x, y);
 
-    if (this.isLoaded && this.brush) {
-      const { x, y, w, h } = this;
+    if (this.isLoaded) {
+      if (this.brush) {
+        const { x, y, w, h } = this;
 
+        this.brush.save();
 
-      console.log({ x, y, w, h }, scale);
+        if (scale.x !== 1 || scale.y !== 1) {
+          const translate = { x: 0, y: 0 };
 
-      this.brush.save();
+          if (scale.x < 0) translate.x = -scale.x * w;
+          if (scale.y < 0) translate.y = -scale.y * h;
 
-      if (scale.x !== 1 || scale.y !== 1) {
-        const translate = { x: 0, y: 0 };
+          this.brush
+            .translate(translate.x, translate.y)
+            .scale(scale.x, scale.y);
+        }
 
-        if (scale.x < 0) translate.x = -scale.x * w;
-        if (scale.y < 0) translate.y = -scale.y * h;
+        this.brush.drawImage(
+          this.image,
+          0,
+          0,
+          w,
+          h,
+          x * scale.x,
+          y * scale.y,
+          w,
+          h
+        );
 
-        this.brush.translate(translate.x, translate.y).scale(scale.x, scale.y);
+        this.brush.restore();
       }
-
-      this.brush.drawImage(
-        this.image,
-        0,
-        0,
-        w,
-        h,
-        x * scale.x,
-        y * scale.y,
-        w,
-        h
-      );
-
-      this.brush.restore();
     } else {
       this.addOnLoad(() => this.scale(x, y));
     }

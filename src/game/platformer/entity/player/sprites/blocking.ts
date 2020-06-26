@@ -4,7 +4,10 @@ import { darkwingDuckLeftTexture, darkwingDuckRightTexture } from "../texture";
 
 export const blockingLeftSprite = new Sprite(darkwingDuckLeftTexture).setFrames(
   [
-    // todo:
+      Bounds.valueOf(-4, 42, 27, 29),
+      Bounds.valueOf(-37, 42, 28, 29),
+      Bounds.valueOf(-65, 42, 30, 29),
+      Bounds.valueOf(-95, 42, 29, 29)
   ],
   10
 );

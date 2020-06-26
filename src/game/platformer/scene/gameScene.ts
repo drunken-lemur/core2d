@@ -2,10 +2,6 @@ import { TiledMap } from "lib";
 import { BaseScene, Color, IGame } from "core";
 
 import { Player, PlayerState } from "../entity/player";
-import {
-  darkwingDuckLeftTexture,
-  darkwingDuckRightTexture
-} from "../entity/player/texture";
 
 export class GameScene extends BaseScene {
   style = { fillStyle: Color.MarioSky };
@@ -17,7 +13,7 @@ export class GameScene extends BaseScene {
     super(game);
 
     this.map = new TiledMap("mario/world-1-1.tmx");
-    this.player = new Player().setState(PlayerState.BlockingRight);
+    this.player = new Player().setState(PlayerState.WalkingLeft );
 
     this.add(this.map, this.player);
   }

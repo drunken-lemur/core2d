@@ -12,20 +12,15 @@ export class Player extends Entity {
   constructor() {
     super();
 
-    // todo: setBounds
     this.state = Player.DefaultState;
     this.sprite = getSpriteByState(this.state)!;
-
     this.setSize(this.sprite).add(this.sprite);
   }
 
   setState = (state: PlayerState) => {
     this.state = state;
-
     this.sprite = getSpriteByState(state)!;
-    this.setSize(this.sprite);
-
-    console.log("state", state);
+    this.setSize(this.sprite).clear().add(this.sprite);
 
     return this;
   };

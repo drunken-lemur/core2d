@@ -83,6 +83,10 @@ export class Sprite extends Entity implements ISprite {
   private frameIndex = 0;
   private texture?: ITexture;
 
+  get isLoaded() {
+    return this.texture?.isLoaded;
+  }
+
   constructor(
     texture?: string | ITexture,
     bounds?: IPointData | ISizeData | IBoundsData
@@ -116,9 +120,37 @@ export class Sprite extends Entity implements ISprite {
 
   // todo: refactor speed use Delay & secMs
   setFrames = (frames: number | ISpriteFrames, speed: number = 0) => {
-    this.frames = frames;
+    if (this.isLoaded) {
+      if(typeof frames === "number"){
+        this.frames = frames;
+      } else {
+        const { w, h } = this;
+        this.frames = frames.map(frame => {
+          if (!frame.x) frame.x = 0;
+          if (!frame.y) frame.y = 0;
+          if (frame.x < 0) {
+            frame.x = w + frame.x - frame.w
+          }
+          if (frame.y < 0) {
+            frame.y = h + frame.y - frame.h
+          }
 
-    if (speed) this.speed = speed;
+          if (!frame.w) frame.w = w - frame.x;
+          if (!frame.h) frame.h = h - frame.y;
+          if (frame.w < 0) {
+            frame.w = w + frame.w - frame.x;
+          }
+          if (frame.h < 0) {
+            frame.h = h + frame.h - frame.y;
+          }
+
+          return frame;
+        })
+      }
+      if (speed) this.speed = speed;
+    } else {
+      this.texture?.addOnLoad(() => this.setFrames(frames, speed));
+    }
 
     return this;
   };
