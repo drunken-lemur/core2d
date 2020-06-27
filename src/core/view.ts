@@ -34,6 +34,8 @@ export type IView<T extends IEntity = IEntity> =
   | IViewClass<T>
   | IViewFunction<T>;
 
+export type IViews<T extends IEntity = IEntity> = IView<T>[];
+
 export class BaseView<T extends IEntity = IEntity> implements IViewClass<T> {
   parent: T;
 

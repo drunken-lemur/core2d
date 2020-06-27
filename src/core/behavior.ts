@@ -25,6 +25,8 @@ export type IBehavior<T extends IEntity = IEntity> =
   | IBehaviorClass<T>
   | IBehaviorFunction<T>;
 
+export type IBehaviors<T extends IEntity = IEntity> = IBehavior<T>[];
+
 export class BaseBehavior<T extends IEntity = IEntity>
   implements IBehaviorClass<T> {
   parent: T;

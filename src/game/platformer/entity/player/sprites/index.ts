@@ -1,58 +1,47 @@
-import { Sprite } from "core";
+import { Direction, Sprite } from "core";
 
 import { PlayerState } from "../state";
-import { blockingLeftSprite, blockingRightSprite } from "./blocking";
-import { dieingLeftSprite, dieingRightSprite } from "./dieing";
-import { duckingLeftSprite, duckingRightSprite } from "./ducking";
-import {
-  duckingBlockingLeftSprite,
-  duckingBlockingRightSprite
-} from "./duckingBlocking";
-import {
-  duckingShootingLeftSprite,
-  duckingShootingRightSprite
-} from "./duckingShooting";
-import { flingLeftSprite, flingRightSprite } from "./fling";
-import { greetingLeftSprite, greetingRightSprite } from "./greeting";
-import { stayingLeftSprite, stayingRightSprite } from "./staying";
-import { walkingLeftSprite, walkingRightSprite } from "./walking";
-import { ridingLeftSprite, ridingRightSprite } from "./riding";
 
-const states: Record<PlayerState, Sprite | undefined> = {
-  [PlayerState.BlockingLeft]: blockingLeftSprite,
-  [PlayerState.BlockingRight]: blockingRightSprite,
-  [PlayerState.DieingLeft]: dieingLeftSprite,
-  [PlayerState.DieingRight]: dieingRightSprite,
-  [PlayerState.DuckingLeft]: duckingLeftSprite,
-  [PlayerState.DuckingRight]: duckingRightSprite,
-  [PlayerState.DuckingBlockingLeft]: duckingBlockingLeftSprite,
-  [PlayerState.DuckingBlockingRight]: duckingBlockingRightSprite,
-  [PlayerState.DuckingShootingLeft]: duckingShootingLeftSprite,
-  [PlayerState.DuckingShootingRight]: duckingShootingRightSprite,
-  [PlayerState.FlingLeft]: flingLeftSprite,
-  [PlayerState.FlingRight]: flingRightSprite,
-  [PlayerState.GreetingLeft]: greetingLeftSprite,
-  [PlayerState.GreetingRight]: greetingRightSprite,
-  [PlayerState.HookingLeft]: undefined,
-  [PlayerState.HookingRight]: undefined,
-  [PlayerState.HookingShootingLeft]: undefined,
-  [PlayerState.HookingShootingRight]: undefined,
-  [PlayerState.JumpingLeft]: undefined,
-  [PlayerState.JumpingRight]: undefined,
-  [PlayerState.JumpingBlockingLeft]: undefined,
-  [PlayerState.JumpingBlockingRight]: undefined,
-  [PlayerState.JumpingShootingLeft]: undefined,
-  [PlayerState.JumpingShootingRight]: undefined,
-  [PlayerState.RestingLeft]: undefined,
-  [PlayerState.RestingRight]: undefined,
-  [PlayerState.RidingLeft]: ridingLeftSprite,
-  [PlayerState.RidingRight]: ridingRightSprite,
-  [PlayerState.ShootingLeft]: undefined,
-  [PlayerState.ShootingRight]: undefined,
-  [PlayerState.StayingLeft]: stayingLeftSprite,
-  [PlayerState.StayingRight]: stayingRightSprite,
-  [PlayerState.WalkingLeft]: walkingLeftSprite,
-  [PlayerState.WalkingRight]: walkingRightSprite
+import { getBlockingSprite } from "./blocking";
+import { getDieingSprite } from "./dieing";
+import { getDuckingSprite } from "./ducking";
+import { getDuckingShootingSprite } from "./duckingShooting";
+import { getFlingSprite } from "./fling";
+import { getGreetingSprite } from "./greeting";
+import {  } from "./hooking";
+import {  } from "./jumping";
+import {  } from "./jumpingShooting";
+import {  } from "./jumpingBlocking";
+import {  } from "./resting";
+import { getRidingSprite } from "./riding";
+import {  } from "./shooting";
+import { getStayingSprite } from "./staying";
+import { getWalkingSprite } from "./walking";
+import {  } from "./wellDone";
+
+
+
+const states: Record<
+  PlayerState,
+  ((direction: Direction) => Sprite) | undefined
+> = {
+  [PlayerState.Blocking]: getBlockingSprite,
+  [PlayerState.Dieing]: getDieingSprite,
+  [PlayerState.Ducking]: getDuckingSprite,
+  [PlayerState.DuckingShooting]: getDuckingShootingSprite,
+  [PlayerState.Fling]: getFlingSprite,
+  [PlayerState.Greeting]: getGreetingSprite,
+  [PlayerState.Hooking]: undefined,
+  [PlayerState.HookingShooting]: undefined,
+  [PlayerState.Jumping]: undefined,
+  [PlayerState.JumpingBlocking]: undefined,
+  [PlayerState.JumpingShooting]: undefined,
+  [PlayerState.Resting]: undefined,
+  [PlayerState.Riding]: getRidingSprite,
+  [PlayerState.Shooting]: undefined,
+  [PlayerState.Staying]: getStayingSprite,
+  [PlayerState.Walking]: getWalkingSprite
 };
 
-export const getSpriteByState = (state: PlayerState) => states[state];
+export const getSpriteByState = (state: PlayerState, direction: Direction) =>
+  states[state]!(direction);

@@ -1,17 +1,17 @@
-import { Bounds, Sprite } from "core";
+import { Bounds, Direction, Sprite } from "core";
 
 import { darkwingDuckLeftTexture, darkwingDuckRightTexture } from "../texture";
 
-export const wellDoneLeftSprite = new Sprite(darkwingDuckLeftTexture).setFrames(
+const left = new Sprite(darkwingDuckLeftTexture).setFrames(
   [
-    // todo:
+    Bounds.valueOf(-4, 298, 56, 56),
+    Bounds.valueOf(-59, 299, 57, 56),
+    Bounds.valueOf(-119, 299, 58, 56)
   ],
   5
 );
 
-export const wellDoneRightSprite = new Sprite(
-  darkwingDuckRightTexture
-).setFrames(
+const right = new Sprite(darkwingDuckRightTexture).setFrames(
   [
     Bounds.valueOf(4, 298, 56, 56),
     Bounds.valueOf(59, 299, 57, 56),
@@ -19,3 +19,6 @@ export const wellDoneRightSprite = new Sprite(
   ],
   5
 );
+
+const getWellDoneSprite = (direction: Direction) =>
+  direction === Direction.West ? left : right;
