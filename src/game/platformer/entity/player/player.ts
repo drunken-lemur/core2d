@@ -3,8 +3,11 @@ import {
   Direction,
   Entity,
   IBehaviors,
+  IPoint,
+  IPointData,
   IScene,
   Key,
+  Point,
   Sprite
 } from "core";
 
@@ -12,14 +15,8 @@ import { PlayerState } from "./state";
 import { getSpriteByState } from "./sprites";
 
 export class Player extends Entity {
+  private static DefaultSpeed = new Point(1);
   private static DefaultState = PlayerState.Staying;
-
-  private sprite!: Sprite;
-  private state: PlayerState;
-  private isJumping = false;
-  private isDucking = false;
-  private isFiring = false;
-  private isBlocking = false;
 
   behaviors: IBehaviors<Player> = [
     defaultBehavior,
@@ -36,10 +33,15 @@ export class Player extends Entity {
       control.right = isKeyHold(Key.ArrowRight);
     },
     player => {
-      const {control} = player;
+      const { control } = player;
 
-      if (control.left) player.direction = Direction.West;
-      if (control.right) player.direction = Direction.East;
+      if (control.left) {
+        player.delta.x = -player.speed.x;
+        player.direction = Direction.West;
+      } else if (control.right) {
+        player.delta.x = player.speed.x;
+        player.direction = Direction.East;
+      }
 
       if (control.block) {
         player.setState(PlayerState.Blocking);
@@ -56,13 +58,28 @@ export class Player extends Entity {
       } else {
         player.sprite.rewind();
         player.setState(PlayerState.Staying);
+
+        player.delta.x = 0;
+
         player.isJumping = false;
         player.isDucking = false;
         player.isFiring = false;
         player.isBlocking = false;
       }
-    }
+    },
+    player => player.plusPosition(player.delta)
   ];
+
+  private delta: IPoint;
+  private speed: IPoint;
+  private sprite: Sprite;
+  private state: PlayerState;
+
+  private isJumping = false;
+  private isDucking = false;
+  private isFiring = false;
+  private isBlocking = false;
+
   private control = {
     jump: false,
     duck: false,
@@ -76,8 +93,11 @@ export class Player extends Entity {
   constructor() {
     super();
 
+    this.delta = new Point();
+    this.speed = Player.DefaultSpeed;
     this.state = Player.DefaultState;
-    this.state = this.setState(this.state).state;
+    this.sprite = this.setState(this.state).sprite;
+
     this.setSize(this.sprite).add(this.sprite);
   }
 
