@@ -36,7 +36,7 @@ export class Player extends Entity {
       control.right = isKeyHold(Key.ArrowRight);
     },
     player => {
-      const { control } = player;
+      const {control} = player;
 
       if (control.left) player.direction = Direction.West;
       if (control.right) player.direction = Direction.East;
@@ -47,7 +47,14 @@ export class Player extends Entity {
       } else if (control.duck) {
         player.setState(PlayerState.Ducking);
         player.isDucking = true;
+      } else if (control.left) {
+        player.setState(PlayerState.Walking);
+        player.direction = Direction.West;
+      } else if (control.right) {
+        player.setState(PlayerState.Walking);
+        player.direction = Direction.East;
       } else {
+        player.sprite.rewind();
         player.setState(PlayerState.Staying);
         player.isJumping = false;
         player.isDucking = false;
