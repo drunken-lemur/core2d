@@ -2,9 +2,10 @@ import { Entity } from "./entity";
 import { ISizeData } from "./size";
 import { IPointData } from "./point";
 import { IBehavior } from "./behavior";
-import { cacheView, IView } from "./view";
+import { IView } from "./view";
 import { IBounds, IBoundsData } from "./bounds";
 import { ITexture, setSizeOnLoad, Texture } from "./texture";
+import { IUpdated } from "core/updated";
 
 export interface ISprite {
   speed: number;
@@ -15,12 +16,108 @@ export interface ISprite {
 
 export interface ISpriteFrames extends Array<IBoundsData> {}
 
+export enum SpritePlayMode {
+  Forward = "Forward",
+  Backward = "Backward",
+  ForwardLoop = "ForwardLoop",
+  BackwardLoop = "BackwardLoop",
+  ForwardBackward = "ForwardBackward",
+  BackwardForward = "BackwardForward",
+  ForwardBackwardLoop = "ForwardBackwardLoop",
+  BackwardForwardLoop = "BackwardForwardLoop"
+}
+
 export class Sprite extends Entity implements ISprite {
+  private static SpritePlayer = class SpritePlayer implements IUpdated {
+    private sprite: Sprite;
+    private mode: SpritePlayMode;
+
+    constructor(
+      sprite: Sprite,
+      mode: SpritePlayMode = SpritePlayMode.ForwardLoop
+    ) {
+      this.mode = mode;
+      this.sprite = sprite;
+    }
+
+    private get frames() {
+      return this.sprite.frames;
+    }
+
+    private get pointer() {
+      return this.sprite.frameIndex;
+    }
+
+    private set pointer(pointer: number) {
+      this.sprite.frameIndex = pointer;
+    }
+
+    setMode = (mode: SpritePlayMode) => {
+      this.mode = mode;
+
+      return this;
+    };
+
+    update = (deltaTime: number) => this.modes[this.mode](deltaTime);
+
+    private forward = (deltaTime: number) => {};
+
+    private backward = (deltaTime: number) => {};
+
+    private forwardLoop = (deltaTime: number) => {};
+
+    private backwardLoop = (deltaTime: number) => {};
+
+    private forwardBackward = (deltaTime: number) => {};
+
+    private backwardForward = (deltaTime: number) => {};
+
+    private forwardBackwardLoop = (deltaTime: number) => {};
+
+    private backwardForwardLoop = (deltaTime: number) => {};
+
+    private modes: Record<SpritePlayMode, (deltaTime: number) => void> = {
+      [SpritePlayMode.Forward]: this.forward,
+      [SpritePlayMode.Backward]: this.backward,
+      [SpritePlayMode.ForwardLoop]: this.forwardLoop,
+      [SpritePlayMode.BackwardLoop]: this.backwardLoop,
+      [SpritePlayMode.ForwardBackward]: this.forwardBackward,
+      [SpritePlayMode.BackwardForward]: this.backwardForward,
+      [SpritePlayMode.ForwardBackwardLoop]: this.forwardBackwardLoop,
+      [SpritePlayMode.BackwardForwardLoop]: this.backwardForwardLoop
+    };
+  };
+
   speed: number = 1;
   frames: number | IBoundsData[] = 1;
+  player = new Sprite.SpritePlayer(this);
+  behaviors: IBehavior<Sprite>[] = [
+    (sprite, deltaTime) => {
+      if (sprite.speed < 1) return;
 
+      sprite.tickCount++;
+
+      if (sprite.tickCount > sprite.speed) {
+        sprite.tickCount = 0;
+
+        sprite.player.update(deltaTime); // todo: move logic to player ( tickCount & frameIndex )
+
+        const { frames, frameIndex } = sprite;
+        if (Array.isArray(frames) && frameIndex < frames.length - 1) {
+          sprite.frameIndex++;
+        } else if (frameIndex < (frames as number) - 1) {
+          sprite.frameIndex++;
+        } else {
+          sprite.frameIndex = 0;
+        }
+      }
+    }
+  ];
+  private tickCount = 0;
+  private frameIndex = 0;
+  private texture?: ITexture;
   views: IView<Sprite>[] = [
-    cacheView<Sprite>(0)((sprite, brush, deltaTime) => {
+    (sprite, brush, deltaTime) => {
       if (this.texture?.isLoaded && this.texture.brush) {
         const { x, y, w, h, frameIndex, frames } = sprite;
 
@@ -56,36 +153,8 @@ export class Sprite extends Entity implements ISprite {
 
         brush.restore();
       }
-    })
-  ];
-  behaviors: IBehavior<Sprite>[] = [
-    sprite => {
-      if (sprite.speed < 1) return;
-
-      sprite.tickCount++;
-
-      if (sprite.tickCount > sprite.speed) {
-        sprite.tickCount = 0;
-
-        const { frames, frameIndex } = sprite;
-        if (Array.isArray(frames) && frameIndex < frames.length - 1) {
-          sprite.frameIndex++;
-        } else if (frameIndex < (frames as number) - 1) {
-          sprite.frameIndex++;
-        } else {
-          sprite.frameIndex = 0;
-        }
-      }
     }
   ];
-
-  private tickCount = 0;
-  private frameIndex = 0;
-  private texture?: ITexture;
-
-  get isLoaded() {
-    return this.texture?.isLoaded;
-  }
 
   constructor(
     texture?: string | ITexture,
@@ -94,6 +163,10 @@ export class Sprite extends Entity implements ISprite {
     super(bounds);
 
     if (texture) this.setTexture(texture, bounds);
+  }
+
+  get isLoaded() {
+    return this.texture?.isLoaded;
   }
 
   setTexture = (
@@ -119,9 +192,13 @@ export class Sprite extends Entity implements ISprite {
   };
 
   // todo: refactor speed use Delay & secMs
-  setFrames = (frames: number | ISpriteFrames, speed: number = 0) => {
+  setFrames = (
+    frames: number | ISpriteFrames,
+    speed: number = 0
+    // playMode: SpritePlayMode = SpritePlayMode.ForwardLoop
+  ) => {
     if (this.isLoaded) {
-      if(typeof frames === "number"){
+      if (typeof frames === "number") {
         this.frames = frames;
       } else {
         const { w, h } = this;
@@ -129,10 +206,10 @@ export class Sprite extends Entity implements ISprite {
           if (!frame.x) frame.x = 0;
           if (!frame.y) frame.y = 0;
           if (frame.x < 0) {
-            frame.x = w + frame.x - frame.w
+            frame.x = w + frame.x - frame.w;
           }
           if (frame.y < 0) {
-            frame.y = h + frame.y - frame.h
+            frame.y = h + frame.y - frame.h;
           }
 
           if (!frame.w) frame.w = w - frame.x;
@@ -145,7 +222,7 @@ export class Sprite extends Entity implements ISprite {
           }
 
           return frame;
-        })
+        });
       }
       if (speed) this.speed = speed;
     } else {

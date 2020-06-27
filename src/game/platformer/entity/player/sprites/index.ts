@@ -12,9 +12,11 @@ import {
   duckingShootingLeftSprite,
   duckingShootingRightSprite
 } from "./duckingShooting";
+import { flingLeftSprite, flingRightSprite } from "./fling";
 import { greetingLeftSprite, greetingRightSprite } from "./greeting";
 import { stayingLeftSprite, stayingRightSprite } from "./staying";
 import { walkingLeftSprite, walkingRightSprite } from "./walking";
+import { ridingLeftSprite, ridingRightSprite } from "./riding";
 
 const states: Record<PlayerState, Sprite | undefined> = {
   [PlayerState.BlockingLeft]: blockingLeftSprite,
@@ -27,6 +29,8 @@ const states: Record<PlayerState, Sprite | undefined> = {
   [PlayerState.DuckingBlockingRight]: duckingBlockingRightSprite,
   [PlayerState.DuckingShootingLeft]: duckingShootingLeftSprite,
   [PlayerState.DuckingShootingRight]: duckingShootingRightSprite,
+  [PlayerState.FlingLeft]: flingLeftSprite,
+  [PlayerState.FlingRight]: flingRightSprite,
   [PlayerState.GreetingLeft]: greetingLeftSprite,
   [PlayerState.GreetingRight]: greetingRightSprite,
   [PlayerState.HookingLeft]: undefined,
@@ -41,6 +45,8 @@ const states: Record<PlayerState, Sprite | undefined> = {
   [PlayerState.JumpingShootingRight]: undefined,
   [PlayerState.RestingLeft]: undefined,
   [PlayerState.RestingRight]: undefined,
+  [PlayerState.RidingLeft]: ridingLeftSprite,
+  [PlayerState.RidingRight]: ridingRightSprite,
   [PlayerState.ShootingLeft]: undefined,
   [PlayerState.ShootingRight]: undefined,
   [PlayerState.StayingLeft]: stayingLeftSprite,
