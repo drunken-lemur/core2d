@@ -15,6 +15,6 @@ export class GameScene extends BaseScene {
     this.map = new TiledMap("mario/world-1-1.tmx");
     this.player = new Player();
 
-    this.add(this.map, this.player);
+    this.add(this.map.add(this.player));
   }
 }

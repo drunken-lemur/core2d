@@ -14,6 +14,13 @@ import {
 import { PlayerState } from "./state";
 import { getSpriteByState } from "./sprites";
 
+/*
+В прижке, нельзя присесть.
+В обычном, прыжке два кадра - один прыжок, вторй падение
+В присядке, нельзя прыгать, нельзя блокировать, нельз развернуться. (выстрел сидя два кдра - сидя закрыт и стреляет)
+
+ */
+
 export class Player extends Entity {
   private static DefaultSpeed = new Point(1);
   private static DefaultState = PlayerState.Staying;
@@ -22,7 +29,7 @@ export class Player extends Entity {
     defaultBehavior,
     player => {
       const { control } = player;
-      const { game } = this.parent as IScene;
+      const { game } = this.parent?.parent as IScene;
       const { isKeyHold } = game.input;
 
       control.jump = isKeyHold(Key.Space);

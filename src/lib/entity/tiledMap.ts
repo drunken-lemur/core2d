@@ -1,18 +1,17 @@
 import {
   assetsPath,
-  Bounds,
+  defaultBehavior,
   defaultView,
   Entity,
+  IBehaviors,
   IBrush,
-  imagesPath,
   IPointData,
   ITexture,
-  IView,
+  IViews,
   removeColorOnLoad,
-  setSizeOnLoad,
   Texture
 } from "core";
-import { loadTiledMap } from "lib/utils";
+import { gravityBehavior, loadTiledMap } from "lib";
 
 export interface ITilesetImage {
   width: number;
@@ -59,10 +58,6 @@ class Tileset implements ITileset {
   image!: ITilesetImage;
   texture: ITexture;
 
-  get isLoaded() {
-    return this.texture.isLoaded;
-  }
-
   constructor(tileset: ITileset) {
     Object.assign(this, tileset);
 
@@ -70,6 +65,10 @@ class Tileset implements ITileset {
     this.texture = new Texture(assetsPath(source)).addOnLoad(
       removeColorOnLoad(transparent)
     );
+  }
+
+  get isLoaded() {
+    return this.texture.isLoaded;
   }
 
   drawTile = (tile: ITile, brush: IBrush, deltaTime: number) => {
@@ -101,28 +100,11 @@ class Tileset implements ITileset {
 }
 
 export class TiledMap extends Entity implements ITiledMap {
+  private static DefaultGravity = 0.9;
+
   tilesets: Tileset[];
   layers!: ITiledMapLayer[];
-
-  constructor(mapFile: string) {
-    super();
-
-    this.tilesets = [];
-    // noinspection JSIgnoredPromiseFromCall
-    this.load(mapFile);
-  }
-
-  private load = async (mapFile: string) => {
-    const { tilesets, layers } = await loadTiledMap(mapFile);
-
-    this.layers = layers;
-
-    tilesets.forEach(tileset => {
-      this.tilesets.push(new Tileset(tileset));
-    });
-  };
-
-  views: IView<TiledMap>[] = [
+  views: IViews<TiledMap> = [
     (map, brush, deltaTime) => {
       const { layers, tilesets } = map;
 
@@ -148,6 +130,35 @@ export class TiledMap extends Entity implements ITiledMap {
           }
         });
       }
+    },
+    defaultView
+  ];
+  behaviors: IBehaviors<TiledMap> = [
+    defaultBehavior,
+    gravityBehavior(TiledMap.DefaultGravity),
+    map => {
+      map.forEach(children => {
+
+        // todo: calc collisions
+      })
     }
   ];
+
+  constructor(mapFile: string) {
+    super();
+
+    this.tilesets = [];
+    // noinspection JSIgnoredPromiseFromCall
+    this.load(mapFile);
+  }
+
+  private load = async (mapFile: string) => {
+    const { tilesets, layers } = await loadTiledMap(mapFile);
+
+    this.layers = layers;
+
+    tilesets.forEach(tileset => {
+      this.tilesets.push(new Tileset(tileset));
+    });
+  };
 }
