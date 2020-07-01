@@ -1,18 +1,18 @@
 export enum Position {
-  TOP = "TOP",
-  LEFT = "LEFT",
-  RIGHT = "RIGHT",
-  BOTTOM = "BOTTOM",
+  Top = "Top",
+  Left = "Left",
+  Right = "Right",
+  Bottom = "Bottom",
 
-  TOP_LEFT = "TOP_LEFT",
-  TOP_CENTER = "TOP",
-  TOP_RIGHT = "TOP_RIGHT",
+  TopLeft = "TopLeft",
+  TopCenter = "Top",
+  TopRight = "TopRight",
 
-  CENTER_LEFT = "LEFT",
-  CENTER = "CENTER",
-  CENTER_RIGHT = "RIGHT",
+  CenterLeft = "Left",
+  Center = "Center",
+  CenterRight = "Right",
 
-  BOTTOM_LEFT = "BOTTOM_LEFT",
-  BOTTOM_CENTER = "BOTTOM",
-  BOTTOM_RIGHT = "BOTTOM_RIGHT"
+  BottomLeft = "BottomLeft",
+  BottomCenter = "Bottom",
+  BottomRight = "BottomRight"
 }

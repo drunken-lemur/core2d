@@ -24,5 +24,6 @@ export * from "./toArray";
 export * from "./toggleable";
 export * from "./updated";
 export * from "./utils";
+export * from "./velocity";
 export * from "./view";
 export * from "./visiable";

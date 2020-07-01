@@ -27,7 +27,7 @@ class IntroScene extends BaseScene {
       new TypingLabel(lorem, 2),
       new Square(Size.valueOf(50)),
       new FpsLabel()
-        .align(this, Position.TOP_RIGHT)
+        .align(this, Position.TopRight)
         .setStyle({ font, textAlign: "right" }),
 
       new ScoreLabel().setStyle({ font })

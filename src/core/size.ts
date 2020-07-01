@@ -136,8 +136,8 @@ export class Size implements ISize {
   invertH = () => this.multiply({ w: 1, h: -1 });
 
   ceil = () => {
-    this.w = Math.ceil(this.w);
-    this.h = Math.ceil(this.h);
+    this.w |= 0;
+    this.h |= 0;
 
     return this;
   };
@@ -150,8 +150,8 @@ export class Size implements ISize {
   };
 
   floor = () => {
-    this.w = Math.floor(this.w);
-    this.h = Math.floor(this.h);
+    this.w = (this.w | 0) + 1;
+    this.h = (this.h | 0) + 1;
 
     return this;
   };

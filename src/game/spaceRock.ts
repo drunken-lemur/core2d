@@ -473,7 +473,7 @@ class GameScene extends BaseScene {
 
     infoLabel
       .setStyle({ textBaseline: "middle", textAlign: "center" })
-      .align(this, Position.CENTER);
+      .align(this, Position.Center);
 
     this.add(
       this.rockBelt,
@@ -491,7 +491,7 @@ class GameScene extends BaseScene {
     Score.reset();
 
     this.ship = new Ship(this.bulletStream);
-    Bounds.align(this.ship, this, Position.CENTER);
+    Bounds.align(this.ship, this, Position.Center);
     this.gameGroup.add(this.ship);
     // @ts-ignore
     Object.keys(control).forEach(key => (this.control[key] = false));

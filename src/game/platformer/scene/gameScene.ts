@@ -12,8 +12,8 @@ export class GameScene extends BaseScene {
   constructor(game: IGame) {
     super(game);
 
-    this.map = new TiledMap("mario/world-1-1.tmx");
-    this.player = new Player();
+    this.map = new TiledMap("mario/world-1-1.tmx", "World");
+    this.player = new Player().setSize(16, 16);
 
     this.add(this.map.add(this.player));
   }

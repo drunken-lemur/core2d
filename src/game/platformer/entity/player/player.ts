@@ -1,4 +1,5 @@
 import {
+  Color,
   defaultBehavior,
   Direction,
   Entity,
@@ -6,9 +7,13 @@ import {
   IPoint,
   IPointData,
   IScene,
+  IViews,
   Key,
   Point,
-  Sprite
+  rectView,
+  sceneView,
+  Sprite,
+  IVelocity
 } from "core";
 
 import { PlayerState } from "./state";
@@ -21,10 +26,13 @@ import { getSpriteByState } from "./sprites";
 
  */
 
-export class Player extends Entity {
+export class Player extends Entity implements IVelocity {
   private static DefaultSpeed = new Point(1);
   private static DefaultState = PlayerState.Staying;
 
+  style = { fillStyle: Color.Blue, strokeStyle: Color.Blue };
+
+  views: IViews<Player> = [sceneView];
   behaviors: IBehaviors<Player> = [
     defaultBehavior,
     player => {
@@ -43,19 +51,21 @@ export class Player extends Entity {
       const { control } = player;
 
       if (control.left) {
-        player.delta.x = -player.speed.x;
+        player.velocity.x = -player.speed.x;
         player.direction = Direction.West;
       } else if (control.right) {
-        player.delta.x = player.speed.x;
+        player.velocity.x = player.speed.x;
         player.direction = Direction.East;
       }
 
       if (control.block) {
         player.setState(PlayerState.Blocking);
         player.isBlocking = true;
+        player.velocity.y = -player.speed.y;
       } else if (control.duck) {
         player.setState(PlayerState.Ducking);
         player.isDucking = true;
+        player.velocity.y = player.speed.y;
       } else if (control.left) {
         player.setState(PlayerState.Walking);
         player.direction = Direction.West;
@@ -66,7 +76,8 @@ export class Player extends Entity {
         player.sprite.rewind();
         player.setState(PlayerState.Staying);
 
-        player.delta.x = 0;
+        player.velocity.x = 0;
+        player.velocity.y = 0;
 
         player.isJumping = false;
         player.isDucking = false;
@@ -74,10 +85,10 @@ export class Player extends Entity {
         player.isBlocking = false;
       }
     },
-    player => player.plusPosition(player.delta)
+    player => player.plusPosition(player.velocity)
   ];
 
-  private delta: IPoint;
+  velocity: IPoint;
   private speed: IPoint;
   private sprite: Sprite;
   private state: PlayerState;
@@ -100,7 +111,7 @@ export class Player extends Entity {
   constructor() {
     super();
 
-    this.delta = new Point();
+    this.velocity = new Point();
     this.speed = Player.DefaultSpeed;
     this.state = Player.DefaultState;
     this.sprite = this.setState(this.state).sprite;

@@ -1,13 +1,5 @@
-import {
-  BaseBehavior,
-  Color,
-  Entity,
-  IBehavior,
-  IView,
-  Point,
-  rectView
-} from "core";
-import { Score } from "lib/score";
+import {BaseBehavior, Color, Entity, IBehavior, IView, Point, Position, rectView} from "core";
+import {Score} from "lib/score";
 
 export class BorderBouncingBehavior<
   T extends Entity = Entity
@@ -26,22 +18,22 @@ export class BorderBouncingBehavior<
     const sceneCorners = this.parent.parent?.getCorners();
 
     if (sceneCorners) {
-      if (corners.TOP_LEFT.x < sceneCorners.TOP_LEFT.x) {
+      if (corners[Position.TopLeft].x < sceneCorners[Position.TopLeft].x) {
         this.deltaSpeed.x = 1;
         this.onBorder();
       }
 
-      if (corners.TOP_RIGHT.x > sceneCorners.TOP_RIGHT.x) {
+      if (corners[Position.TopRight].x > sceneCorners[Position.TopRight].x) {
         this.deltaSpeed.x = -1;
         this.onBorder();
       }
 
-      if (corners.TOP_LEFT.y < sceneCorners.TOP_LEFT.y) {
+      if (corners[Position.BottomLeft].y < sceneCorners[Position.BottomLeft].y) {
         this.deltaSpeed.y = 1;
         this.onBorder();
       }
 
-      if (corners.BOTTOM_RIGHT.y > sceneCorners.BOTTOM_RIGHT.y) {
+      if (corners[Position.BottomRight].y > sceneCorners[Position.BottomRight].y) {
         this.deltaSpeed.y = -1;
         this.onBorder();
       }

@@ -5,10 +5,10 @@ import { ISize, ISizeData, Size } from "./size";
 import { IPoint, IPointData, Point } from "./point";
 
 export interface ICorners {
-  [Position.TOP_LEFT]: IPoint;
-  [Position.TOP_RIGHT]: IPoint;
-  [Position.BOTTOM_LEFT]: IPoint;
-  [Position.BOTTOM_RIGHT]: IPoint;
+  [Position.TopLeft]: IPoint;
+  [Position.TopRight]: IPoint;
+  [Position.BottomLeft]: IPoint;
+  [Position.BottomRight]: IPoint;
 }
 
 export interface IBoundsData extends ISizeData, IPointData {}
@@ -208,59 +208,59 @@ export class Bounds implements IBounds {
     position: Position
   ) => {
     switch (position) {
-      case Position.TOP_LEFT: {
+      case Position.TopLeft: {
         bounds.x = 0;
         bounds.y = 0;
 
         break;
       }
-      case Position.TOP:
-      case Position.TOP_CENTER: {
+      case Position.Top:
+      case Position.TopCenter: {
         bounds.x = borderBounds.x + (borderBounds.w - bounds.w) / 2;
         bounds.y = 0;
 
         break;
       }
-      case Position.TOP_RIGHT: {
+      case Position.TopRight: {
         bounds.x = borderBounds.x + borderBounds.w - bounds.w;
         bounds.y = 0;
 
         break;
       }
-      case Position.LEFT:
-      case Position.CENTER_LEFT: {
+      case Position.Left:
+      case Position.CenterLeft: {
         bounds.x = 0;
         bounds.y = borderBounds.y + (borderBounds.h - bounds.h) / 2;
 
         break;
       }
-      case Position.CENTER: {
+      case Position.Center: {
         bounds.x = borderBounds.x + (borderBounds.w - bounds.w) / 2;
         bounds.y = borderBounds.y + (borderBounds.h - bounds.h) / 2;
 
         break;
       }
-      case Position.RIGHT:
-      case Position.CENTER_RIGHT: {
+      case Position.Right:
+      case Position.CenterRight: {
         bounds.x = borderBounds.x + borderBounds.w - bounds.w;
         bounds.y = borderBounds.y + (borderBounds.h - bounds.h) / 2;
 
         break;
       }
-      case Position.BOTTOM_LEFT: {
+      case Position.BottomLeft: {
         bounds.x = 0;
         bounds.y = borderBounds.y + borderBounds.h - bounds.h;
 
         break;
       }
-      case Position.BOTTOM:
-      case Position.BOTTOM_CENTER: {
+      case Position.Bottom:
+      case Position.BottomCenter: {
         bounds.x = borderBounds.x + (borderBounds.w - bounds.w) / 2;
         bounds.y = borderBounds.y + borderBounds.h - bounds.h;
 
         break;
       }
-      case Position.BOTTOM_RIGHT: {
+      case Position.BottomRight: {
         bounds.x = borderBounds.x + borderBounds.w - bounds.w;
         bounds.y = borderBounds.y + borderBounds.h - bounds.h;
 
@@ -619,10 +619,10 @@ export class Bounds implements IBounds {
     const { x, y } = this.position;
 
     return {
-      [Position.TOP_LEFT]: new Point({ x, y }),
-      [Position.TOP_RIGHT]: new Point({ x: x + w, y }),
-      [Position.BOTTOM_LEFT]: new Point({ x, y: y + h }),
-      [Position.BOTTOM_RIGHT]: new Point({ x: x + w, y: y + h })
+      [Position.TopLeft]: new Point({ x, y }),
+      [Position.TopRight]: new Point({ x: x + w, y }),
+      [Position.BottomLeft]: new Point({ x, y: y + h }),
+      [Position.BottomRight]: new Point({ x: x + w, y: y + h })
     };
   };
 

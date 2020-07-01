@@ -8,8 +8,8 @@ export interface IWithChildren<T> {
   add: (...sceneObjects: T[]) => this;
   clear: () => this;
   delete: (...sceneObjects: T[]) => this;
-  forEach: (
-    callback: (value: T, value2: T, set: Set<T>) => void,
+  forEach: <P extends {} = {}>(
+    callback: (value: T & P, value2: T & P, set: Set<T & P>) => void,
     thisArg?: any
   ) => this;
   has: (...sceneObjects: T[]) => boolean;

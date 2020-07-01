@@ -123,3 +123,19 @@ export const borderBouncingBehavior = (
     entity.plusPosition(speed);
   };
 };
+
+export const intervalBehavior = <T extends IEntity = IEntity>(
+  delaySec: number
+) => (behavior: IBehaviorFunction<T>): IBehaviorFunction<T> => {
+  const delay = new Delay(delaySec);
+
+  return (entity, deltaTime) => {
+    delay.update(deltaTime);
+
+    if (delay.isDone) {
+      delay.reset();
+
+      behavior(entity, deltaTime);
+    }
+  };
+};
