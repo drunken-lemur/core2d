@@ -175,8 +175,12 @@ export class Entity extends Bounds implements IEntity {
     return this;
   };
 
-  forEach = <T extends IEntity>(
-    callback: (value: T, value2: T, set: Set<T>) => void,
+  forEach = <P extends {} = {}>(
+    callback: (
+      value: IEntity & P,
+      value2: IEntity & P,
+      set: Set<IEntity & P>
+    ) => void,
     thisArg?: any
   ) => {
     this.children.forEach(callback as any, thisArg);

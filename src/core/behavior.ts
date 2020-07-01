@@ -139,3 +139,21 @@ export const intervalBehavior = <T extends IEntity = IEntity>(
     }
   };
 };
+
+export const floorSizeBehavior: IBehaviorFunction = (entity, deltaTime) => {
+  entity.floorSize();
+};
+
+export const floorPositionBehavior: IBehaviorFunction = (entity, deltaTime) => {
+  entity.floorPosition();
+};
+
+export const floorBoundsBehavior: IBehaviorFunction = (entity, deltaTime) => {
+  entity.floorBounds();
+};
+
+export const foreachBehavior = <T extends IEntity = IEntity>(
+  behavior: IBehaviorFunction<T>
+): IBehaviorFunction<T> => (entity, deltaTime) => {
+  entity.forEach<T>(children => behavior(children, deltaTime));
+};

@@ -4,11 +4,15 @@ import {
   defaultBehavior,
   defaultView,
   Entity,
+  floorBoundsBehavior,
+  floorPositionBehavior,
+  foreachBehavior,
   IBehaviors,
   IBrush,
   intervalBehavior,
   IPointData,
   ITexture,
+  IVelocity,
   IViews,
   netView,
   removeColorOnLoad,
@@ -103,7 +107,7 @@ class Tileset implements ITileset {
 }
 
 export class TiledMap extends Entity implements ITiledMap {
-  private static DefaultGravity = 0.9;
+  private static DefaultGravity = 0.3;
 
   style = { strokeStyle: Color.Black };
 
@@ -132,36 +136,87 @@ export class TiledMap extends Entity implements ITiledMap {
   ];
   behaviors: IBehaviors<TiledMap> = [
     defaultBehavior,
-    // intervalBehavior<TiledMap>(1)(
-        map =>
-      map.forEach(children => {
-        const { TopLeft, TopRight, BottomLeft, BottomRight } = children.getCorners();
+    gravityBehavior(TiledMap.DefaultGravity),
+    map =>
+      map.forEach<IVelocity>(children => {
+        const { velocity } = children;
 
-        const topLeft = map.getTileByPosition(TopLeft);
-        const topRight = map.getTileByPosition(TopRight);
-        const bottomLeft = map.getTileByPosition(BottomLeft);
-        const bottomRight = map.getTileByPosition(BottomRight);
+        if (velocity) {
+          children.y += velocity.y;
+          const {
+            TopLeft,
+            TopRight,
+            BottomLeft,
+            BottomRight
+          } = children.getCorners();
+          const topLeft = map.getTileByPosition(TopLeft);
+          const topRight = map.getTileByPosition(TopRight);
+          const bottomLeft = map.getTileByPosition(BottomLeft);
+          const bottomRight = map.getTileByPosition(BottomRight);
+          children.y -= velocity.y;
 
-        // console.log("Calc collisions", { topLeft, topRight, bottomLeft, bottomRight });
+          if (velocity.y < 0) {
+            if (topLeft || topRight) velocity.y = 0;
+          } else if (velocity.y > 0) {
+            if (bottomLeft || bottomRight) velocity.y = 0;
+          }
 
-        if (topLeft || bottomLeft) children.x++;
-        if (topRight || bottomRight) children.x--;
-
-        if (topLeft || topRight) children.y++;
-        if (bottomLeft || bottomRight) children.y--;
-
-        // if (bottomLeft || bottomRight) children.y = TopLeft.y;
-        // if (topLeft || topRight) children.y--; // = BottomLeft.y;
+          children.y += velocity.y;
+        }
       }),
-    // map => {
-    //   map.forEach(children => {
-    //     // todo: calc collisions
-    //
-    //     if (children.y + children.h >= 176) children.y = 176 - children.h;
-    //   });
-    // },
-    gravityBehavior(TiledMap.DefaultGravity * 1)
-    // )
+    map =>
+      map.forEach<IVelocity>(children => {
+        const { velocity } = children;
+
+        if (velocity) {
+          children.x += velocity.x;
+          const {
+            TopLeft,
+            TopRight,
+            BottomLeft,
+            BottomRight
+          } = children.getCorners();
+          const topLeft = map.getTileByPosition(TopLeft);
+          const topRight = map.getTileByPosition(TopRight);
+          const bottomLeft = map.getTileByPosition(BottomLeft);
+          const bottomRight = map.getTileByPosition(BottomRight);
+          children.x -= velocity.x;
+
+          if (velocity.x < 0) {
+            if (topLeft || bottomLeft) velocity.x = 0;
+          } else if (velocity.x > 0) {
+            if (topRight || bottomRight) velocity.x = 0;
+          }
+
+          children.x += velocity.x;
+        }
+      }),
+    map =>
+      0 &&
+      map.forEach<IVelocity>(children => {
+        if (children.velocity) {
+          const { velocity } = children;
+          children.plusPosition(velocity);
+
+          const {
+            TopLeft,
+            TopRight,
+            BottomLeft,
+            BottomRight
+          } = children.getCorners();
+          const topLeft = map.getTileByPosition(TopLeft);
+          const topRight = map.getTileByPosition(TopRight);
+          const bottomLeft = map.getTileByPosition(BottomLeft);
+          const bottomRight = map.getTileByPosition(BottomRight);
+          children.minusPosition(velocity);
+
+          if (topLeft || bottomLeft) children.velocity.x = 0;
+          if (topRight || bottomRight) children.velocity.x = 0;
+          if (topLeft || topRight) children.velocity.y = 0;
+          if (bottomLeft || bottomRight) children.velocity.y = 0;
+        }
+      }),
+    foreachBehavior(floorPositionBehavior)
   ];
 
   private mainLayerName: string;
@@ -174,6 +229,8 @@ export class TiledMap extends Entity implements ITiledMap {
     this.tilesets = [];
     this.mainLayerName = mainLayerName;
     this.mainTilesetName = mainTilesetName;
+
+    this.disable().hide();
 
     // noinspection JSIgnoredPromiseFromCall
     this.load(mapFile);
@@ -221,6 +278,8 @@ export class TiledMap extends Entity implements ITiledMap {
         layer.height * tileset.tileheight
       );
     }
+
+    this.enable().show();
   };
 }
 

@@ -153,8 +153,8 @@ export class Point implements IPoint {
   invertY = () => this.multiply({ x: 1, y: -1 });
 
   ceil = () => {
-    this.x |= 0;
-    this.y |= 0;
+    this.x = (this.x | 0) + 1;
+    this.y = (this.y | 0) + 1;
 
     return this;
   };
@@ -167,8 +167,8 @@ export class Point implements IPoint {
   };
 
   floor = () => {
-    this.x = (this.x | 0) + 1;
-    this.y = (this.y | 0) + 1;
+    this.x |= 0;
+    this.y |= 0;
 
     return this;
   };

@@ -20,7 +20,13 @@ export enum Key {
   k = "k",
   Escape = "Escape",
   Enter = "Enter",
-  Space = " "
+  Space = "Space",
+  ControlLeft = "ControlLeft",
+  ControlRight = "ControlRight",
+  AltRight = "AltRight",
+  AltLeft = "AltLeft",
+  MetaLeft = "MetaLeft",
+  MetaRight = "MetaRight",
 }
 
 enum Events {
@@ -40,11 +46,11 @@ export class BaseInput {
 
     document.addEventListener(
       Events.KeyUp,
-      e => (this.keys[e.key as Key] = false)
+      e => (this.keys[e.code as Key] = false)
     );
     document.addEventListener(
       Events.KeyDown,
-      e => (this.keys[e.key as Key] = true)
+      e => (this.keys[e.code as Key] = true)
     );
   }
 

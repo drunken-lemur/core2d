@@ -3,6 +3,7 @@ import { Entity } from "./entity";
 import { IBoundsData } from "./bounds";
 import { IBehaviors } from "./behavior";
 import { ITexture, setSizeOnLoad, Texture } from "./texture";
+import {ISize, ISizeData} from "core/size";
 
 export enum SpritePlayMode {
   Forward = "Forward",
@@ -94,6 +95,20 @@ export class Sprite extends Entity implements ISprite {
   get isLoaded() {
     return this.texture?.isLoaded || false;
   }
+
+  // get w() {
+  //   const { frames, frameIndex } = this;
+  //
+  //   return frames[frameIndex] ? frames[frameIndex].w : 0;
+  // }
+  // set w(w: number){}
+  //
+  // get h() {
+  //   const { frames, frameIndex } = this;
+  //
+  //   return frames[frameIndex] ? frames[frameIndex].h : 0;
+  // }
+  // set h(h: number){}
 
   setTexture = (texture: string | ITexture) => {
     this.texture = typeof texture === "string" ? new Texture(texture) : texture;
