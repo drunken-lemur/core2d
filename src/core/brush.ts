@@ -1,6 +1,7 @@
-import { Color, IRgbaColor } from "./color";
+import { Color } from "./color";
+import { Point } from "./point";
 import { ISizeData } from "./size";
-import { Bounds, IBoundsData } from "core/bounds";
+import { Bounds, IBoundsData } from "./bounds";
 
 interface CanvasFillStrokeStylesData {
   fillStyle: string | CanvasGradient | CanvasPattern;
@@ -864,4 +865,14 @@ export class Brush implements IBrush {
 
     return this;
   };
+}
+
+export class NewBrush extends Brush {
+  translation = new Point();
+
+  translate(x: number, y: number) {
+    this.translation.plus(x, y);
+
+    return super.translate(x, y);
+  }
 }

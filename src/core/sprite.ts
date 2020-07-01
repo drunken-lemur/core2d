@@ -1,9 +1,9 @@
 import { IViews } from "./view";
-import { Entity } from "./entity";
-import { IBoundsData } from "./bounds";
-import { IBehaviors } from "./behavior";
+import { Entity, IEntity } from "./entity";
+import { IBrush } from "./brush";
+import { Bounds, IBoundsData } from "./bounds";
+import { IBehaviorFunction, IBehaviors } from "./behavior";
 import { ITexture, setSizeOnLoad, Texture } from "./texture";
-import {ISize, ISizeData} from "core/size";
 
 export enum SpritePlayMode {
   Forward = "Forward",
@@ -12,31 +12,39 @@ export enum SpritePlayMode {
   BackwardLoop = "BackwardLoop"
 }
 
-export interface ISpriteFrames extends Array<IBoundsData> {}
+export type ISpriteBoundsFrame = IBoundsData;
+export type ISpriteFunctionFrame = IBehaviorFunction;
+
+export type ISpriteFrame = ISpriteBoundsFrame | ISpriteFunctionFrame;
+
+export interface ISpriteFrames extends Array<ISpriteFrame> {}
 
 export interface ISprite {
+  isLoaded: boolean;
   setFrames: (
     frames: ISpriteFrames,
     delay?: number,
     mode?: SpritePlayMode
   ) => this;
-  isLoaded: boolean;
   setTexture: (texture: ITexture) => this;
+  rewind: () => this;
+  goFrame: (offset: number, loop?: boolean) => this;
+  nextFrame: (n: number, loop?: boolean) => this;
+  prevFrame: (n: number, loop?: boolean) => this;
 }
 
 export class Sprite extends Entity implements ISprite {
   views: IViews<Sprite> = [
     (sprite, brush, deltaTime) => {
-      if (this.texture?.isLoaded && this.texture.brush) {
-        const { x, y, w, h, frameIndex, frames } = sprite;
+      const { texture } = this;
+      if (texture?.isLoaded && texture.brush) {
+        const { x, y, frameIndex, frames } = sprite;
 
-        brush.save();
+        const frame = frames[frameIndex];
 
-        if (Array.isArray(frames)) {
-          const frame = frames[frameIndex];
-
+        if (typeof frame !== "function") {
           brush.drawImage(
-            this.texture.brush,
+            texture.brush,
             frame.x,
             frame.y,
             frame.w,
@@ -46,21 +54,7 @@ export class Sprite extends Entity implements ISprite {
             frame.w,
             frame.h
           );
-        } else {
-          brush.drawImage(
-            this.texture.brush,
-            w * frameIndex,
-            0,
-            w,
-            h,
-            x,
-            y,
-            w,
-            h
-          );
         }
-
-        brush.restore();
       }
     }
   ];
@@ -72,8 +66,18 @@ export class Sprite extends Entity implements ISprite {
 
       if (sprite.tickCount > sprite.speed) {
         sprite.tickCount = 0;
-
         sprite.modes[sprite.mode](deltaTime);
+        sprite.frameIndex = sprite.frameIndex || 0; // todo: fix bug, frameIndex = NaN ?
+
+        const frame = sprite.frames[sprite.frameIndex];
+        if (frame) {
+          if (typeof frame == "function") {
+            frame(sprite, deltaTime);
+          } else {
+            sprite.w = frame.w;
+            sprite.h = frame.h;
+          }
+        }
       }
     }
   ];
@@ -94,6 +98,12 @@ export class Sprite extends Entity implements ISprite {
 
   get isLoaded() {
     return this.texture?.isLoaded || false;
+  }
+
+  private get isGoBack() {
+    const { Backward, BackwardLoop } = SpritePlayMode;
+
+    return [Backward, BackwardLoop].includes(this.mode);
   }
 
   // get w() {
@@ -127,22 +137,16 @@ export class Sprite extends Entity implements ISprite {
       const { w, h } = this;
 
       this.frames = frames.map(frame => {
-        if (!frame.x) frame.x = 0;
-        if (!frame.y) frame.y = 0;
-        if (frame.x < 0) {
-          frame.x = w + frame.x - frame.w;
-        }
-        if (frame.y < 0) {
-          frame.y = h + frame.y - frame.h;
-        }
+        if (typeof frame !== "function") {
+          if (!frame.x) frame.x = 0;
+          if (!frame.y) frame.y = 0;
+          if (frame.x < 0) frame.x = w + frame.x - frame.w;
+          if (frame.y < 0) frame.y = h + frame.y - frame.h;
 
-        if (!frame.w) frame.w = w - frame.x;
-        if (!frame.h) frame.h = h - frame.y;
-        if (frame.w < 0) {
-          frame.w = w + frame.w - frame.x;
-        }
-        if (frame.h < 0) {
-          frame.h = h + frame.h - frame.y;
+          if (!frame.w) frame.w = w - frame.x;
+          if (!frame.h) frame.h = h - frame.y;
+          if (frame.w < 0) frame.w = w + frame.w - frame.x;
+          if (frame.h < 0) frame.h = h + frame.h - frame.y;
         }
 
         return frame;
@@ -150,6 +154,13 @@ export class Sprite extends Entity implements ISprite {
 
       if (mode) this.mode = mode;
       if (delay) this.speed = delay;
+      this.rewind();
+
+      const frame = this.frames[this.frameIndex];
+      if (frame && typeof frame !== "function") {
+        this.w = frame.w;
+        this.h = frame.h;
+      }
     } else {
       this.texture?.addOnLoad(() => this.setFrames(frames, delay, mode));
     }
@@ -158,49 +169,42 @@ export class Sprite extends Entity implements ISprite {
   };
 
   rewind = () => {
-    const { Backward, BackwardLoop } = SpritePlayMode;
-    const isBackward = [Backward, BackwardLoop].includes(this.mode);
+    const { frames, isGoBack } = this;
 
-    this.frameIndex = !isBackward ? 0 : this.frames.length - 1;
+    this.frameIndex = !isGoBack ? 0 : frames.length - 1;
 
     return this;
   };
 
-  private forward = (deltaTime: number) => {
-    const { frames, frameIndex } = this;
+  goFrame = (offset = 0, loop = false) => {
+    const {
+      isGoBack,
+      frames: { length }
+    } = this;
 
-    if (frameIndex < frames.length - 1) {
-      this.frameIndex++;
-    }
-  };
+    this.frameIndex += offset;
 
-  private backward = (deltaTime: number) => {
-    const { frameIndex } = this;
-
-    if (frameIndex > 0) {
-      this.frameIndex--;
-    }
-  };
-
-  private forwardLoop = (deltaTime: number) => {
-    const { frames, frameIndex } = this;
-
-    if (frameIndex < frames.length - 1) {
-      this.frameIndex++;
+    if (loop) {
+      this.frameIndex = (this.frameIndex + length) % length;
     } else {
-      this.rewind();
+      if (this.frameIndex < 0) this.frameIndex = 0;
+      if (this.frameIndex > length - 1) this.frameIndex = length - 1;
     }
+
+    return this;
   };
 
-  private backwardLoop = (deltaTime: number) => {
-    const { frameIndex } = this;
+  nextFrame = (n = 1, loop = false) => this.goFrame(n, loop);
 
-    if (frameIndex > 0) {
-      this.frameIndex--;
-    } else {
-      this.rewind();
-    }
-  };
+  prevFrame = (n = 1, loop = false) => this.goFrame(-n, loop);
+
+  private forward = (deltaTime: number) => this.nextFrame();
+
+  private backward = (deltaTime: number) => this.prevFrame();
+
+  private forwardLoop = (deltaTime: number) => this.nextFrame(1, true);
+
+  private backwardLoop = (deltaTime: number) => this.prevFrame(1, true);
 
   private modes: Record<SpritePlayMode, (deltaTime: number) => void> = {
     [SpritePlayMode.Forward]: this.forward,
