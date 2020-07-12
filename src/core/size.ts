@@ -6,25 +6,25 @@ export interface ISizeData {
 }
 
 export interface ISize extends ISizeData, IWithToArray<number> {
-  get: () => ISizeData;
-  set: (w: number | ISizeData, h?: number) => this;
-  plus: (w: number | ISizeData, h?: number) => this;
-  minus: (w: number | ISizeData, h?: number) => this;
-  multiply: (w: number | ISizeData, h?: number) => this;
-  divide: (w: number | ISizeData, h?: number, euclidean?: boolean) => this;
-  invert: () => this;
-  swap: () => this;
-  clone: () => ISize;
-  eq: (w: number | ISizeData, h?: number) => boolean;
-  min: (w: number | ISizeData, h?: number) => this;
-  max: (w: number | ISizeData, h?: number) => this;
-  invertW: () => this;
-  invertH: () => this;
-  ceil: () => this;
-  round: () => this;
-  floor: () => this;
-  lessThan: (orEqual: boolean, w: number | ISizeData, h?: number) => boolean;
-  getMinRadius: () => number;
+  get(): ISizeData;
+  set(w: number | ISizeData, h?: number): this;
+  plus(w: number | ISizeData, h?: number): this;
+  minus(w: number | ISizeData, h?: number): this;
+  multiply(w: number | ISizeData, h?: number): this;
+  divide(w: number | ISizeData, h?: number, euclidean?: boolean): this;
+  invert(): this;
+  swap(): this;
+  clone(): ISize;
+  eq(w: number | ISizeData, h?: number): boolean;
+  min(w: number | ISizeData, h?: number): this;
+  max(w: number | ISizeData, h?: number): this;
+  invertW(): this;
+  invertH(): this;
+  ceil(): this;
+  round(): this;
+  floor(): this;
+  lessThan(orEqual: boolean, w: number | ISizeData, h?: number): boolean;
+  getMinRadius(): number;
 }
 
 export class Size implements ISize {
@@ -52,42 +52,44 @@ export class Size implements ISize {
     return new Size(Math.random() * size.w, Math.random() * size.h);
   }
 
-  get = (): ISizeData => ({ w: this.w, h: this.h });
+  get(): ISizeData {
+    return { w: this.w, h: this.h };
+  }
 
-  set = (w: number | ISizeData, h?: number) => {
+  set(w: number | ISizeData, h?: number) {
     Object.assign(this, Size.valueOf(w, h));
 
     return this;
-  };
+  }
 
-  plus = (w: number | ISizeData, h?: number) => {
+  plus(w: number | ISizeData, h?: number) {
     const size = Size.valueOf(w, h);
 
     this.w += size.w;
     this.h += size.h;
 
     return this;
-  };
+  }
 
-  minus = (w: number | ISizeData, h?: number) => {
+  minus(w: number | ISizeData, h?: number) {
     const size = Size.valueOf(w, h);
 
     this.w -= size.w;
     this.h -= size.h;
 
     return this;
-  };
+  }
 
-  multiply = (w: number | ISizeData, h?: number) => {
+  multiply(w: number | ISizeData, h?: number) {
     const size = Size.valueOf(w, h);
 
     this.w *= size.w;
     this.h *= size.h;
 
     return this;
-  };
+  }
 
-  divide = (w: number | ISizeData, h?: number, euclidean = false) => {
+  divide(w: number | ISizeData, h?: number, euclidean = false) {
     const size = Size.valueOf(w, h);
 
     if (!euclidean) {
@@ -99,64 +101,74 @@ export class Size implements ISize {
     }
 
     return this;
-  };
+  }
 
-  invert = () => this.multiply({ w: -1, h: -1 });
+  invert() {
+    return this.multiply({ w: -1, h: -1 });
+  }
 
-  swap = () => this.set({ w: this.h, h: this.w });
+  swap() {
+    return this.set({ w: this.h, h: this.w });
+  }
 
-  clone = () => new Size(this.get());
+  clone() {
+    return new Size(this.get());
+  }
 
-  eq = (w: number | ISizeData, h?: number) => {
+  eq(w: number | ISizeData, h?: number) {
     const size = Size.valueOf(w, h);
 
     return this.w === size.w && this.h === size.h;
-  };
+  }
 
-  min = (w: number | ISizeData, h?: number) => {
+  min(w: number | ISizeData, h?: number) {
     const size = Size.valueOf(w, h);
 
     this.w = Math.min(this.w, size.w);
     this.h = Math.min(this.h, size.h);
 
     return this;
-  };
+  }
 
-  max = (w: number | ISizeData, h?: number) => {
+  max(w: number | ISizeData, h?: number) {
     const size = Size.valueOf(w, h);
 
     this.w = Math.max(this.w, size.w);
     this.h = Math.max(this.h, size.h);
 
     return this;
-  };
+  }
 
-  invertW = () => this.multiply({ w: -1, h: 1 });
+  invertW() {
+    return this.multiply({ w: -1, h: 1 });
+  }
 
-  invertH = () => this.multiply({ w: 1, h: -1 });
+  invertH() {
+    return this.multiply({ w: 1, h: -1 });
+  }
 
-  ceil = () => {
+  ceil() {
     this.w = (this.w | 0) + 1;
     this.h = (this.h | 0) + 1;
 
     return this;
-  };
+  }
 
-  round = () => {
+  round() {
     this.w = Math.round(this.w);
     this.h = Math.round(this.h);
 
     return this;
-  };
+  }
 
-  floor = () => {
+  floor() {
     this.w |= 0;
     this.h |= 0;
 
     return this;
-  };
+  }
 
-  lessThan = (orEqual: boolean, w: number | ISizeData, h?: number) => {
+  lessThan(orEqual: boolean, w: number | ISizeData, h?: number) {
     const size = Size.valueOf(w, h);
 
     if (orEqual) {
@@ -164,14 +176,13 @@ export class Size implements ISize {
     } else {
       return this.w < size.w && this.h < size.h;
     }
-  };
+  }
 
-  getMinRadius = () => {
-    const { w, h } = this;
-    const { min, abs } = Math;
-
+  getMinRadius() {
     return Math.min(this.w, this.h) / 2;
-  };
+  }
 
-  toArray = () => [this.w, this.h];
+  toArray() {
+    return [this.w, this.h];
+  }
 }
