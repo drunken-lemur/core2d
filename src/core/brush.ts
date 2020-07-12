@@ -1,6 +1,6 @@
 import { Color } from "./color";
-import { Point } from "./point";
 import { ISizeData } from "./size";
+import { IPointData, Point } from "./point";
 import { Bounds, IBoundsData } from "./bounds";
 
 interface CanvasFillStrokeStylesData {
@@ -223,6 +223,7 @@ export interface IBrush extends IDrawerData, ICacheBrush, IFilterBrush {
     f: number
   ): this;
 
+  translate(point: IPointData): this;
   translate(x: number, y: number): this;
 }
 
@@ -789,8 +790,13 @@ export class Brush implements IBrush {
     return this;
   }
 
-  translate(x: number, y: number) {
-    this.ctx.translate(x, y);
+  translate(x: number | IPointData, y?: number) {
+    if (typeof x === "number" && typeof y === "number") {
+      this.ctx.translate(x, y);
+    } else {
+      const point = Point.valueOf(x, y);
+      this.ctx.translate(point.x, point.y);
+    }
 
     return this;
   }
@@ -865,14 +871,4 @@ export class Brush implements IBrush {
 
     return this;
   };
-}
-
-export class NewBrush extends Brush {
-  translation = new Point();
-
-  translate(x: number, y: number) {
-    this.translation.plus(x, y);
-
-    return super.translate(x, y);
-  }
 }

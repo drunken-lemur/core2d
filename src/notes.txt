@@ -1,8 +1,9 @@
 Sound manager
-Texture scroller
 Refine timer loop
 Refine brush to receive IBoundsData
 refactor move methods to class ( remove arrow functions methods )
+
+init function to Entity
 
 add brush styles
 add brush ISize interface
@@ -17,3 +18,4 @@ set max velocities
 
 // Done
 + floor by var tileRow = (tile / imageNumTiles) | 0; // Bitwise OR operation
++Texture scroller

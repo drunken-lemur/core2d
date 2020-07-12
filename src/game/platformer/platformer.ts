@@ -1,8 +1,8 @@
 import { BaseGame, IScene, IScreen, Color } from "core";
-import { GameScene } from "./scene";
+import { DemoScene, GameScene } from "./scene";
 
 export class Platformer extends BaseGame {
-  scene: IScene = new GameScene(this);
+  scene: IScene = new DemoScene(this);
 
   constructor(screen: IScreen, fps: number = 60) {
     super(screen, fps);

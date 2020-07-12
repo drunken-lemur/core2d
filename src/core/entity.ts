@@ -11,6 +11,11 @@ import { Bounds, IBounds, IBoundsData } from "./bounds";
 import { defaultView, IStylable, IView, IWithView } from "./view";
 import { defaultBehavior, IBehavior, IWithBehavior } from "./behavior";
 
+export interface IInitialized {
+  initialize(): this;
+  isInitialized: boolean;
+}
+
 export interface IEntity
   extends IBounds,
     IVisible,

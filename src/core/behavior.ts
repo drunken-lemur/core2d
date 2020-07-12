@@ -157,3 +157,35 @@ export const foreachBehavior = <T extends IEntity = IEntity>(
 ): IBehaviorFunction<T> => (entity, deltaTime) => {
   entity.forEach<T>(children => behavior(children, deltaTime));
 };
+
+export const onOutInOfBoundsBehavior = <T extends IEntity = IEntity>(
+  onOut: IBehaviorFunction<IEntity & T>,
+  onIn?: IBehaviorFunction<IEntity & T>
+): IBehaviorFunction<IEntity & T> => {
+  let isInBoxLast: boolean | null = null;
+
+  return (entity, deltaTime) => {
+    const isInBox = entity.parent?.isIntersect(entity) || false;
+
+    if (isInBox !== isInBoxLast) {
+      if (isInBox) {
+        onIn && onIn(entity, deltaTime);
+      } else {
+        onOut(entity, deltaTime);
+      }
+
+      isInBoxLast = isInBox;
+    }
+  };
+};
+
+export const hideOnOutOfBoundsBehavior = onOutInOfBoundsBehavior(
+  e => {
+    e.hide();
+    console.log(e.isVisible());
+  },
+  e => {
+    e.show();
+    console.log(e.isVisible());
+  }
+);

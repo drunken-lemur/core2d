@@ -1,4 +1,4 @@
-import { IView } from "./view";
+import {IView, translatedView} from "./view";
 import { Color } from "./color";
 import { Entity } from "./entity";
 import { ISizeData } from "./size";
@@ -50,7 +50,7 @@ export class Texture extends Entity implements ITexture {
       const { w, h } = texture;
 
       if (texture.isLoaded && texture.brush) {
-        brush.drawCache(texture.brush, 0, 0, w, h, 0, 0, w, h);
+        brush.translate(texture).drawCache(texture.brush, 0, 0, w, h, 0, 0, w, h);
       }
     }
   ];

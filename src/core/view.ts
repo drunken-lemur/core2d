@@ -59,7 +59,7 @@ export class BaseView<T extends IEntity = IEntity> implements IViewClass<T> {
     Object.assign(brush, style);
 
     if (!style.noTranslate && e.length && e.x + e.y > 0) {
-      brush.translate(e.x, e.y);
+      brush.translate(e);
     }
 
     this.parent.forEach(children => children.draw(brush, deltaTime));
@@ -70,52 +70,6 @@ export class BaseView<T extends IEntity = IEntity> implements IViewClass<T> {
 
     return this;
   };
-}
-
-export class RectView<T extends IEntity = IEntity> extends BaseView<T> {
-  draw(brush: IBrush, deltaTime: number) {
-    const { x, y, w, h } = this.parent;
-
-    if (brush.fillStyle !== Color.None) {
-      brush.fillRect(x, y, w, h);
-    }
-
-    if (brush.strokeStyle !== Color.None) {
-      brush.strokeRect(x, y, w, h);
-    }
-  }
-}
-
-export class NetView<T extends IEntity = IEntity> extends RectView<T> {
-  private cellSize: ISizeData;
-
-  constructor(parent: T, cellSize: ISizeData) {
-    super(parent);
-
-    this.cellSize = cellSize;
-  }
-
-  draw(b: IBrush, dt: number) {
-    const { x, y, w, h } = this.parent;
-
-    b.fillRect(x, y, w, h);
-
-    for (let j = 0; j < w; j += this.cellSize.h) {
-      b.beginPath()
-        .moveTo(0, j)
-        .lineTo(w, j)
-        .closePath()
-        .stroke();
-
-      for (let i = 0; i < w; i += this.cellSize.w) {
-        b.beginPath()
-          .moveTo(i, 0)
-          .lineTo(i, h)
-          .closePath()
-          .stroke();
-      }
-    }
-  }
 }
 
 export const childrenView: IViewFunction = (entity, brush, deltaTime) => {
@@ -148,7 +102,7 @@ export const styledView: IViewFunction = (entity, brush, deltaTime) => {
 
 export const translatedView: IViewFunction = (entity, brush, deltaTime) => {
   if (!entity.style.noTranslate && entity.length && entity.x + entity.y > 0) {
-    brush.translate(entity.x, entity.y);
+    brush.translate(entity);
   }
 };
 
@@ -233,4 +187,10 @@ export const cacheView = <T extends IEntity = IEntity>(skip = 1) => (
       views.forEach(view => view(entity, brush, deltaTime));
     }
   };
+};
+
+export const foreachView = <T extends IEntity = IEntity>(
+  view: IViewFunction<T>
+): IViewFunction<T> => (entity, brush, deltaTime) => {
+  entity.forEach<T>(children => view(children, brush, deltaTime));
 };
