@@ -192,5 +192,9 @@ export const cacheView = <T extends IEntity = IEntity>(skip = 1) => (
 export const foreachView = <T extends IEntity = IEntity>(
   view: IViewFunction<T>
 ): IViewFunction<T> => (entity, brush, deltaTime) => {
-  entity.forEach<T>(children => view(children, brush, deltaTime));
+  entity.forEach<T>(children => {
+    if (children.isVisible()) { // todo: children.drawView(view)
+      view(children, brush, deltaTime);
+    }
+  });
 };

@@ -12,12 +12,14 @@ import { defaultView, IStylable, IView, IWithView } from "./view";
 import { defaultBehavior, IBehavior, IWithBehavior } from "./behavior";
 
 export interface IInitialized {
-  initialize(): this;
   isInitialized: boolean;
+
+  initialize(): this;
 }
 
 export interface IEntity
-  extends IBounds,
+  extends IInitialized,
+    IBounds,
     IVisible,
     IDrawable,
     IWithView,
@@ -35,6 +37,7 @@ export class Entity extends Bounds implements IEntity {
   parent?: IEntity;
   views: IView<IEntity | any>[] = [defaultView];
   behaviors: IBehavior<IEntity | any>[] = [defaultBehavior];
+  isInitialized = false;
   protected readonly children: Set<IEntity> = new Set();
   private isEnabledState = true;
   private isVisibleState = true;
@@ -134,11 +137,7 @@ export class Entity extends Bounds implements IEntity {
       brush.setStyle(this.style); // todo: ? move to BaseView or StyledView
 
       this.views.forEach(view => {
-        // brush.save();
-
         this.drawView(view, brush, deltaTime);
-
-        // brush.restore();
       });
 
       brush.restore();
@@ -266,6 +265,12 @@ export class Entity extends Bounds implements IEntity {
 
     return this;
   };
+
+  initialize() {
+    this.isInitialized = true;
+
+    return this;
+  }
 
   private drawView = (view: IView, brush: IBrush, deltaTime: number) => {
     if (typeof view === "function") {

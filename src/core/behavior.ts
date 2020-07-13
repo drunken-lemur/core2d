@@ -155,7 +155,11 @@ export const floorBoundsBehavior: IBehaviorFunction = (entity, deltaTime) => {
 export const foreachBehavior = <T extends IEntity = IEntity>(
   behavior: IBehaviorFunction<T>
 ): IBehaviorFunction<T> => (entity, deltaTime) => {
-  entity.forEach<T>(children => behavior(children, deltaTime));
+  entity.forEach<T>(children => {
+    if (children.isEnabled()) {
+      behavior(children, deltaTime);
+    }
+  });
 };
 
 export const onOutInOfBoundsBehavior = <T extends IEntity = IEntity>(
@@ -165,27 +169,23 @@ export const onOutInOfBoundsBehavior = <T extends IEntity = IEntity>(
   let isInBoxLast: boolean | null = null;
 
   return (entity, deltaTime) => {
-    const isInBox = entity.parent?.isIntersect(entity) || false;
+    if (entity.parent) {
+      const isInBox = entity.parent.isIntersect(entity);
 
-    if (isInBox !== isInBoxLast) {
-      if (isInBox) {
-        onIn && onIn(entity, deltaTime);
-      } else {
-        onOut(entity, deltaTime);
+      if (isInBox !== isInBoxLast) {
+        if (isInBox) {
+          onIn && onIn(entity, deltaTime);
+        } else {
+          onOut(entity, deltaTime);
+        }
+
+        isInBoxLast = isInBox;
       }
-
-      isInBoxLast = isInBox;
     }
   };
 };
 
 export const hideOnOutOfBoundsBehavior = onOutInOfBoundsBehavior(
-  e => {
-    e.hide();
-    console.log(e.isVisible());
-  },
-  e => {
-    e.show();
-    console.log(e.isVisible());
-  }
+  e => e.hide(),
+  e => e.show()
 );

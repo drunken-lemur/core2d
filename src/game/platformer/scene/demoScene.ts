@@ -7,7 +7,7 @@ import {
   IGame,
   Key,
   moveByKeyboard,
-  onOutInOfBoundsBehavior,
+  onOutInOfBoundsBehavior, scaleOnLoad,
   sceneBehavior,
   Size,
   Sprite,
@@ -17,7 +17,7 @@ import { Square } from "lib/entity";
 
 const texture = new Texture(
   "//yastatic.net/s3/home-static/_/x/Q/xk8YidkhGjIGOrFm_dL5781YA.svg"
-);
+).addOnLoad(scaleOnLoad(-1, 1));
 const sprite = new Sprite(texture);
 
 const square = new Square(Size.valueOf(50)).setStyle({

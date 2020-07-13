@@ -1,7 +1,7 @@
 import { Color } from "./color";
-import { ISizeData } from "./size";
 import { IPointData, Point } from "./point";
 import { Bounds, IBoundsData } from "./bounds";
+import { ISize, ISizeData, Size } from "./size";
 
 interface CanvasFillStrokeStylesData {
   fillStyle: string | CanvasGradient | CanvasPattern;
@@ -51,7 +51,11 @@ interface IFilterBrush {
   removeColor: (hexColor: string) => this;
 }
 
-export interface IBrush extends IDrawerData, ICacheBrush, IFilterBrush {
+export interface IBrush
+  extends IDrawerData,
+    ICacheBrush,
+    IFilterBrush,
+    ISizeData {
   ctx: CanvasRenderingContext2D;
   canvas: HTMLCanvasElement;
 
@@ -76,6 +80,8 @@ export interface IBrush extends IDrawerData, ICacheBrush, IFilterBrush {
     x: number,
     y: number
   ): this;
+
+  clear(): this;
 
   clearRect(x: number | IBoundsData, y?: number, w?: number, h?: number): this;
 
@@ -232,15 +238,37 @@ export class Brush implements IBrush {
     return new Brush(document.createElement("canvas"), size);
   };
 
+  private readonly size: ISize;
   readonly canvas: HTMLCanvasElement;
   readonly ctx: CanvasRenderingContext2D;
+
+  get w() {
+    return this.size.w;
+  }
+
+  set w(w: number) {
+    this.size.w = w;
+    this.canvas.width = w;
+  }
+
+  get h() {
+    return this.size.h;
+  }
+
+  set h(h: number) {
+    this.size.h = h;
+    this.canvas.height = h;
+  }
 
   constructor(canvas: HTMLCanvasElement, size?: ISizeData) {
     this.canvas = canvas;
 
     if (size) {
+      this.size = new Size(size);
       this.canvas.width = size.w;
       this.canvas.height = size.h;
+    } else {
+      this.size = new Size(canvas.width, canvas.height);
     }
 
     const ctx = canvas.getContext("2d");
@@ -448,6 +476,10 @@ export class Brush implements IBrush {
     this.ctx.bezierCurveTo(cp1x, cp1y, cp2x, cp2y, x, y);
 
     return this;
+  }
+
+  clear() {
+    return this.clearRect(0, 0, this.w, this.h);
   }
 
   clearRect(x: number | IBoundsData, y?: number, w?: number, h?: number) {
@@ -802,11 +834,9 @@ export class Brush implements IBrush {
   }
 
   getCacheBrush = () => {
-    const { width: w, height: h } = this.ctx.canvas;
+    // todo: copy style to CacheBrush
 
-    // todo: setStyle
-
-    return new Brush(document.createElement("canvas"), { w, h });
+    return new Brush(document.createElement("canvas"), this);
   };
 
   drawCache = (
@@ -839,9 +869,9 @@ export class Brush implements IBrush {
   };
 
   removeColor = (hexColor: string) => {
-    const { width, height } = this.canvas;
+    const { w, h } = this;
     const color = Color.hexToRgb(hexColor);
-    const imageData = this.ctx.getImageData(0, 0, width, height);
+    const imageData = this.ctx.getImageData(0, 0, w, h);
 
     if (color) {
       const { data } = imageData;
@@ -865,7 +895,7 @@ export class Brush implements IBrush {
         }
       }
 
-      this.ctx.clearRect(0, 0, width, height);
+      this.ctx.clearRect(0, 0, w, h);
       this.ctx.putImageData(imageData, 0, 0);
     }
 

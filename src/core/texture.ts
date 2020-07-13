@@ -1,4 +1,4 @@
-import {IView, translatedView} from "./view";
+import { IView } from "./view";
 import { Color } from "./color";
 import { Entity } from "./entity";
 import { ISizeData } from "./size";
@@ -50,7 +50,9 @@ export class Texture extends Entity implements ITexture {
       const { w, h } = texture;
 
       if (texture.isLoaded && texture.brush) {
-        brush.translate(texture).drawCache(texture.brush, 0, 0, w, h, 0, 0, w, h);
+        brush
+          .translate(texture)
+          .drawCache(texture.brush, 0, 0, w, h, 0, 0, w, h);
       }
     }
   ];
@@ -86,6 +88,7 @@ export class Texture extends Entity implements ITexture {
     const { image } = this;
 
     this.isLoaded = false;
+    this.disable().hide();
 
     if (onLoad) this.onLoad = [onLoad];
 
@@ -140,6 +143,7 @@ export class Texture extends Entity implements ITexture {
     );
 
     this.isLoaded = true;
+    this.enable().show();
 
     this.onLoad.forEach(onLoad => onLoad(this));
   };
@@ -165,17 +169,9 @@ export class Texture extends Entity implements ITexture {
             .scale(scale.x, scale.y);
         }
 
-        this.brush.drawImage(
-          this.image,
-          0,
-          0,
-          w,
-          h,
-          x * scale.x,
-          y * scale.y,
-          w,
-          h
-        );
+        this.brush
+          .clear()
+          .drawImage(this.image, 0, 0, w, h, x * scale.x, y * scale.y, w, h);
 
         this.brush.restore();
       }
