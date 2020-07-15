@@ -14,10 +14,8 @@ export enum SpritePlayMode {
 
 export type ISpriteBoundsFrame = IBoundsData;
 export type ISpriteFunctionFrame = IBehaviorFunction;
-
 export type ISpriteFrame = ISpriteBoundsFrame | ISpriteFunctionFrame;
-
-export interface ISpriteFrames extends Array<ISpriteFrame> {}
+export type ISpriteFrames = Array<ISpriteFrame>;
 
 export interface ISprite {
   isLoaded: boolean;
@@ -36,13 +34,17 @@ export interface ISprite {
 export class Sprite extends Entity implements ISprite {
   views: IViews<Sprite> = [
     (sprite, brush, deltaTime) => {
-      const { texture } = this;
+      const { texture } = sprite;
+
       if (texture?.isLoaded && texture.brush) {
         const { x, y, frameIndex, frames } = sprite;
 
-        const frame = frames[frameIndex];
+        // if empty frame set use texture bounds
+        const frame = frames.length ? frames[frameIndex] : texture.getBounds();
 
-        if (typeof frame !== "function") {
+        // console.log(frame);
+
+        if (frame && typeof frame !== "function") {
           brush.drawImage(
             texture.brush,
             frame.x,
@@ -177,10 +179,7 @@ export class Sprite extends Entity implements ISprite {
   };
 
   goFrame = (offset = 0, loop = false) => {
-    const {
-      isGoBack,
-      frames: { length }
-    } = this;
+    const { length } = this.frames;
 
     this.frameIndex += offset;
 

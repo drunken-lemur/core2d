@@ -1,17 +1,14 @@
 Sound manager
 Refine timer loop
 refactor move methods to class ( remove arrow functions methods )
-
+load Texture from IDrawable
 init function to Entity
-
 add brush styles
 clone brush with styles
 Refine Color class https://github.com/xerysherry/colors.ts
 Add Brush Filter(s) https://www.html5rocks.com/en/tutorials/canvas/imagefilters/
 ? Brush: refactor logic translate => (calculate inside and add before draw)
-
 TiledMap - refine collisions BigSize between roof when jumping
-
 set max velocities
 
 // Done

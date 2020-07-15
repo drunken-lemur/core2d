@@ -81,9 +81,9 @@ export const moveByKeyboard = (
   fn: (...keys: Key[]) => boolean,
   speed: number,
   up: Key,
-  left: Key,
+  right: Key,
   down: Key,
-  right: Key
+  left: Key
 ): IBehaviorFunction => {
   return (entity, deltaTime) => {
     if (fn(up)) entity.y -= speed * deltaTime;

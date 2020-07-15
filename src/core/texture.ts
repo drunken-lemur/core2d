@@ -1,12 +1,12 @@
 import { IView } from "./view";
 import { Color } from "./color";
-import { Entity } from "./entity";
 import { ISizeData } from "./size";
 import { Brush, IBrush } from "./brush";
+import { Entity, IEntity } from "./entity";
 import { IPointData, Point } from "./point";
 import { Bounds, IBoundsData } from "./bounds";
 
-export interface ITexture {
+export interface ITexture extends IEntity {
   isLoaded: boolean;
   brush?: IBrush;
   viewBox: IBoundsData;
@@ -145,6 +145,8 @@ export class Texture extends Entity implements ITexture {
     this.isLoaded = true;
     this.enable().show();
 
+    console.log("Texture onLoad");
+
     this.onLoad.forEach(onLoad => onLoad(this));
   };
 
@@ -182,6 +184,16 @@ export class Texture extends Entity implements ITexture {
     return this;
   };
 
-  // todo: flip, rotate, scale, resize, etc.
-  // todo: get/set viewBox?: ISizeData update brush
+  // todo:
+  //  load and crop => texture.loadFromFile("image.png", IntRect(10, 10, 32, 32));
+  //  texture.setRepeated(true);
+  //  setPosition - абсолютное смещение
+  //  move - относительное смещение
+  //  setRotation - абсолютное
+  //  rotate - относительное
+  //  setScale - абсолютное
+  //  scale - относительное
+  //  setOrigin - Точка (началом координат)
+  //  flip, rotate, scale, resize, etc.
+  //  get/set viewBox?: ISizeData update brush
 }

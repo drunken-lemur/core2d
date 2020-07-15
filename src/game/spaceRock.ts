@@ -327,9 +327,9 @@ class GameScene extends BaseScene {
         } = this.parent;
 
         control.shoot = input.isKeyHold(Key.Space);
-        control.left = input.isKeyHold(Key.a, Key.ArrowLeft);
-        control.right = input.isKeyHold(Key.d, Key.ArrowRight);
-        control.forward = input.isKeyHold(Key.w, Key.ArrowUp);
+        control.left = input.isKeyHold(Key.KeyA, Key.ArrowLeft);
+        control.right = input.isKeyHold(Key.KeyD, Key.ArrowRight);
+        control.forward = input.isKeyHold(Key.KeyW, Key.ArrowUp);
 
         if (input.isKeyPressed(Key.Escape)) {
           const { game } = this.parent;

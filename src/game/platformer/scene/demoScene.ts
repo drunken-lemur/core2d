@@ -1,27 +1,35 @@
 import {
   BaseScene,
   Color,
+  Direction,
   foreachBehavior,
   hideOnOutOfBoundsBehavior,
   IBehaviors,
   IGame,
   Key,
   moveByKeyboard,
-  onOutInOfBoundsBehavior, scaleOnLoad,
+  Position,
+  scaleOnLoad,
   sceneBehavior,
-  Size,
-  Sprite,
   Texture
 } from "core";
-import { Square } from "lib/entity";
+import {getSpriteByState} from "game/platformer/entity/player/sprites";
+import {PlayerState} from "game/platformer/entity/player";
+import {Label} from "lib/entity";
+import {darkwingDuckLeftTexture} from "game/platformer/entity/player/texture";
 
-const texture = new Texture(
-  "//yastatic.net/s3/home-static/_/x/Q/xk8YidkhGjIGOrFm_dL5781YA.svg"
-).addOnLoad(scaleOnLoad(-1, 1));
-const sprite = new Sprite(texture);
+// const texture = new Texture(
+//   "//yastatic.net/s3/home-static/_/x/Q/xk8YidkhGjIGOrFm_dL5781YA.svg"
+// ).addOnLoad(scaleOnLoad(-1, 1));
 
-const square = new Square(Size.valueOf(50)).setStyle({
-  fillStyle: Color.random()
+const sprite = getSpriteByState(PlayerState.Greeting, Direction.West);
+// const sprite = new Sprite(darkwingDuckLeftTexture);
+
+const infoLabel = new Label("Hello =)").setStyle({
+  fillStyle: Color.White,
+  textAlign: "center",
+  textBaseline: "middle",
+  font: `${36}px Verdana bold`,
 });
 
 export class DemoScene extends BaseScene {
@@ -29,24 +37,39 @@ export class DemoScene extends BaseScene {
 
   behaviors: IBehaviors<DemoScene> = [
     sceneBehavior,
-    foreachBehavior(hideOnOutOfBoundsBehavior)
+    foreachBehavior(hideOnOutOfBoundsBehavior),
+    () => {
+      infoLabel.text = JSON.stringify(sprite.getBounds());
+    }
   ];
 
   constructor(game: IGame) {
     super(game);
 
-    const { isKeyHold } = game.input;
+    const { isKeyHold, isKeyPressed } = game.input;
+
+    infoLabel.align(this, Position.Center);
+
     this.add(
-      texture.setBehaviors(
+      darkwingDuckLeftTexture,
+      infoLabel,
+      sprite.addBehaviors(
         moveByKeyboard(
           isKeyHold,
           60,
           Key.ArrowUp,
-          Key.ArrowLeft,
+          Key.ArrowRight,
           Key.ArrowDown,
-          Key.ArrowRight
+          Key.ArrowLeft,
+        ),
+        moveByKeyboard(
+            isKeyPressed,
+          60,
+          Key.KeyW,
+          Key.KeyD,
+          Key.KeyS,
+          Key.KeyA
         )
-        // square => console.log(square.getBounds())
       )
     );
   }

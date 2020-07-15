@@ -115,11 +115,11 @@ class MenuScene extends BaseScene {
     this.menuActiveOpacity += dt * this.opacityDirection;
 
     // menu navigation
-    if (this.game.input.isKeyPressed(Key.s, Key.ArrowDown)) {
+    if (this.game.input.isKeyPressed(Key.KeyS, Key.ArrowDown)) {
       // Down arrow
       this.menuIndex++;
       this.menuIndex %= this.menuItems.length;
-    } else if (this.game.input.isKeyPressed(Key.w, Key.ArrowUp)) {
+    } else if (this.game.input.isKeyPressed(Key.KeyW, Key.ArrowUp)) {
       // Up arrow
       this.menuIndex--;
       if (this.menuIndex < 0) this.menuIndex = this.menuItems.length - 1;
@@ -199,22 +199,22 @@ class GameScene extends BaseScene {
   }
 
   update(dt: number) {
-    if (this.game.input.isKeyHold(Key.w, Key.ArrowUp)) {
+    if (this.game.input.isKeyHold(Key.KeyW, Key.ArrowUp)) {
       this.posY--;
     }
-    if (this.game.input.isKeyHold(Key.s, Key.ArrowDown)) {
+    if (this.game.input.isKeyHold(Key.KeyS, Key.ArrowDown)) {
       this.posY++;
     }
-    if (this.game.input.isKeyHold(Key.a, Key.ArrowLeft)) {
+    if (this.game.input.isKeyHold(Key.KeyA, Key.ArrowLeft)) {
       this.posX--;
     }
-    if (this.game.input.isKeyHold(Key.d, Key.ArrowRight)) {
+    if (this.game.input.isKeyHold(Key.KeyD, Key.ArrowRight)) {
       this.posX++;
     }
-    if (this.game.input.isKeyHold(Key.e)) {
+    if (this.game.input.isKeyHold(Key.KeyE)) {
       this.angle++;
     }
-    if (this.game.input.isKeyHold(Key.q)) {
+    if (this.game.input.isKeyHold(Key.KeyQ)) {
       this.angle--;
     }
 
