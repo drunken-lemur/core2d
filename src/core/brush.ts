@@ -587,7 +587,7 @@ export class Brush implements IBrush {
         sw !== undefined &&
         sh !== undefined
       ) {
-        this.ctx.drawImage(toDraw, dx, dy, dw, dh, sx, sy, sw, sh);
+        this.ctx.drawImage(toDraw, sx, sy, sw, sh, dx, dy, dw, dh);
       } else {
         this.ctx.drawImage(toDraw, dx, dy, dw, dh);
       }

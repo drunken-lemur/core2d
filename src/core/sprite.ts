@@ -47,12 +47,12 @@ export class Sprite extends Entity implements ISprite {
         if (frame && typeof frame !== "function") {
           brush.drawImage(
             texture.brush,
-            frame.x,
-            frame.y,
-            frame.w,
-            frame.h,
             x,
             y,
+            frame.w,
+            frame.h,
+            frame.x,
+            frame.y,
             frame.w,
             frame.h
           );

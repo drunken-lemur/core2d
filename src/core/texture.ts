@@ -132,12 +132,12 @@ export class Texture extends Entity implements ITexture {
     const { viewBox } = this;
     this.brush = Brush.create(this).drawImage(
       this.image,
-      viewBox.x,
-      viewBox.y,
+      0,
+      0,
       viewBox.w,
       viewBox.h,
-      0,
-      0,
+      viewBox.x,
+      viewBox.y,
       viewBox.w,
       viewBox.h
     );
@@ -173,7 +173,7 @@ export class Texture extends Entity implements ITexture {
 
         this.brush
           .clear()
-          .drawImage(this.image, 0, 0, w, h, x * scale.x, y * scale.y, w, h);
+          .drawImage(this.image, x * scale.x, y * scale.y, w, h, 0, 0, w, h);
 
         this.brush.restore();
       }

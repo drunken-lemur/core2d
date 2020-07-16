@@ -2,7 +2,7 @@ import { BaseGame, IScene, IScreen, Color } from "core";
 import { DemoScene, GameScene } from "./scene";
 
 export class Platformer extends BaseGame {
-  scene: IScene = new DemoScene(this);
+  scene: IScene = new GameScene(this);
 
   constructor(screen: IScreen, fps: number = 60) {
     super(screen, fps);
@@ -20,6 +20,7 @@ export class Platformer extends BaseGame {
       }
       
       canvas {
+        zoom: 2;
         top: 50%;
         left: 50%;
         position: absolute;

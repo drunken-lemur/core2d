@@ -35,12 +35,12 @@ export class TilesetMap extends Entity {
 
             brush.drawImage(
               image,
-              tileCol * tileSize,
-              tileRow * tileSize,
-              tileSize,
-              tileSize,
               col * tileSize,
               row * tileSize,
+              tileSize,
+              tileSize,
+              tileCol * tileSize,
+              tileRow * tileSize,
               tileSize,
               tileSize
             );

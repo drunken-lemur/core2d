@@ -9,6 +9,7 @@ import {
   foreachBehavior,
   IBehaviors,
   IBrush,
+  IEntity,
   intervalBehavior,
   IPointData,
   ITexture,
@@ -88,18 +89,14 @@ class Tileset implements ITileset {
     const tileCol = id % this.columns | 0;
     const tileRow = (id / this.columns) | 0; // Bitwise OR operation
 
-    // brush
-    //   .setStyle({ fillStyle: "pink" })
-    //   .fillRect(x * tilewidth, y * tileheight, tilewidth, tileheight);
-
     brush.drawImage(
       this.texture.image,
-      (tileCol - 1) * tilewidth,
-      tileRow * tileheight,
-      tilewidth,
-      tileheight,
       x * tilewidth,
       y * tileheight,
+      tilewidth,
+      tileheight,
+      (tileCol - 1) * tilewidth,
+      tileRow * tileheight,
       tilewidth,
       tileheight
     );
@@ -221,6 +218,7 @@ export class TiledMap extends Entity implements ITiledMap {
 
   private mainLayerName: string;
   private mainTilesetName: string;
+  private player?: IEntity;
 
   constructor(mapFile: string, mainLayerName = "", mainTilesetName = "") {
     super();
@@ -244,6 +242,14 @@ export class TiledMap extends Entity implements ITiledMap {
       : tilesets;
 
     return Size.valueOf(tileset?.tilewidth || 0, tileset?.tilewidth || 0);
+  }
+
+  setPlayer(player: IEntity) {
+    this.player = player;
+
+    this.delete(player).add(player);
+
+    return this;
   }
 
   getTileByPosition = ({ x, y }: IPointData, layerName?: string): ITile => {

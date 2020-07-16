@@ -37,7 +37,7 @@ class App extends BaseApp {
   }
 
   run = (gameName: Game) => {
-    const screen = new CanvasScreen(this.canvas, Resolutions.other.$1440x240);
+    const screen = new CanvasScreen(this.canvas, Resolutions.other.$720x240);
 
     const game = games[gameName](screen);
     game.start();
