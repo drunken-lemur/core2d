@@ -102,6 +102,14 @@ class Tileset implements ITileset {
   };
 }
 
+const bindMethods = (obj: any, ...methods: any[]) => {
+  methods.forEach(method => {
+    if (!method || !method.bind || !method.name) return;
+
+    obj[method.name] = method.bind(obj);
+  });
+};
+
 export class TiledMap extends Entity implements ITiledMap {
   private static DefaultGravity = 0.3;
 
@@ -215,6 +223,8 @@ export class TiledMap extends Entity implements ITiledMap {
 
     this.disable().hide();
 
+    bindMethods(this, this.fromCell, this.toCell);
+
     // noinspection JSIgnoredPromiseFromCall
     this.load(mapFile);
   }
@@ -247,61 +257,51 @@ export class TiledMap extends Entity implements ITiledMap {
     if (!layer || x < 0 || y < 0) return 0;
 
     const { data } = layer;
-    const { x: col, y: row } = this.toCellPosition(x, y);
+    const { x: col, y: row } = this.toCell(x, y);
 
     return (data[row] && data[row][col]) || 0;
   };
 
-  getLayer() {
-    const { mainLayerName, layers, cellSize } = this;
-  }
-
-  toCellPosition(x: number | IPointData, y?: number) {
+  toCell(x: number | IPointData, y?: number) {
     const { w, h } = this.cellSize;
     const point = new Point(x, y);
 
     return point.divide(w, h).floor();
   }
 
-  isWall(entity: IEntity, position: Position) {
-    const { cellSize } = this;
+  fromCell(x: number | IPointData, y?: number) {
+    const { w, h } = this.cellSize;
+    const point = new Point(x, y);
+
+    return point.multiply(w, h);
+  }
+
+  isWall(entity: IEntity, position: Position, align = false): boolean {
+    const { cellSize, toCell, fromCell } = this;
     const corners = entity.getCorners();
 
-    if (position === Position.Top) {
-      const from = corners[Position.TopLeft];
-      const to = corners[Position.TopRight];
+    const topLeft = corners[Position.BottomLeft];
+    const topRight = corners[Position.BottomRight];
+    const bottomRight = corners[Position.BottomRight];
+    const bottomLeft = corners[Position.BottomLeft];
 
-      for (let x = from.x; x < to.x; x += cellSize.w) {
-        if (this.getTileByPosition({ x, y: from.y })) {
-          return true;
-        }
+    if (position === Position.Top) {
+      for (let x = topLeft.x; x < topRight.x; x += cellSize.w) {
+        if (this.getTileByPosition({ x, y: topLeft.y })) return true;
       }
     } else if (position === Position.Right) {
-      const from = corners[Position.TopRight];
-      const to = corners[Position.BottomRight];
-
-      for (let y = from.y; y < to.y; y += cellSize.h) {
-        if (this.getTileByPosition({ x: from.x, y })) {
-          return true;
-        }
+      for (let y = topRight.y; y < bottomRight.y; y += cellSize.h) {
+        if (this.getTileByPosition({ x: topRight.x, y })) return true;
       }
     } else if (position === Position.Bottom) {
-      const from = corners[Position.BottomLeft].clone().divide(cellSize.w, cellSize.h).floor().multiply(cellSize.w, cellSize.h);
-      const to = corners[Position.BottomRight];
+      const from = fromCell(toCell(bottomLeft));
 
-      for (let x = from.x; x < to.x; x += cellSize.w) {
-        if (this.getTileByPosition({ x, y: from.y })) {
-          return true;
-        }
+      for (let x = from.x; x < bottomRight.x; x += cellSize.w) {
+        if (this.getTileByPosition({ x, y: from.y })) return true;
       }
     } else if (position === Position.Left) {
-      const from = corners[Position.TopLeft];
-      const to = corners[Position.BottomLeft];
-
-      for (let y = from.y; y < to.y; y += cellSize.h) {
-        if (this.getTileByPosition({ x: from.x, y })) {
-          return true;
-        }
+      for (let y = topLeft.y; y < bottomLeft.y; y += cellSize.h) {
+        if (this.getTileByPosition({ x: topLeft.x, y })) return true;
       }
     }
 

@@ -27,13 +27,16 @@ export class Player extends Entity implements IVelocity {
   private static DefaultSpeed = new Point(2);
   private static DefaultState = PlayerState.Staying;
 
-  // views: IViews<Player> = [sceneView];
+  views: IViews<Player> = [sceneView];
   behaviors: IBehaviors<Player> = [
     defaultBehavior,
     player => {
+      const scene = this.parent?.parent as IScene;
+
+      if (!scene) return;
+
       const { control } = player;
-      const { game } = this.parent?.parent as IScene;
-      const { isKeyHold, isKeyPressed } = game.input;
+      const { isKeyHold, isKeyPressed } = scene.game.input;
 
       control.jump = isKeyPressed(Key.Space);
       control.duck = isKeyHold(Key.ArrowDown);

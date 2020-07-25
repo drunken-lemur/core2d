@@ -145,7 +145,7 @@ export class Texture extends Entity implements ITexture {
     this.isLoaded = true;
     this.enable().show();
 
-    console.log("Texture onLoad");
+    // console.log("Texture onLoad");
 
     this.onLoad.forEach(onLoad => onLoad(this));
   };

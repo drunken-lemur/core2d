@@ -3,12 +3,12 @@ import { Bounds, Direction, Sprite } from "core";
 import { darkwingDuckLeftTexture, darkwingDuckRightTexture } from "../texture";
 
 const left = new Sprite(darkwingDuckLeftTexture).setFrames(
-  [Bounds.valueOf(-87, 130, 30, 21)],
+  [Sprite.CreateBoundsFrame(-87, 130, 30, 21, 0, 8)],
   10
 );
 
 const right = new Sprite(darkwingDuckRightTexture).setFrames(
-  [Bounds.valueOf(87, 130, 30, 21)],
+  [Sprite.CreateBoundsFrame(87, 130, 30, 21, 0, 8)],
   10
 );
 
