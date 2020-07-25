@@ -11,6 +11,15 @@ export interface ICorners {
   [Position.BottomRight]: IPoint;
 }
 
+export interface ISides {
+  [Position.Top]: IBounds;
+  [Position.Right]: IBounds;
+  [Position.Bottom]: IBounds;
+  [Position.Left]: IBounds;
+}
+
+export type ISidesIntersect = Record<keyof ISides, boolean>;
+
 export interface IBoundsData extends ISizeData, IPointData {}
 
 export interface IBounds extends IBoundsData, IRotatable, IWithToArray {
@@ -82,12 +91,19 @@ export interface IBounds extends IBoundsData, IRotatable, IWithToArray {
   ): this;
   cropBounds(x: number | IBoundsData, y?: number, w?: number, h?: number): this;
   getCorners(): ICorners;
+  getSides(w?: number, h?: number): ISides;
   isIntersect(
     x: number | IBoundsData,
     y?: number,
     w?: number,
     h?: number
   ): boolean;
+  getIntersectSides(
+    x: number | IBoundsData,
+    y?: number,
+    w?: number,
+    h?: number
+  ): ISidesIntersect;
   isIntersectByRadius(
     x: number | IBoundsData,
     y?: number,
@@ -580,15 +596,41 @@ export class Bounds implements IBounds {
     };
   }
 
+  getSides(w = 0, h = 0): ISides {
+    return {
+      [Position.Top]: new Bounds(this.x, this.y, this.w, h),
+      [Position.Right]: new Bounds(this.x + this.w, this.y, -w, this.h),
+      [Position.Bottom]: new Bounds(this.x, this.y + this.h, this.w, -h),
+      [Position.Left]: new Bounds(this.x, this.y, w, this.h)
+    };
+  }
+
   isIntersect(x: number | IBoundsData, y?: number, w?: number, h?: number) {
     const bounds = Bounds.valueOf(x, y, w, h);
 
     return (
       this.position.x + this.size.w > bounds.x &&
-      this.position.x < bounds.x + bounds.w &&
+      this.position.x <= bounds.x + bounds.w &&
       this.position.y + this.size.h > bounds.y &&
-      this.position.y < bounds.y + bounds.h
+      this.position.y <= bounds.y + bounds.h
     );
+  }
+
+  getIntersectSides(
+    x: number | IBoundsData,
+    y?: number,
+    w?: number,
+    h?: number
+  ): ISidesIntersect {
+    const bounds = new Bounds(x, y, w, h);
+    const sides = this.getSides();
+
+    return {
+      [Position.Top]: bounds.isIntersect(sides[Position.Top]),
+      [Position.Right]: bounds.isIntersect(sides[Position.Right]),
+      [Position.Bottom]: bounds.isIntersect(sides[Position.Bottom]),
+      [Position.Left]: bounds.isIntersect(sides[Position.Left])
+    };
   }
 
   // @deprecated // todo: fix logic

@@ -4,18 +4,17 @@ import {
   defaultBehavior,
   defaultView,
   Entity,
-  floorBoundsBehavior,
   floorPositionBehavior,
   foreachBehavior,
   IBehaviors,
   IBrush,
   IEntity,
-  intervalBehavior,
   IPointData,
   ITexture,
   IVelocity,
   IViews,
-  netView,
+  Point,
+  Position,
   removeColorOnLoad,
   Size,
   Texture
@@ -52,7 +51,7 @@ export interface ITiledMap {
   layers: ITiledMapLayer[];
 }
 
-export type ITile = number;
+export type ITile = number & {};
 
 class Tileset implements ITileset {
   name!: string;
@@ -134,28 +133,21 @@ export class TiledMap extends Entity implements ITiledMap {
   behaviors: IBehaviors<TiledMap> = [
     defaultBehavior,
     gravityBehavior(TiledMap.DefaultGravity),
+    map => {},
     map =>
       map.forEach<IVelocity>(children => {
         const { velocity } = children;
 
         if (velocity) {
           children.y += velocity.y;
-          const {
-            TopLeft,
-            TopRight,
-            BottomLeft,
-            BottomRight
-          } = children.getCorners();
-          const topLeft = map.getTileByPosition(TopLeft);
-          const topRight = map.getTileByPosition(TopRight);
-          const bottomLeft = map.getTileByPosition(BottomLeft);
-          const bottomRight = map.getTileByPosition(BottomRight);
+          const isTopWall = map.isWall(children, Position.Top);
+          const isBottomWall = map.isWall(children, Position.Bottom);
           children.y -= velocity.y;
 
           if (velocity.y < 0) {
-            if (topLeft || topRight) velocity.y = 0;
+            if (isTopWall) velocity.y = 0;
           } else if (velocity.y > 0) {
-            if (bottomLeft || bottomRight) velocity.y = 0;
+            if (isBottomWall) velocity.y = 0;
           }
 
           children.y += velocity.y;
@@ -167,22 +159,15 @@ export class TiledMap extends Entity implements ITiledMap {
 
         if (velocity) {
           children.x += velocity.x;
-          const {
-            TopLeft,
-            TopRight,
-            BottomLeft,
-            BottomRight
-          } = children.getCorners();
-          const topLeft = map.getTileByPosition(TopLeft);
-          const topRight = map.getTileByPosition(TopRight);
-          const bottomLeft = map.getTileByPosition(BottomLeft);
-          const bottomRight = map.getTileByPosition(BottomRight);
+
+          const isLeftWall = map.isWall(children, Position.Left);
+          const isRightWall = map.isWall(children, Position.Right);
           children.x -= velocity.x;
 
           if (velocity.x < 0) {
-            if (topLeft || bottomLeft) velocity.x = 0;
+            if (isLeftWall) velocity.x = 0;
           } else if (velocity.x > 0) {
-            if (topRight || bottomRight) velocity.x = 0;
+            if (isRightWall) velocity.x = 0;
           }
 
           children.x += velocity.x;
@@ -253,7 +238,7 @@ export class TiledMap extends Entity implements ITiledMap {
   }
 
   getTileByPosition = ({ x, y }: IPointData, layerName?: string): ITile => {
-    const { mainLayerName, layers, cellSize } = this;
+    const { mainLayerName, layers } = this;
     const ln = layerName || mainLayerName;
     const [layer] = mainLayerName
       ? layers.filter(({ name }) => name === ln)
@@ -262,11 +247,66 @@ export class TiledMap extends Entity implements ITiledMap {
     if (!layer || x < 0 || y < 0) return 0;
 
     const { data } = layer;
-    const col = (x / cellSize.w) | 0;
-    const row = (y / cellSize.h) | 0;
+    const { x: col, y: row } = this.toCellPosition(x, y);
 
     return (data[row] && data[row][col]) || 0;
   };
+
+  getLayer() {
+    const { mainLayerName, layers, cellSize } = this;
+  }
+
+  toCellPosition(x: number | IPointData, y?: number) {
+    const { w, h } = this.cellSize;
+    const point = new Point(x, y);
+
+    return point.divide(w, h).floor();
+  }
+
+  isWall(entity: IEntity, position: Position) {
+    const { cellSize } = this;
+    const corners = entity.getCorners();
+
+    if (position === Position.Top) {
+      const from = corners[Position.TopLeft];
+      const to = corners[Position.TopRight];
+
+      for (let x = from.x; x < to.x; x += cellSize.w) {
+        if (this.getTileByPosition({ x, y: from.y })) {
+          return true;
+        }
+      }
+    } else if (position === Position.Right) {
+      const from = corners[Position.TopRight];
+      const to = corners[Position.BottomRight];
+
+      for (let y = from.y; y < to.y; y += cellSize.h) {
+        if (this.getTileByPosition({ x: from.x, y })) {
+          return true;
+        }
+      }
+    } else if (position === Position.Bottom) {
+      const from = corners[Position.BottomLeft].clone().divide(cellSize.w, cellSize.h).floor().multiply(cellSize.w, cellSize.h);
+      const to = corners[Position.BottomRight];
+
+      for (let x = from.x; x < to.x; x += cellSize.w) {
+        if (this.getTileByPosition({ x, y: from.y })) {
+          return true;
+        }
+      }
+    } else if (position === Position.Left) {
+      const from = corners[Position.TopLeft];
+      const to = corners[Position.BottomLeft];
+
+      for (let y = from.y; y < to.y; y += cellSize.h) {
+        if (this.getTileByPosition({ x: from.x, y })) {
+          return true;
+        }
+      }
+    }
+
+    return false;
+  }
 
   private load = async (mapFile: string) => {
     const { tilesets, layers } = await loadTiledMap(mapFile);
