@@ -4,6 +4,7 @@ import { IEntity } from "./entity";
 import { IUpdated } from "./updated";
 import { IWithParent } from "./composite";
 import { IPointData } from "core/point";
+import { IVelocity } from "core/velocity";
 
 export interface IWithBehavior {
   addBehaviors: (...behaviors: IBehavior[]) => this;
@@ -189,3 +190,10 @@ export const hideOnOutOfBoundsBehavior = onOutInOfBoundsBehavior(
   e => e.hide(),
   e => e.show()
 );
+
+export const moveByVelocityBehavior: IBehaviorFunction<IVelocity & IEntity> = (
+  entity,
+  deltaTime
+) => {
+  if (entity.velocity) entity.plusPosition(entity.velocity);
+};

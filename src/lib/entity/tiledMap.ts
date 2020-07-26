@@ -1,5 +1,5 @@
 import {
-  assetsPath,
+  assetsPath, childrenBehavior,
   Color,
   defaultBehavior,
   defaultView,
@@ -19,7 +19,7 @@ import {
   Size,
   Texture
 } from "core";
-import { gravityBehavior, loadTiledMap } from "lib";
+import { bindMethods, gravityBehavior, loadTiledMap } from "lib";
 
 export interface ITilesetImage {
   width: number;
@@ -102,14 +102,6 @@ class Tileset implements ITileset {
   };
 }
 
-const bindMethods = (obj: any, ...methods: any[]) => {
-  methods.forEach(method => {
-    if (!method || !method.bind || !method.name) return;
-
-    obj[method.name] = method.bind(obj);
-  });
-};
-
 export class TiledMap extends Entity implements ITiledMap {
   private static DefaultGravity = 0.3;
 
@@ -141,71 +133,7 @@ export class TiledMap extends Entity implements ITiledMap {
   behaviors: IBehaviors<TiledMap> = [
     defaultBehavior,
     gravityBehavior(TiledMap.DefaultGravity),
-    map => {},
-    map =>
-      map.forEach<IVelocity>(children => {
-        const { velocity } = children;
-
-        if (velocity) {
-          children.y += velocity.y;
-          const isTopWall = map.isWall(children, Position.Top);
-          const isBottomWall = map.isWall(children, Position.Bottom);
-          children.y -= velocity.y;
-
-          if (velocity.y < 0) {
-            if (isTopWall) velocity.y = 0;
-          } else if (velocity.y > 0) {
-            if (isBottomWall) velocity.y = 0;
-          }
-
-          children.y += velocity.y;
-        }
-      }),
-    map =>
-      map.forEach<IVelocity>(children => {
-        const { velocity } = children;
-
-        if (velocity) {
-          children.x += velocity.x;
-
-          const isLeftWall = map.isWall(children, Position.Left);
-          const isRightWall = map.isWall(children, Position.Right);
-          children.x -= velocity.x;
-
-          if (velocity.x < 0) {
-            if (isLeftWall) velocity.x = 0;
-          } else if (velocity.x > 0) {
-            if (isRightWall) velocity.x = 0;
-          }
-
-          children.x += velocity.x;
-        }
-      }),
-    map =>
-      0 &&
-      map.forEach<IVelocity>(children => {
-        if (children.velocity) {
-          const { velocity } = children;
-          children.plusPosition(velocity);
-
-          const {
-            TopLeft,
-            TopRight,
-            BottomLeft,
-            BottomRight
-          } = children.getCorners();
-          const topLeft = map.getTileByPosition(TopLeft);
-          const topRight = map.getTileByPosition(TopRight);
-          const bottomLeft = map.getTileByPosition(BottomLeft);
-          const bottomRight = map.getTileByPosition(BottomRight);
-          children.minusPosition(velocity);
-
-          if (topLeft || bottomLeft) children.velocity.x = 0;
-          if (topRight || bottomRight) children.velocity.x = 0;
-          if (topLeft || topRight) children.velocity.y = 0;
-          if (bottomLeft || bottomRight) children.velocity.y = 0;
-        }
-      }),
+    TiledMap.processCollisions,
     foreachBehavior(floorPositionBehavior)
   ];
 
@@ -237,6 +165,27 @@ export class TiledMap extends Entity implements ITiledMap {
       : tilesets;
 
     return Size.valueOf(tileset?.tilewidth || 0, tileset?.tilewidth || 0);
+  }
+
+  private static processCollisions(map: TiledMap) {
+    map.forEach<IVelocity>(children => {
+      const { velocity } = children;
+
+      if (!velocity) return;
+
+      children.y += velocity.y;
+      const isTopWall = map.isWall(children, Position.Top);
+      const isBottomWall = map.isWall(children, Position.Bottom);
+      children.y -= velocity.y;
+
+      if (velocity.y < 0) {
+        if (isTopWall) velocity.y = 0;
+      } else if (velocity.y > 0) {
+        if (isBottomWall) velocity.y = 0;
+      }
+
+      children.y += velocity.y;
+    });
   }
 
   setPlayer(player: IEntity) {
