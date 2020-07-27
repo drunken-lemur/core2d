@@ -28,7 +28,7 @@ export class Player extends Entity implements IVelocity {
   private static DefaultSpeed = new Point(2);
   private static DefaultState = PlayerState.Staying;
 
-  views: IViews<Player> = [sceneView];
+  // views: IViews<Player> = [sceneView];
   behaviors: IBehaviors<Player> = [
     defaultBehavior,
     Player.proccessControll,

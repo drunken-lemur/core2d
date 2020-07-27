@@ -1,4 +1,5 @@
 import {
+  Bounds,
   Color,
   defaultBehavior,
   defaultView,
@@ -13,9 +14,10 @@ import {
   IViews,
   Point,
   Position,
+  rectView,
   Size
 } from "core";
-import { bindMethods, fetchXml, gravityBehavior } from "lib";
+import { bindMethods, fetchXml, gravityBehavior, Label } from "lib";
 
 import { ITile } from "./tile";
 import { ITileset, Tileset } from "./tileset";
@@ -34,22 +36,33 @@ export interface ITiledMap {
 }
 
 export class TiledMap extends Entity implements ITiledMap {
-  private static DefaultGravity = 0.3;
+  private static DefaultGravity = 0.03;
 
   style = { strokeStyle: Color.Black };
 
   tilesets: ITileset[];
   layers: ITiledMapLayer[];
-  views: IViews<TiledMap> = [defaultView, TiledMap.drawTiles];
+  views: IViews<TiledMap> = [TiledMap.drawTiles, defaultView];
   behaviors: IBehaviors<TiledMap> = [
     defaultBehavior,
-    // gravityBehavior(TiledMap.DefaultGravity),
+    gravityBehavior(TiledMap.DefaultGravity),
     TiledMap.processCollisions,
     foreachBehavior(floorPositionBehavior)
   ];
 
+  private testLabel = new Label().setStyle({
+    font: `${14}px Verdana`,
+    fillStyle: Color.White,
+    textAlign: "left",
+    textBaseline: "middle"
+  });
+  private top = new Entity();
+  private right = new Entity();
+  private bottom = new Entity().setBounds(16, 16, 16, 16);
+  private left = new Entity();
+
   private readonly mainLayerName: string;
-  private readonly mainTilesetName: string;
+  private mainTilesetName: string;
   private mainLayer?: ITiledMapLayer;
   private mainTileset?: ITileset;
   private player?: IEntity;
@@ -68,6 +81,17 @@ export class TiledMap extends Entity implements ITiledMap {
 
     // noinspection JSIgnoredPromiseFromCall
     this.load(mapFile);
+
+    const { top, right, bottom, left } = this;
+    [top, right, bottom, left].forEach(block =>
+      this.add(
+        block
+          .setStyle({
+            fillStyle: Color.Green
+          })
+          .addViews(rectView)
+      )
+    );
   }
 
   get cellSize() {
@@ -115,6 +139,37 @@ export class TiledMap extends Entity implements ITiledMap {
 
       children.y += velocity.y;
     });
+
+    const { player, testLabel, cellSize } = map;
+
+    if (player) {
+      const { top, right, bottom, left } = map;
+
+      const corners = player.cloneBounds().getCorners();
+      const topLeft = corners[Position.TopLeft];
+      const topRight = corners[Position.TopRight];
+      const bottomRight = corners[Position.BottomRight];
+      const bottomLeft = corners[Position.BottomLeft];
+
+      testLabel.text = JSON.stringify({
+        topRight,
+        bottomRight,
+        player: player.getBounds()
+      });
+
+      top
+        .setPosition(topLeft.x, topLeft.y - cellSize.h)
+        .setSize(bottomRight.x - bottomLeft.x, cellSize.h);
+      right
+        .setPosition(topRight)
+        .setSize(cellSize.w, bottomRight.y - topRight.y);
+      bottom
+        .setPosition(bottomLeft)
+        .setSize(bottomRight.x - bottomLeft.x, cellSize.h);
+      left
+        .setPosition(topLeft.x - cellSize.w, topLeft.y)
+        .setSize(cellSize.w, bottomRight.y - topRight.y);
+    }
   }
 
   private static async load(mapFile: string) {
@@ -321,6 +376,10 @@ export class TiledMap extends Entity implements ITiledMap {
     tilesets.forEach(tileset => {
       const tilesetObj = new Tileset(tileset);
 
+      if (!this.mainTilesetName) {
+        this.mainTilesetName = tileset.name;
+      }
+
       if (tileset.name === this.mainTilesetName) {
         // set main tileset
         this.mainTileset = tilesetObj;
@@ -346,6 +405,11 @@ export class TiledMap extends Entity implements ITiledMap {
         layer.height * tileset.tileheight
       );
     }
+
+    console.log("setSizeAfterLoad", this.getBounds());
+
+    // todo: remove this line
+    this.add(this.testLabel.align(this, Position.CenterLeft));
 
     return this;
   }

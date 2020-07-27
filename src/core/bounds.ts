@@ -29,7 +29,7 @@ export interface IBounds extends IBoundsData, IRotatable, IWithToArray {
   setBounds(x: number | IBoundsData, y?: number, w?: number, h?: number): this;
   setSize(w: number | ISizeData, h?: number): this;
   setPosition(x: number | IPointData, y?: number): this;
-  plusBounds(bounds: IBounds): this;
+  plusBounds(x: number | IBoundsData, y?: number, w?: number, h?: number): this;
   plusSize(w: number | ISizeData, h?: number): this;
   plusPosition(x: number | IPointData, y?: number): this;
   minusBounds(
