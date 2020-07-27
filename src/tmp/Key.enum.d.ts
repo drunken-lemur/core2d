@@ -218,7 +218,7 @@ export declare const enum Key {
   /** The Convert key, which instructs the IME to convert the current input method sequence into the resulting character. */
   Convert = "Convert",
 
-  /** A dead "combining" key; that is, a key which is used in tandem with other keys to generate accented and other modified characters. If pressed by itself, it doesn't generate a character. If you wish to identify which specific dead key was pressed (in cases where more than one exists), you can do so by examining the KeyboardEvent's associated compositionupdate event's  data property. */
+  /** A dead "combining" key; that is, a key which is used in tandem with other keys to generate accented and other modified characters. If pressed by itself, it doesn't generate a character. If you wish to identify which specific dead key was pressed (in cases where more than one exists), you can do so by examining the KeyboardEvent's associated compositionupdate event's  tiles property. */
   Dead = "Dead",
 
   /** The Final (Final Mode) key is used on some Asian keyboards to enter final mode when using IMEs. */
@@ -512,7 +512,7 @@ export declare const enum Key {
   /** Displays or hides the media contents available for playback (this may be a channel guide showing the currently airing programs, or a list of media files to play). */
   TVContentsMenu = "TVContentsMenu",
 
-  /** Displays or hides the TV's data service menu. */
+  /** Displays or hides the TV's tiles service menu. */
   TVDataService = "TVDataService",
 
   /** Cycles the input mode on an external TV. */

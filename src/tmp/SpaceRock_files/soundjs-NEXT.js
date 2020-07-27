@@ -356,7 +356,7 @@ this.createjs = this.createjs||{};
 	 * bubbling / capture, preventDefault, stopPropagation, stopImmediatePropagation, and handleEvent.
 	 * 
 	 * EventDispatcher also exposes a {{#crossLink "EventDispatcher/on"}}{{/crossLink}} method, which makes it easier
-	 * to create scoped listeners, listeners that only run once, and listeners with associated arbitrary data. The 
+	 * to create scoped listeners, listeners that only run once, and listeners with associated arbitrary tiles. The
 	 * {{#crossLink "EventDispatcher/off"}}{{/crossLink}} method is merely an alias to
 	 * {{#crossLink "EventDispatcher/removeEventListener"}}{{/crossLink}}.
 	 * 
@@ -479,7 +479,7 @@ this.createjs = this.createjs||{};
 	
 	/**
 	 * A shortcut method for using addEventListener that makes it easier to specify an execution scope, have a listener
-	 * only run once, associate arbitrary data with the listener, and remove the listener.
+	 * only run once, associate arbitrary tiles with the listener, and remove the listener.
 	 * 
 	 * This method works by creating an anonymous wrapper function and subscribing it with addEventListener.
 	 * The wrapper function is returned for use with `removeEventListener` (or `off`).
@@ -491,10 +491,10 @@ this.createjs = this.createjs||{};
 	 * <h4>Example</h4>
 	 * 
 	 * 		var listener = myBtn.on("click", handleClick, null, false, {count:3});
-	 * 		function handleClick(evt, data) {
-	 * 			data.count -= 1;
+	 * 		function handleClick(evt, tiles) {
+	 * 			tiles.count -= 1;
 	 * 			console.log(this == myBtn); // true - scope defaults to the dispatcher
-	 * 			if (data.count == 0) {
+	 * 			if (tiles.count == 0) {
 	 * 				alert("clicked 3 times!");
 	 * 				myBtn.off("click", listener);
 	 * 				// alternately: evt.remove();
@@ -507,7 +507,7 @@ this.createjs = this.createjs||{};
 	 * the event is dispatched.
 	 * @param {Object} [scope] The scope to execute the listener in. Defaults to the dispatcher/currentTarget for function listeners, and to the listener itself for object listeners (ie. using handleEvent).
 	 * @param {Boolean} [once=false] If true, the listener will remove itself after the first time it is triggered.
-	 * @param {*} [data] Arbitrary data that will be included as the second parameter when the listener is called.
+	 * @param {*} [data] Arbitrary tiles that will be included as the second parameter when the listener is called.
 	 * @param {Boolean} [useCapture=false] For events that bubble, indicates whether to listen for the event in the capture or bubbling/target phase.
 	 * @return {Function} Returns the anonymous function that was created and assigned as the listener. This is needed to remove the listener later using .removeEventListener.
 	 **/
@@ -943,7 +943,7 @@ this.createjs = this.createjs||{};
 	 * @class ErrorEvent
 	 * @param {String} [title] The error title
 	 * @param {String} [message] The error description
-	 * @param {Object} [data] Additional error data
+	 * @param {Object} [data] Additional error tiles
 	 * @constructor
 	 */
 	function ErrorEvent(title, message, data) {
@@ -964,7 +964,7 @@ this.createjs = this.createjs||{};
 		this.message = message;
 
 		/**
-		 * Additional data attached to an error.
+		 * Additional tiles attached to an error.
 		 * @property data
 		 * @type {Object}
 		 */
@@ -1110,7 +1110,7 @@ this.createjs = this.createjs || {};
 		this.callback = null;
 
 		/**
-		 * An arbitrary data object, which is included with the loaded object.
+		 * An arbitrary tiles object, which is included with the loaded object.
 		 * @property data
 		 * @type {Object}
 		 * @default null
@@ -1251,7 +1251,7 @@ this.createjs = this.createjs || {};
 	var s = {};
 
 	/**
-	 * Defines a POST request, use for a method value when loading data.
+	 * Defines a POST request, use for a method value when loading tiles.
 	 * @property POST
 	 * @type {string}
 	 * @default post
@@ -1260,7 +1260,7 @@ this.createjs = this.createjs || {};
 	s.POST = "POST";
 
 	/**
-	 * Defines a GET request, use for a method value when loading data.
+	 * Defines a GET request, use for a method value when loading tiles.
 	 * @property GET
 	 * @type {string}
 	 * @default get
@@ -1347,7 +1347,7 @@ this.createjs = this.createjs || {};
 	s.JAVASCRIPT = "javascript";
 
 	/**
-	 * The preload type for json files, usually with the "json" file extension. JSON data is loaded and parsed into a
+	 * The preload type for json files, usually with the "json" file extension. JSON tiles is loaded and parsed into a
 	 * JavaScript object. Note that if a `callback` is present on the load item, the file will be loaded with JSONP,
 	 * no matter what the {{#crossLink "LoadQueue/preferXHR:property"}}{{/crossLink}} property is set to, and the JSON
 	 * must contain a matching wrapper function.
@@ -1360,7 +1360,7 @@ this.createjs = this.createjs || {};
 	s.JSON = "json";
 
 	/**
-	 * The preload type for jsonp files, usually with the "json" file extension. JSON data is loaded and parsed into a
+	 * The preload type for jsonp files, usually with the "json" file extension. JSON tiles is loaded and parsed into a
 	 * JavaScript object. You are required to pass a callback parameter that matches the function wrapper in the JSON.
 	 * Note that JSONP will always be used if there is a callback present, no matter what the {{#crossLink "LoadQueue/preferXHR:property"}}{{/crossLink}}
 	 * property is set to.
@@ -1373,7 +1373,7 @@ this.createjs = this.createjs || {};
 	s.JSONP = "jsonp";
 
 	/**
-	 * The preload type for json-based manifest files, usually with the "json" file extension. The JSON data is loaded
+	 * The preload type for json-based manifest files, usually with the "json" file extension. The JSON tiles is loaded
 	 * and parsed into a JavaScript object. PreloadJS will then look for a "manifest" property in the JSON, which is an
 	 * Array of files to load, following the same format as the {{#crossLink "LoadQueue/loadManifest"}}{{/crossLink}}
 	 * method. If a "callback" is specified on the manifest object, then it will be loaded using JSONP instead,
@@ -1821,13 +1821,13 @@ this.createjs = this.createjs || {};
 	/**
 	 * Formats an object into a query string for either a POST or GET request.
 	 * @method formatQueryString
-	 * @param {Object} data The data to convert to a query string.
+	 * @param {Object} data The tiles to convert to a query string.
 	 * @param {Array} [query] Existing name/value pairs to append on to this query.
 	 * @static
 	 */
 	s.formatQueryString = function (data, query) {
 		if (data == null) {
-			throw new Error("You must specify data.");
+			throw new Error("You must specify tiles.");
 		}
 		var params = [];
 		for (var n in data) {
@@ -1840,7 +1840,7 @@ this.createjs = this.createjs || {};
 	};
 
 	/**
-	 * A utility method that builds a file path using a source and a data object, and formats it into a new path.
+	 * A utility method that builds a file path using a source and a tiles object, and formats it into a new path.
 	 * @method buildURI
 	 * @param {String} src The source path to add values to.
 	 * @param {Object} [data] Object used to append values to this request as a query string. Existing parameters on the
@@ -2149,7 +2149,7 @@ this.createjs = this.createjs || {};
 	 * or {{#crossLink "LoadQueue/loadManifest"}}{{/crossLink}} call. If only a string path or tag was specified, the
 	 * object will contain that value as a `src` property.
 	 * @param {Object} result The HTML tag or parsed result of the loaded item.
-	 * @param {Object} rawResult The unprocessed result, usually the raw text or binary data before it is converted
+	 * @param {Object} rawResult The unprocessed result, usually the raw text or binary tiles before it is converted
 	 * to a usable object.
 	 * @since 0.6.0
 	 */
@@ -2182,7 +2182,7 @@ this.createjs = this.createjs || {};
 	 * event is dispatched.
 	 * @method getResult
 	 * @param {Boolean} [raw=false] Determines if the returned result will be the formatted content, or the raw loaded
-	 * data (if it exists).
+	 * tiles (if it exists).
 	 * @return {Object}
 	 * @since 0.6.0
 	 */
@@ -2592,9 +2592,9 @@ this.createjs = this.createjs || {};
 	"use strict";
 
 	/**
-	 * A base class for actual data requests, such as {{#crossLink "XHRRequest"}}{{/crossLink}}, {{#crossLink "TagRequest"}}{{/crossLink}},
-	 * and {{#crossLink "MediaRequest"}}{{/crossLink}}. PreloadJS loaders will typically use a data loader under the
-	 * hood to get data.
+	 * A base class for actual tiles requests, such as {{#crossLink "XHRRequest"}}{{/crossLink}}, {{#crossLink "TagRequest"}}{{/crossLink}},
+	 * and {{#crossLink "MediaRequest"}}{{/crossLink}}. PreloadJS loaders will typically use a tiles loader under the
+	 * hood to get tiles.
 	 * @class AbstractRequest
 	 * @param {LoadItem} item
 	 * @constructor
@@ -2901,7 +2901,7 @@ this.createjs = this.createjs || {};
 	/**
 	 * A preloader that loads items using XHR requests, usually XMLHttpRequest. However XDomainRequests will be used
 	 * for cross-domain requests if possible, and older versions of IE fall back on to ActiveX objects when necessary.
-	 * XHR requests load the content as text or binary data, provide progress and consistent completion events, and
+	 * XHR requests load the content as text or binary tiles, provide progress and consistent completion events, and
 	 * can be canceled during load. Note that XHR is not supported in IE 6 or earlier, and is not recommended for
 	 * cross-domain loading.
 	 * @class XHRRequest
@@ -3368,7 +3368,7 @@ this.createjs = this.createjs || {};
 			headers["Origin"] = location.origin;
 		}
 
-		// To send data we need to set the Content-type header)
+		// To send tiles we need to set the Content-type header)
 		if (item.values && item.method == createjs.Methods.POST) {
 			headers["Content-Type"] = "application/x-www-form-urlencoded";
 		}
@@ -3543,7 +3543,7 @@ this.createjs = this.createjs || {};
  *		createjs.Sound.initializeDefaultPlugins();
  *		var assetsPath = "./assets/";
  *		var sounds = [{
- *			src:"MyAudioSprite.ogg", data: {
+ *			src:"MyAudioSprite.ogg", tiles: {
  *				audioSprite: [
  *					{id:"sound1", startTime:0, duration:500},
  *					{id:"sound2", startTime:1000, duration:400},
@@ -3783,7 +3783,7 @@ this.createjs = this.createjs || {};
      *          instance.volume = 0.5;
 	 *      }
 	 *
-	 * The maximum number of concurrently playing instances of the same sound can be specified in the "data" argument
+	 * The maximum number of concurrently playing instances of the same sound can be specified in the "tiles" argument
 	 * of {{#crossLink "Sound/registerSound"}}{{/crossLink}}.  Note that if not specified, the active plugin will apply
 	 * a default limit.  Currently HTMLAudioPlugin sets a default limit of 2, while WebAudioPlugin and FlashAudioPlugin set a
 	 * default limit of 100.
@@ -3808,7 +3808,7 @@ this.createjs = this.createjs || {};
 	 *
 	 *		var assetsPath = "./assets/";
 	 *		var sounds = [{
-	 *			src:"MyAudioSprite.ogg", data: {
+	 *			src:"MyAudioSprite.ogg", tiles: {
 	 *				audioSprite: [
 	 *					{id:"sound1", startTime:0, duration:500},
 	 *					{id:"sound2", startTime:1000, duration:400},
@@ -4315,8 +4315,8 @@ this.createjs = this.createjs || {};
 
 	/**
 	 * An object hash that stores preloading sound sources via the parsed source that is passed to the plugin.  Contains the
-	 * source, id, and data that was passed in by the user.  Parsed sources can contain multiple instances of source, id,
-	 * and data.
+	 * source, id, and tiles that was passed in by the user.  Parsed sources can contain multiple instances of source, id,
+	 * and tiles.
 	 * @property _preloadHash
 	 * @type {Object}
 	 * @private
@@ -4356,7 +4356,7 @@ this.createjs = this.createjs || {};
 	 * @param {String} type The event type.
 	 * @param {String} src The source of the sound that was loaded.
 	 * @param {String} [id] The id passed in when the sound was registered. If one was not provided, it will be null.
-	 * @param {Number|Object} [data] Any additional data associated with the item. If not provided, it will be undefined.
+	 * @param {Number|Object} [tiles] Any additional tiles associated with the item. If not provided, it will be undefined.
 	 * @since 0.4.1
 	 */
 
@@ -4368,7 +4368,7 @@ this.createjs = this.createjs || {};
 	 * @param {String} type The event type.
 	 * @param {String} src The source of the sound that was loaded.
 	 * @param {String} [id] The id passed in when the sound was registered. If one was not provided, it will be null.
-	 * @param {Number|Object} [data] Any additional data associated with the item. If not provided, it will be undefined.
+	 * @param {Number|Object} [tiles] Any additional tiles associated with the item. If not provided, it will be undefined.
 	 * @since 0.6.0
 	 */
 
@@ -4550,7 +4550,7 @@ this.createjs = this.createjs || {};
 	 * Internal method for loading sounds.  This should not be called directly.
 	 *
 	 * @method _registerSound
-	 * @param {Object} src The object to load, containing src property and optionally containing id and data.
+	 * @param {Object} src The object to load, containing src property and optionally containing id and tiles.
 	 * @return {Object} An object with the modified values that were passed in, which defines the sound.
 	 * Returns false if the source cannot be parsed or no plugins can be initialized.
 	 * Returns true if the source is already loaded.
@@ -4630,10 +4630,10 @@ this.createjs = this.createjs || {};
 	 * @method registerSound
 	 * @param {String | Object} src The source or an Object with a "src" property or an Object with multiple extension labeled src properties.
 	 * @param {String} [id] An id specified by the user to play the sound later.  Note id is required for when src is multiple extension labeled src properties.
-	 * @param {Number | Object} [data] Data associated with the item. Sound uses the data parameter as the number of
-	 * channels for an audio instance, however a "channels" property can be appended to the data object if it is used
+	 * @param {Number | Object} [data] Data associated with the item. Sound uses the tiles parameter as the number of
+	 * channels for an audio instance, however a "channels" property can be appended to the tiles object if it is used
 	 * for other information. The audio channels will set a default based on plugin if no value is found.
-	 * Sound also uses the data property to hold an {{#crossLink "AudioSprite"}}{{/crossLink}} array of objects in the following format {id, startTime, duration}.<br/>
+	 * Sound also uses the tiles property to hold an {{#crossLink "AudioSprite"}}{{/crossLink}} array of objects in the following format {id, startTime, duration}.<br/>
 	 *   id used to play the sound later, in the same manner as a sound src with an id.<br/>
 	 *   startTime is the initial offset to start playback and loop from, in milliseconds.<br/>
 	 *   duration is the amount of time to play the clip for, in milliseconds.<br/>
@@ -4685,7 +4685,7 @@ this.createjs = this.createjs || {};
 	 * 		var assetPath = "./myAudioPath/";
 	 *      var sounds = [
 	 *          {src:"asset0.ogg", id:"example"},
-	 *          {src:"asset1.ogg", id:"1", data:6},
+	 *          {src:"asset1.ogg", id:"1", tiles:6},
 	 *          {src:"asset2.mp3", id:"works"}
 	 *          {src:{mp3:"path1/asset3.mp3", ogg:"path2/asset3NoExtension"}, id:"better"}
 	 *      ];
@@ -4695,8 +4695,8 @@ this.createjs = this.createjs || {};
 	 *
 	 * @method registerSounds
 	 * @param {Array} sounds An array of objects to load. Objects are expected to be in the format needed for
-	 * {{#crossLink "Sound/registerSound"}}{{/crossLink}}: <code>{src:srcURI, id:ID, data:Data}</code>
-	 * with "id" and "data" being optional.
+	 * {{#crossLink "Sound/registerSound"}}{{/crossLink}}: <code>{src:srcURI, id:ID, tiles:Data}</code>
+	 * with "id" and "tiles" being optional.
 	 * You can also pass an object with path and manifest properties, where path is a basePath and manifest is an array of objects to load.
 	 * Note id is required if src is an object with extension labeled src properties.
 	 * @param {string} basePath Set a path that will be prepended to each src when loading.  When creating, playing, or removing
@@ -4787,7 +4787,7 @@ this.createjs = this.createjs || {};
 	 * 		assetPath = "./myPath/";
 	 *      var sounds = [
 	 *          {src:"asset0.ogg", id:"example"},
-	 *          {src:"asset1.ogg", id:"1", data:6},
+	 *          {src:"asset1.ogg", id:"1", tiles:6},
 	 *          {src:"asset2.mp3", id:"works"}
 	 *      ];
 	 *      createjs.Sound.removeSounds(sounds, assetPath);
@@ -6362,7 +6362,7 @@ this.createjs = this.createjs || {};
 
 		/**
 		 * Object hash indexed by the source URI of each file to indicate if an audio source has begun loading,
-		 * is currently loading, or has completed loading.  Can be used to store non boolean data after loading
+		 * is currently loading, or has completed loading.  Can be used to store non boolean tiles after loading
 		 * is complete (for example arrayBuffers for web audio).
 		 * @property _audioSources
 		 * @type {Object}
