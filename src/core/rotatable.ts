@@ -10,7 +10,11 @@ export const Deg = PI / 180;
 export const Deg180 = PI;
 export const Deg360 = PI2;
 
-export interface IRotatable {
+export interface IRotatableData {
+  r?: number;
+}
+
+export interface IRotatable extends IRotatableData {
   r?: number;
   moveByRotation: (length: number) => this;
   rotate: (angle: number, unit?: Unit) => this;

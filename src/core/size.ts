@@ -7,43 +7,24 @@ export interface ISizeData {
 
 export interface ISize extends ISizeData, IWithToArray<number> {
   clone(): ISize;
-
   get(): ISizeData;
-
   set(w: number | ISizeData, h?: number): this;
-
   plus(w: number | ISizeData, h?: number): this;
-
   minus(w: number | ISizeData, h?: number): this;
-
   multiply(w: number | ISizeData, h?: number): this;
-
   divide(w: number | ISizeData, h?: number, euclidean?: boolean): this;
-
   min(w: number | ISizeData, h?: number): this;
-
   max(w: number | ISizeData, h?: number): this;
-
   swap(): this;
-
   invert(): this;
-
   invertW(): this;
-
   invertH(): this;
-
   floor(): this;
-
   round(): this;
-
   ceil(): this;
-
   eq(w: number | ISizeData, h?: number): boolean;
-
   isLess(w: number | ISizeData, y?: number, or?: boolean): boolean;
-
   isMore(w: number | ISizeData, y?: number, or?: boolean): boolean;
-
   getMinRadius(): number;
 }
 
@@ -56,17 +37,6 @@ export class Size implements ISize {
     this.h = 0;
 
     this.set(Size.valueOf(w, h));
-  }
-
-  static get(size: ISizeData): ISizeData {
-    return { w: size.w, h: size.h };
-  }
-
-  static set(destination: ISizeData, source: ISizeData): ISizeData {
-    destination.w = source.w;
-    destination.h = source.h;
-
-    return destination;
   }
 
   static plus(a: ISizeData, b: ISizeData): ISizeData {

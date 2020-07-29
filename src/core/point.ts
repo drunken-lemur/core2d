@@ -1,5 +1,5 @@
 import { IWithToArray } from "./toArray";
-import { Deg, IRotatable, Unit } from "./rotatable";
+import {Deg, IRotatable, IRotatableData, Unit} from "./rotatable";
 
 export interface IPointData {
   x: number;
@@ -126,12 +126,12 @@ export class Point implements IPoint {
     return or ? a.x > b.x || a.y > b.y : a.x > b.x && a.y > b.y;
   }
 
-  static valueOf(x: number | IPointData = 0, y?: number): IPointData {
+  static valueOf(x: number | (IPointData & IRotatableData) = 0, y?: number, r: number = 0): IPointData & IRotatableData {
     if (typeof x === "number") {
-      return { x, y: y === undefined ? x : y };
+      return { x, y: y === undefined ? x : y, r };
     }
 
-    return { x: x.x, y: x.y };
+    return { x: x.x, y: x.y, r: x.r };
   }
 
   static random(x: number | IPointData = 1, y?: number): IPoint {
@@ -140,17 +140,41 @@ export class Point implements IPoint {
     return new Point(Math.random() * point.x, Math.random() * point.y);
   }
 
+  static getDistance(a: IPointData, b: IPointData): number {
+    const { abs, sqrt } = Math;
+
+    return sqrt(abs(a.x - b.x) ** 2 + abs(a.y - b.y) ** 2);
+  }
+
+  static rotate(point: IPointData & IRotatableData, angle: number, unit = Unit.deg): IPointData & IRotatableData {
+    return {
+      x: point.x,
+      y: point.y,
+      r: (point.r || 0) + angle * -(unit === Unit.deg ? Deg : Math.PI),
+    };
+  }
+
+  static moveToAngle(point: IPointData & IRotatableData, angle: number, length: number, unit = Unit.deg): IPointData & IRotatableData {
+    const x = length * Math.sin(angle * -(unit === Unit.deg ? Deg : Math.PI));
+    const y = length * Math.cos(angle * -(unit === Unit.deg ? Deg : Math.PI));
+
+    return {
+      x: point.x + x,
+      y: point.y + y,
+      r: point.r
+    };
+  }
+
+  static moveByRotation(point: IPointData & IRotatableData, length: number): IPointData & IRotatableData {
+    return Point.moveToAngle(point, point.r || 0, length);
+  }
+
+  // todo: check & remove
   static byAngle(angle: number, length: number = 1) {
     const x = length * Math.sin(angle * -Deg);
     const y = length * Math.cos(angle * -Deg);
 
     return Point.valueOf(x, y);
-  }
-
-  static getDistance(a: IPointData, b: IPointData): number {
-    const { abs, sqrt } = Math;
-
-    return sqrt(abs(a.x - b.x) ** 2 + abs(a.y - b.y) ** 2);
   }
 
   clone(): IPoint {
@@ -163,11 +187,12 @@ export class Point implements IPoint {
     return { x, y };
   }
 
-  set(x: number | IPointData, y?: number): this {
-    const point = Point.valueOf(x, y);
+  set(x: number | IPointData, y?: number, r?: number): this {
+    const point = Point.valueOf(x, y, r);
 
     this.x = point.x;
     this.y = point.y;
+    this.r = point.r || 0;
 
     return this;
   }
@@ -240,21 +265,16 @@ export class Point implements IPoint {
     return Point.getDistance(this, Point.valueOf(x, y));
   }
 
-  moveByRotation(length: number): this {
-    return this.moveToAngle(this.r, length);
+  rotate(angle: number, unit = Unit.deg): this {
+    return this.set(Point.rotate(this, angle, unit));
   }
 
   moveToAngle(angle: number, length: number, unit = Unit.deg): this {
-    this.x += length * Math.sin(angle * -(unit === Unit.deg ? Deg : Math.PI));
-    this.y += length * Math.cos(angle * -(unit === Unit.deg ? Deg : Math.PI));
-
-    return this;
+    return this.set(Point.moveToAngle(this, angle, length, unit));
   }
 
-  rotate(angle: number, unit = Unit.deg): this {
-    this.r += angle * -(unit === Unit.deg ? Deg : Math.PI);
-
-    return this;
+  moveByRotation(length: number): this {
+    return this.set(Point.moveByRotation(this, length));
   }
 
   toArray(): [number, number] {
