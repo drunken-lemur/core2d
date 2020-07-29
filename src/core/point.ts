@@ -126,12 +126,6 @@ export class Point implements IPoint {
     return or ? a.x > b.x || a.y > b.y : a.x > b.x && a.y > b.y;
   }
 
-  static getDistance(a: IPointData, b: IPointData): number {
-    const { abs, sqrt } = Math;
-
-    return sqrt(abs(a.x - b.x) ** 2 + abs(a.y - b.y) ** 2);
-  }
-
   static valueOf(x: number | IPointData = 0, y?: number): IPointData {
     if (typeof x === "number") {
       return { x, y: y === undefined ? x : y };
@@ -151,6 +145,12 @@ export class Point implements IPoint {
     const y = length * Math.cos(angle * -Deg);
 
     return Point.valueOf(x, y);
+  }
+
+  static getDistance(a: IPointData, b: IPointData): number {
+    const { abs, sqrt } = Math;
+
+    return sqrt(abs(a.x - b.x) ** 2 + abs(a.y - b.y) ** 2);
   }
 
   clone(): IPoint {

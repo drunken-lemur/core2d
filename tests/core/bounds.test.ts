@@ -251,18 +251,18 @@ it("", () => void 0);
 //   expect(b.eqBounds(Bounds.valueOf(1, 2, 3, 4))).toBeTruthy();
 // });
 //
-// it("invertX", () => {
+// it("invertW", () => {
 //   const a = Bounds.objectOf(1, 2, 3, 4);
 //
-//   a.invertX();
+//   a.invertW();
 //
 //   expect(a.eqBounds(Bounds.valueOf(-1, 2, 3, 4))).toBeTruthy();
 // });
 //
-// it("invertY", () => {
+// it("invertH", () => {
 //   const a = Bounds.objectOf(1, 2, 3, 4);
 //
-//   a.invertY();
+//   a.invertH();
 //
 //   expect(a.eqBounds(Bounds.valueOf(1, -2, 3, 4))).toBeTruthy();
 // });

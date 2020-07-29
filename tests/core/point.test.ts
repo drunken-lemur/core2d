@@ -113,18 +113,18 @@ it("", () => void 0);
 //   expect(b.eq(Point.valueOf(1, 2))).toBeTruthy();
 // });
 //
-// it("invertX", () => {
+// it("invertW", () => {
 //   const a = Point.objectOf(1, 2);
 //
-//   a.invertX();
+//   a.invertW();
 //
 //   expect(a.eq(Point.valueOf(-1, 2))).toBeTruthy();
 // });
 //
-// it("invertY", () => {
+// it("invertH", () => {
 //   const a = Point.objectOf(1, 2);
 //
-//   a.invertY();
+//   a.invertH();
 //
 //   expect(a.eq(Point.valueOf(1, -2))).toBeTruthy();
 // });

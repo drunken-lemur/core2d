@@ -6,24 +6,44 @@ export interface ISizeData {
 }
 
 export interface ISize extends ISizeData, IWithToArray<number> {
-  get(): ISizeData;
-  set(w: number | ISizeData, h?: number): this;
-  plus(w: number | ISizeData, h?: number): this;
-  minus(w: number | ISizeData, h?: number): this;
-  multiply(w: number | ISizeData, h?: number): this;
-  divide(w: number | ISizeData, h?: number, euclidean?: boolean): this;
-  invert(): this;
-  swap(): this;
   clone(): ISize;
-  eq(w: number | ISizeData, h?: number): boolean;
+
+  get(): ISizeData;
+
+  set(w: number | ISizeData, h?: number): this;
+
+  plus(w: number | ISizeData, h?: number): this;
+
+  minus(w: number | ISizeData, h?: number): this;
+
+  multiply(w: number | ISizeData, h?: number): this;
+
+  divide(w: number | ISizeData, h?: number, euclidean?: boolean): this;
+
   min(w: number | ISizeData, h?: number): this;
+
   max(w: number | ISizeData, h?: number): this;
+
+  swap(): this;
+
+  invert(): this;
+
   invertW(): this;
+
   invertH(): this;
-  ceil(): this;
-  round(): this;
+
   floor(): this;
-  lessThan(orEqual: boolean, w: number | ISizeData, h?: number): boolean;
+
+  round(): this;
+
+  ceil(): this;
+
+  eq(w: number | ISizeData, h?: number): boolean;
+
+  isLess(w: number | ISizeData, y?: number, or?: boolean): boolean;
+
+  isMore(w: number | ISizeData, y?: number, or?: boolean): boolean;
+
   getMinRadius(): number;
 }
 
@@ -36,6 +56,90 @@ export class Size implements ISize {
     this.h = 0;
 
     this.set(Size.valueOf(w, h));
+  }
+
+  static get(size: ISizeData): ISizeData {
+    return { w: size.w, h: size.h };
+  }
+
+  static set(destination: ISizeData, source: ISizeData): ISizeData {
+    destination.w = source.w;
+    destination.h = source.h;
+
+    return destination;
+  }
+
+  static plus(a: ISizeData, b: ISizeData): ISizeData {
+    return { w: a.w + b.w, h: a.h + b.h };
+  }
+
+  static minus(a: ISizeData, b: ISizeData): ISizeData {
+    return { w: a.w - b.w, h: a.h - b.h };
+  }
+
+  static multiply(a: ISizeData, b: ISizeData): ISizeData {
+    return { w: a.w * b.w, h: a.h * b.h };
+  }
+
+  static divide(a: ISizeData, b: ISizeData, euclidean?: boolean): ISizeData {
+    return !euclidean
+      ? { w: a.w / b.w, h: a.h / b.h }
+      : { w: a.w % b.w, h: a.h % b.h };
+  }
+
+  static min(a: ISizeData, b: ISizeData): ISizeData {
+    return {
+      w: Math.min(a.w, b.w),
+      h: Math.min(a.h, b.h)
+    };
+  }
+
+  static max(a: ISizeData, b: ISizeData): ISizeData {
+    return {
+      w: Math.max(a.w, b.w),
+      h: Math.max(a.h, b.h)
+    };
+  }
+
+  static swap(size: ISizeData): ISizeData {
+    // noinspection JSSuspiciousNameCombination
+    return { w: size.h, h: size.w };
+  }
+
+  static invert(size: ISizeData): ISizeData {
+    return { w: -size.w, h: -size.h };
+  }
+
+  static invertW(size: ISizeData): ISizeData {
+    return { w: -size.w, h: size.h };
+  }
+
+  static invertH(size: ISizeData): ISizeData {
+    return { w: size.w, h: -size.h };
+  }
+
+  static floor(size: ISizeData): ISizeData {
+    return { w: size.w | 0, h: size.h | 0 };
+  }
+
+  static round(size: ISizeData): ISizeData {
+    return { w: Math.round(size.w), h: Math.round(size.h) };
+  }
+
+  static ceil(size: ISizeData): ISizeData {
+    return { w: (size.w | 0) + 1, h: (size.h | 0) + 1 };
+  }
+
+  static eq(a: ISizeData, b: ISizeData, or = false): boolean {
+    return or ? a.w === b.w || a.h === b.h : a.w === b.w && a.h === b.h;
+  }
+
+  static isLess(a: ISizeData, b: ISizeData, or = false): boolean {
+    return or ? a.w < b.w || a.h < b.h : a.w < b.w && a.h < b.h;
+  }
+
+  static isMore(a: ISizeData, b: ISizeData, or = false): boolean {
+    return or ? a.w > b.w || a.h > b.h : a.w > b.w && a.h > b.h;
   }
 
   static valueOf(w: number | ISizeData = 0, h?: number): ISizeData {
@@ -52,137 +156,96 @@ export class Size implements ISize {
     return new Size(Math.random() * size.w, Math.random() * size.h);
   }
 
+  static getMinRadius(size: ISizeData): number {
+    return Math.min(size.w, size.h) / 2;
+  }
+
+  clone(): ISize {
+    return new Size(this);
+  }
+
   get(): ISizeData {
     return { w: this.w, h: this.h };
   }
 
-  set(w: number | ISizeData, h?: number) {
-    Object.assign(this, Size.valueOf(w, h));
-
-    return this;
-  }
-
-  plus(w: number | ISizeData, h?: number) {
+  set(w: number | ISizeData, h?: number): this {
     const size = Size.valueOf(w, h);
 
-    this.w += size.w;
-    this.h += size.h;
+    this.w = size.w;
+    this.h = size.h;
 
     return this;
   }
 
-  minus(w: number | ISizeData, h?: number) {
-    const size = Size.valueOf(w, h);
-
-    this.w -= size.w;
-    this.h -= size.h;
-
-    return this;
+  plus(w: number | ISizeData, h?: number): this {
+    return this.set(Size.plus(this, Size.valueOf(w, h)));
   }
 
-  multiply(w: number | ISizeData, h?: number) {
-    const size = Size.valueOf(w, h);
-
-    this.w *= size.w;
-    this.h *= size.h;
-
-    return this;
+  minus(w: number | ISizeData, h?: number): this {
+    return this.set(Size.minus(this, Size.valueOf(w, h)));
   }
 
-  divide(w: number | ISizeData, h?: number, euclidean = false) {
-    const size = Size.valueOf(w, h);
-
-    if (!euclidean) {
-      this.w /= size.w;
-      this.h /= size.h;
-    } else {
-      this.w %= size.w;
-      this.h %= size.h;
-    }
-
-    return this;
+  multiply(w: number | ISizeData, h?: number): this {
+    return this.set(Size.multiply(this, Size.valueOf(w, h)));
   }
 
-  invert() {
-    return this.multiply({ w: -1, h: -1 });
+  divide(w: number | ISizeData, h?: number, euclidean = false): this {
+    return this.set(Size.divide(this, Size.valueOf(w, h), euclidean));
   }
 
-  swap() {
-    return this.set({ w: this.h, h: this.w });
+  min(w: number | ISizeData, h?: number): this {
+    return this.set(Size.min(this, Size.valueOf(w, h)));
   }
 
-  clone() {
-    return new Size(this.get());
+  max(w: number | ISizeData, h?: number): this {
+    return this.set(Size.max(this, Size.valueOf(w, h)));
   }
 
-  eq(w: number | ISizeData, h?: number) {
-    const size = Size.valueOf(w, h);
-
-    return this.w === size.w && this.h === size.h;
+  swap(): this {
+    return this.set(Size.swap(this));
   }
 
-  min(w: number | ISizeData, h?: number) {
-    const size = Size.valueOf(w, h);
-
-    this.w = Math.min(this.w, size.w);
-    this.h = Math.min(this.h, size.h);
-
-    return this;
+  invert(): this {
+    return this.set(Size.invert(this));
   }
 
-  max(w: number | ISizeData, h?: number) {
-    const size = Size.valueOf(w, h);
-
-    this.w = Math.max(this.w, size.w);
-    this.h = Math.max(this.h, size.h);
-
-    return this;
+  invertW(): this {
+    return this.set(Size.invertW(this));
   }
 
-  invertW() {
-    return this.multiply({ w: -1, h: 1 });
+  invertH(): this {
+    return this.set(Size.invertH(this));
   }
 
-  invertH() {
-    return this.multiply({ w: 1, h: -1 });
+  floor(): this {
+    return this.set(Size.floor(this));
   }
 
-  ceil() {
-    this.w = (this.w | 0) + 1;
-    this.h = (this.h | 0) + 1;
-
-    return this;
+  round(): this {
+    return this.set(Size.round(this));
   }
 
-  round() {
-    this.w = Math.round(this.w);
-    this.h = Math.round(this.h);
-
-    return this;
+  ceil(): this {
+    return this.set(Size.ceil(this));
   }
 
-  floor() {
-    this.w |= 0;
-    this.h |= 0;
-
-    return this;
+  eq(w: number | ISizeData, h?: number, or = false): boolean {
+    return Size.eq(this, Size.valueOf(w, h), or);
   }
 
-  lessThan(orEqual: boolean, w: number | ISizeData, h?: number) {
-    const size = Size.valueOf(w, h);
-
-    if (orEqual) {
-      return this.w <= size.w && this.h <= size.h;
-    } else {
-      return this.w < size.w && this.h < size.h;
-    }
+  isLess(w: number | ISizeData, h?: number, or = false): boolean {
+    return Size.isLess(this, Size.valueOf(w, h), or);
   }
 
-  getMinRadius() {
-    return Math.min(this.w, this.h) / 2;
+  isMore(w: number | ISizeData, h?: number, or = false): boolean {
+    return Size.isMore(this, Size.valueOf(w, h), or);
   }
 
-  toArray() {
+  getMinRadius(): number {
+    return Size.getMinRadius(this);
+  }
+
+  toArray(): [number, number] {
     return [this.w, this.h];
   }
 }
