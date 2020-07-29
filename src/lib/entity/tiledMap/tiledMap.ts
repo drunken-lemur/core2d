@@ -310,21 +310,33 @@ export class TiledMap extends Entity implements ITiledMap {
     const bottomRight = corners[Position.BottomRight];
     const bottomLeft = corners[Position.BottomLeft];
 
+    // const helpers: Partial<Record<Position, () => boolean>> = {
+    //   [Position.Top]: this.isWallTop,
+    //   [Position.Right]: this.isWallRight,
+    //   [Position.BottomLeft]: this.isWallBottom,
+    //   [Position.Left]: this.isWallLeft,
+    // };
+
     if (position === Position.Top) {
+      return this.isWallTop();
       for (let x = topLeft.x; x < topRight.x; x += cellSize.w) {
         if (this.getTileByPosition({ x, y: topLeft.y })) return true;
       }
     } else if (position === Position.Right) {
+      return this.isWallRight();
       for (let y = topRight.y; y < bottomRight.y; y += cellSize.h) {
         if (this.getTileByPosition({ x: topRight.x, y })) return true;
       }
     } else if (position === Position.Bottom) {
+      return this.isWallBottom();
       const from = fromCell(toCell(bottomLeft));
 
       for (let x = from.x; x < bottomRight.x; x += cellSize.w) {
         if (this.getTileByPosition({ x, y: from.y })) return true;
       }
     } else if (position === Position.Left) {
+      return this.isWallLeft();
+
       for (let y = topLeft.y; y < bottomLeft.y; y += cellSize.h) {
         if (this.getTileByPosition({ x: topLeft.x, y })) return true;
       }
@@ -333,7 +345,15 @@ export class TiledMap extends Entity implements ITiledMap {
     return false;
   }
 
-  private getLayer(layerName?: string): ITiledMapLayer | null {
+  hasWallFromTo(from: IPointData, to: IPointData): boolean {
+    // const a = Point
+    for (let y = from.y; y <= to.y; y++) {
+      for (let x = from.x; x <= to.x; x++) {}
+    }
+    return false;
+  }
+
+  getLayer(layerName?: string): ITiledMapLayer | null {
     const { layers } = this;
 
     if (!layerName) return this.mainLayer || null;
@@ -343,7 +363,7 @@ export class TiledMap extends Entity implements ITiledMap {
     return layer || null;
   }
 
-  private getTileset(tilesetName?: string): ITileset | null {
+  getTileset(tilesetName?: string): ITileset | null {
     const { tilesets } = this;
 
     if (!tilesetName) return this.mainTileset || null;
@@ -353,7 +373,7 @@ export class TiledMap extends Entity implements ITiledMap {
     return tileset || null;
   }
 
-  private getTile(
+  getTile(
     x: IPointData | number,
     y?: number,
     layerName?: string
@@ -412,6 +432,22 @@ export class TiledMap extends Entity implements ITiledMap {
     this.add(this.testLabel.align(this, Position.CenterLeft));
 
     return this;
+  }
+
+  private isWallTop(): boolean {
+    return false;
+  }
+
+  private isWallRight(): boolean {
+    return false;
+  }
+
+  private isWallBottom(): boolean {
+    return false;
+  }
+
+  private isWallLeft(): boolean {
+    return false;
   }
 }
 
