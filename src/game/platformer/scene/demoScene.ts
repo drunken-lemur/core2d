@@ -7,7 +7,7 @@ import {
   IBehaviors,
   IGame,
   Key,
-  moveByKeyboard,
+  moveByKeyboardBehavior,
   Position,
   scaleOnLoad,
   sceneBehavior,
@@ -54,7 +54,7 @@ export class DemoScene extends BaseScene {
       darkwingDuckLeftTexture,
       infoLabel,
       sprite.addBehaviors(
-        moveByKeyboard(
+        moveByKeyboardBehavior(
           isKeyHold,
           60,
           Key.ArrowUp,
@@ -62,7 +62,7 @@ export class DemoScene extends BaseScene {
           Key.ArrowDown,
           Key.ArrowLeft,
         ),
-        moveByKeyboard(
+        moveByKeyboardBehavior(
             isKeyPressed,
           60,
           Key.KeyW,

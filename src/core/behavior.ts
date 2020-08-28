@@ -1,10 +1,10 @@
-import { Key } from "./input";
 import { Delay } from "./delay";
 import { IEntity } from "./entity";
 import { IUpdated } from "./updated";
+import { IPointData } from "./point";
+import { IVelocity } from "./velocity";
 import { IWithParent } from "./composite";
-import { IPointData } from "core/point";
-import { IVelocity } from "core/velocity";
+import { IKeyboardFn, Key } from "./input";
 
 export interface IWithBehavior {
   addBehaviors: (...behaviors: IBehavior[]) => this;
@@ -78,8 +78,8 @@ export const removeAfterDelayBehavior = (
   };
 };
 
-export const moveByKeyboard = (
-  fn: (...keys: Key[]) => boolean,
+export const moveByKeyboardBehavior = (
+  fn: IKeyboardFn,
   speed: number,
   up: Key,
   right: Key,
@@ -93,6 +93,16 @@ export const moveByKeyboard = (
     if (fn(right)) entity.x += speed * deltaTime;
   };
 };
+
+export const moveByWasdBehavior = (inputFn: IKeyboardFn, speed = 60) =>
+  moveByKeyboardBehavior(
+    inputFn,
+    speed,
+    Key.KeyW,
+    Key.KeyD,
+    Key.KeyS,
+    Key.KeyA
+  );
 
 export const borderBouncingBehavior = (
   onBorder: () => void = () => void 0,

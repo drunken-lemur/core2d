@@ -31,7 +31,7 @@ export class Player extends Entity implements IVelocity {
   // views: IViews<Player> = [sceneView];
   behaviors: IBehaviors<Player> = [
     defaultBehavior,
-    Player.proccessControll,
+    Player.processControl,
     Player.moveByControl,
     moveByVelocityBehavior
   ];
@@ -79,7 +79,7 @@ export class Player extends Entity implements IVelocity {
 
   set h(h: number) {}
 
-  private static proccessControll = (player: Player) => {
+  private static processControl = (player: Player) => {
     const scene = player?.parent?.parent as IScene;
 
     if (!scene) return;

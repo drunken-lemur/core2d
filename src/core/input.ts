@@ -1,6 +1,10 @@
+export interface IKeyboardFn {
+  (...keys: Key[]): boolean;
+}
+
 export interface IInput {
-  isKeyHold: (...keys: Key[]) => boolean;
-  isKeyPressed: (...keys: Key[]) => boolean;
+  isKeyHold: IKeyboardFn;
+  isKeyPressed: IKeyboardFn;
 }
 
 export enum Key {
