@@ -1,4 +1,4 @@
-import { IEntity, ISides, Position } from "core";
+import { IEntity, ISides, IVelocity, Position } from "core";
 import { bindMethods } from "lib/utils";
 
 import { Tile, TiledMap } from ".";
@@ -12,19 +12,28 @@ export class CollisionManager {
     bindMethods(this, this.processCollisions, this.isWall, this.getWalls);
   }
 
-  processCollisions(entity: IEntity): void {
+  processCollisions(entity: IEntity & IVelocity): void {
+    const { velocity } = entity;
+
     const walls = this.getWalls(entity);
     const top = walls[Position.Top];
     const bottom = walls[Position.Bottom];
     const left = walls[Position.Left];
     const right = walls[Position.Right];
 
+    if (velocity) {
+      if (top || bottom) velocity.y = 0;
+      if (left || right) velocity.x = 0;
+    }
+
+    if (top && bottom && left && right) return;
     if (top) {
       entity.y = top.y * this.map.cellSize.h + this.map.cellSize.h;
     }
     if (bottom) {
       entity.y = bottom.y * this.map.cellSize.h - entity.h;
     }
+
     if (left) {
       entity.x = left.x * this.map.cellSize.w + this.map.cellSize.w;
     }
@@ -38,7 +47,9 @@ export class CollisionManager {
     return !!tile?.id;
   }
 
-  private getWalls(entity: IEntity): Partial<Record<keyof ISides, Tile>> {
+  private getWalls(
+    entity: IEntity & IVelocity
+  ): Partial<Record<keyof ISides, Tile>> {
     const { cellSize, getTile } = this.map;
 
     // correction

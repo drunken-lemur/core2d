@@ -1,4 +1,4 @@
-import { TiledMap } from "lib";
+import {TiledMap, velocityDecorator} from "lib";
 import { BaseScene, Color, IGame, Key, moveByWasdBehavior } from "core";
 import { TestBox } from "game/platformer/entity";
 
@@ -10,7 +10,7 @@ export class GameScene extends BaseScene {
 
     const map = new TiledMap("mario/world-1-1.tmx", "World");
     map.add(
-      new TestBox().addBehaviors(moveByWasdBehavior(game.input.isKeyHold))
+      velocityDecorator(new TestBox()).addBehaviors(moveByWasdBehavior(game.input.isKeyHold, 60))
     );
     // map.setPlayer(new Player());
 

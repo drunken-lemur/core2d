@@ -205,5 +205,8 @@ export const moveByVelocityBehavior: IBehaviorFunction<IVelocity & IEntity> = (
   entity,
   deltaTime
 ) => {
-  if (entity.velocity) entity.plusPosition(entity.velocity);
+  if (entity.velocity) {
+    entity.x += entity.velocity.x;
+    entity.y += entity.velocity.y;
+  }
 };
