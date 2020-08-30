@@ -1,5 +1,4 @@
 import {
-  Bounds,
   Color,
   defaultBehavior,
   defaultView,
@@ -10,17 +9,18 @@ import {
   IBrush,
   IEntity,
   IPointData,
+  ISides,
   IVelocity,
   IViews,
   Point,
   Position,
-  rectView,
   Size
 } from "core";
-import { bindMethods, fetchXml, gravityBehavior, Label } from "lib";
+import { bindMethods, fetchXml, gravityBehavior } from "lib";
 
 import { ITile } from "./tile";
 import { ITileset, Tileset } from "./tileset";
+import { CollisionChecker, InfoLabel } from "..";
 
 export interface ITiledMapLayer {
   id: number;
@@ -42,6 +42,7 @@ export class TiledMap extends Entity implements ITiledMap {
 
   tilesets: ITileset[];
   layers: ITiledMapLayer[];
+  cellSize = Size.valueOf(1);
   views: IViews<TiledMap> = [TiledMap.drawTiles, defaultView];
   behaviors: IBehaviors<TiledMap> = [
     defaultBehavior,
@@ -54,6 +55,9 @@ export class TiledMap extends Entity implements ITiledMap {
   private mainLayer?: ITiledMapLayer;
   private mainTilesetName: string;
   private readonly mainLayerName: string;
+  private readonly collisionChecker: CollisionChecker;
+
+  private infoLabel = new InfoLabel("Info Label");
 
   constructor(mapFile: string, mainLayerName = "", mainTilesetName = "") {
     super();
@@ -62,23 +66,19 @@ export class TiledMap extends Entity implements ITiledMap {
     this.tilesets = [];
     this.mainLayerName = mainLayerName;
     this.mainTilesetName = mainTilesetName;
+    this.collisionChecker = new CollisionChecker(this);
+
+    bindMethods(this, this.fromCell, this.toCell, this.getTile);
 
     this.disable().hide();
-
-    bindMethods(this, this.fromCell, this.toCell);
-
     // noinspection JSIgnoredPromiseFromCall
-    this.load(mapFile);
-  }
+    this.load(mapFile, () => {
+      this.onLoad()
+        .enable()
+        .show();
 
-  get cellSize() {
-    const { mainTileset } = this;
-
-    if (mainTileset) {
-      return Size.valueOf(mainTileset.tilewidth, mainTileset.tileheight);
-    }
-
-    return Size.valueOf(1);
+      this.infoLabel.align(this, Position.CenterLeft);
+    });
   }
 
   private static drawTiles(map: TiledMap, brush: IBrush, deltaTime: number) {
@@ -93,10 +93,25 @@ export class TiledMap extends Entity implements ITiledMap {
         })
       );
     });
+
+    map.infoLabel.draw(brush, deltaTime);
   }
 
   private static processCollisions(map: TiledMap) {
-    map.forEach<IVelocity>(children => {});
+    map.forEach<IVelocity>(children => {
+      let walls = map.collisionChecker.getWalls(children);
+
+      map.collisionChecker.correctCollision(children);
+
+      const info = JSON.stringify({
+        TOP: +!!walls[Position.Top],
+        BOTTOM: +!!walls[Position.Bottom],
+        LEFT: +!!walls[Position.Left],
+        RIGHT: +!!walls[Position.Right]
+      });
+
+      map.infoLabel.text = info + "\n" + JSON.stringify(children.getPosition());
+    });
   }
 
   private static async load(mapFile: string) {
@@ -206,27 +221,42 @@ export class TiledMap extends Entity implements ITiledMap {
     return Point.valueOf(point.x * w, point.y * h);
   }
 
-  getLayer(layerName?: string): ITiledMapLayer | null {
+  getLayer(layerName?: string): ITiledMapLayer | undefined {
     const { layers } = this;
 
-    if (!layerName) return this.mainLayer || null;
+    if (!layerName) return this.mainLayer || undefined;
 
     const [layer] = layers.filter(({ name }) => name === layerName);
 
     return layer || null;
   }
 
-  getTileset(tilesetName?: string): ITileset | null {
+  getTileset(tilesetName?: string): ITileset | undefined {
     const { tilesets } = this;
 
-    if (!tilesetName) return this.mainTileset || null;
+    if (!tilesetName) return this.mainTileset || undefined;
 
     const [tileset] = tilesets.filter(({ name }) => name === tilesetName);
 
     return tileset || null;
   }
 
-  private load = async (mapFile: string) => {
+  getTile(
+    x: number | IPointData,
+    y?: number,
+    layerName?: string
+  ): ITile | undefined {
+    const point = Point.floor(this.toCell(Point.valueOf(x, y)));
+    const layer = this.getLayer(layerName);
+
+    if (!layer || point.x < 0 || point.y < 0) return undefined;
+
+    return layer.data[point.y] && layer.data[point.y][point.x]
+      ? layer.data[point.y][point.x]
+      : undefined;
+  }
+
+  private load = async (mapFile: string, onLoad: () => void) => {
     const { tilesets, layers } = await TiledMap.load(mapFile);
 
     layers.forEach(layer => {
@@ -252,14 +282,16 @@ export class TiledMap extends Entity implements ITiledMap {
 
     this.layers = layers;
 
-    this.setSizeAfterLoad()
-      .enable()
-      .show();
+    onLoad.apply(this);
   };
 
-  private setSizeAfterLoad() {
+  private onLoad() {
     const layer = this.mainLayer;
     const tileset = this.mainTileset;
+
+    if (tileset) {
+      this.cellSize = Size.valueOf(tileset.tilewidth, tileset.tileheight);
+    }
 
     if (layer && tileset) {
       this.setSize(
@@ -267,8 +299,6 @@ export class TiledMap extends Entity implements ITiledMap {
         layer.height * tileset.tileheight
       );
     }
-
-    console.log("setSizeAfterLoad", this.getBounds());
 
     return this;
   }

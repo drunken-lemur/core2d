@@ -1,8 +1,6 @@
-import { Box, TiledMap } from "lib";
-import { BaseScene, Bounds, Color, IGame, moveByWasdBehavior } from "core";
-
-import { Player } from "../entity/player";
-import { TestBox } from "game/platformer/entity";
+import {TiledMap} from "lib";
+import {BaseScene, Color, IGame, Key, moveByWasdBehavior} from "core";
+import {TestBox} from "game/platformer/entity";
 
 export class GameScene extends BaseScene {
   style = { fillStyle: Color.MarioSky };
@@ -16,6 +14,11 @@ export class GameScene extends BaseScene {
     );
     // map.setPlayer(new Player());
 
+    this.addBehaviors(() => {
+      if (game.input.isKeyPressed(Key.Escape)) {
+        game.scene = new GameScene(game);
+      }
+    });
     this.add(map);
     // .add(numbersSprite);
   }
