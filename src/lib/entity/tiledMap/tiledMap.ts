@@ -7,9 +7,7 @@ import {
   foreachBehavior,
   IBehaviors,
   IBrush,
-  IEntity,
   IPointData,
-  ISides,
   IVelocity,
   IViews,
   Point,
@@ -20,7 +18,7 @@ import { bindMethods, fetchXml, gravityBehavior } from "lib";
 
 import { ITile } from "./tile";
 import { ITileset, Tileset } from "./tileset";
-import { CollisionChecker, InfoLabel } from "..";
+import { CollisionManager, InfoLabel } from "..";
 
 export interface ITiledMapLayer {
   id: number;
@@ -55,7 +53,7 @@ export class TiledMap extends Entity implements ITiledMap {
   private mainLayer?: ITiledMapLayer;
   private mainTilesetName: string;
   private readonly mainLayerName: string;
-  private readonly collisionChecker: CollisionChecker;
+  private readonly collisionManager: CollisionManager;
 
   private infoLabel = new InfoLabel("Info Label");
 
@@ -66,7 +64,7 @@ export class TiledMap extends Entity implements ITiledMap {
     this.tilesets = [];
     this.mainLayerName = mainLayerName;
     this.mainTilesetName = mainTilesetName;
-    this.collisionChecker = new CollisionChecker(this);
+    this.collisionManager = new CollisionManager(this);
 
     bindMethods(this, this.fromCell, this.toCell, this.getTile);
 
@@ -98,20 +96,7 @@ export class TiledMap extends Entity implements ITiledMap {
   }
 
   private static processCollisions(map: TiledMap) {
-    map.forEach<IVelocity>(children => {
-      let walls = map.collisionChecker.getWalls(children);
-
-      map.collisionChecker.correctCollision(children);
-
-      const info = JSON.stringify({
-        TOP: +!!walls[Position.Top],
-        BOTTOM: +!!walls[Position.Bottom],
-        LEFT: +!!walls[Position.Left],
-        RIGHT: +!!walls[Position.Right]
-      });
-
-      map.infoLabel.text = info + "\n" + JSON.stringify(children.getPosition());
-    });
+    map.forEach<IVelocity>(map.collisionManager.processCollisions);
   }
 
   private static async load(mapFile: string) {

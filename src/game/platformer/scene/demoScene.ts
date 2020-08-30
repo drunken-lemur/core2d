@@ -9,14 +9,12 @@ import {
   Key,
   moveByKeyboardBehavior,
   Position,
-  scaleOnLoad,
-  sceneBehavior,
-  Texture
+  sceneBehavior
 } from "core";
-import {getSpriteByState} from "game/platformer/entity/player/sprites";
-import {PlayerState} from "game/platformer/entity/player";
-import {Label} from "lib/entity";
-import {darkwingDuckLeftTexture} from "game/platformer/entity/player/texture";
+import { getSpriteByState } from "game/platformer/entity/player/sprites";
+import { PlayerState } from "game/platformer/entity/player";
+import { Label } from "lib/entity";
+import { darkwingDuckLeftTexture } from "game/platformer/entity/player/texture";
 
 // const texture = new Texture(
 //   "//yastatic.net/s3/home-static/_/x/Q/xk8YidkhGjIGOrFm_dL5781YA.svg"
@@ -29,7 +27,7 @@ const infoLabel = new Label("Hello =)").setStyle({
   fillStyle: Color.White,
   textAlign: "center",
   textBaseline: "middle",
-  font: `${36}px Verdana bold`,
+  font: `${36}px Verdana bold`
 });
 
 export class DemoScene extends BaseScene {
@@ -60,10 +58,10 @@ export class DemoScene extends BaseScene {
           Key.ArrowUp,
           Key.ArrowRight,
           Key.ArrowDown,
-          Key.ArrowLeft,
+          Key.ArrowLeft
         ),
         moveByKeyboardBehavior(
-            isKeyPressed,
+          isKeyPressed,
           60,
           Key.KeyW,
           Key.KeyD,
@@ -80,8 +78,8 @@ export class DemoScene extends BaseScene {
   method(idOrObj?: number | object) {
     console.log({ idOrObj });
 
-    const a = this.sum(1, 1);
-    const b = this.sum("1", "1");
+    // const a = this.sum(1, 1);
+    // const b = this.sum("1", "1");
   }
 
   sum(a: string, b: string): string;

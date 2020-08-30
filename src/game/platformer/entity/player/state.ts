@@ -14,5 +14,5 @@ export enum PlayerState {
   Riding = "Riding",
   Shooting = "Shooting",
   Staying = "Staying",
-  Walking = "Walking",
+  Walking = "Walking"
 }

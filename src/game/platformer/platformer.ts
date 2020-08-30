@@ -1,5 +1,5 @@
-import { BaseGame, IScene, IScreen, Color } from "core";
-import { DemoScene, GameScene } from "./scene";
+import { BaseGame, Color, IScene, IScreen } from "core";
+import { GameScene } from "./scene";
 
 export class Platformer extends BaseGame {
   scene: IScene = new GameScene(this);

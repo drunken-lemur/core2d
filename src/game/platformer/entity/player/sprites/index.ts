@@ -8,18 +8,16 @@ import { getDuckingSprite } from "./ducking";
 import { getDuckingShootingSprite } from "./duckingShooting";
 import { getFlingSprite } from "./fling";
 import { getGreetingSprite } from "./greeting";
-import {  } from "./hooking";
-import {  } from "./jumping";
-import {  } from "./jumpingShooting";
-import {  } from "./jumpingBlocking";
-import {  } from "./resting";
+import {} from "./hooking";
+import {} from "./jumping";
+import {} from "./jumpingShooting";
+import {} from "./jumpingBlocking";
+import {} from "./resting";
 import { getRidingSprite } from "./riding";
-import {  } from "./shooting";
+import {} from "./shooting";
 import { getStayingSprite } from "./staying";
 import { getWalkingSprite } from "./walking";
-import {  } from "./wellDone";
-
-
+import {} from "./wellDone";
 
 const states: Record<
   PlayerState,

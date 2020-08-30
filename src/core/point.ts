@@ -1,5 +1,5 @@
 import { IWithToArray } from "./toArray";
-import {Deg, IRotatable, IRotatableData, Unit} from "./rotatable";
+import { Deg, IRotatable, IRotatableData, Unit } from "./rotatable";
 
 export interface IPointData {
   x: number;
@@ -126,7 +126,11 @@ export class Point implements IPoint {
     return or ? a.x > b.x || a.y > b.y : a.x > b.x && a.y > b.y;
   }
 
-  static valueOf(x: number | (IPointData & IRotatableData) = 0, y?: number, r: number = 0): IPointData & IRotatableData {
+  static valueOf(
+    x: number | (IPointData & IRotatableData) = 0,
+    y?: number,
+    r: number = 0
+  ): IPointData & IRotatableData {
     if (typeof x === "number") {
       return { x, y: y === undefined ? x : y, r };
     }
@@ -146,15 +150,24 @@ export class Point implements IPoint {
     return sqrt(abs(a.x - b.x) ** 2 + abs(a.y - b.y) ** 2);
   }
 
-  static rotate(point: IPointData & IRotatableData, angle: number, unit = Unit.deg): IPointData & IRotatableData {
+  static rotate(
+    point: IPointData & IRotatableData,
+    angle: number,
+    unit = Unit.deg
+  ): IPointData & IRotatableData {
     return {
       x: point.x,
       y: point.y,
-      r: (point.r || 0) + angle * -(unit === Unit.deg ? Deg : Math.PI),
+      r: (point.r || 0) + angle * -(unit === Unit.deg ? Deg : Math.PI)
     };
   }
 
-  static moveToAngle(point: IPointData & IRotatableData, angle: number, length: number, unit = Unit.deg): IPointData & IRotatableData {
+  static moveToAngle(
+    point: IPointData & IRotatableData,
+    angle: number,
+    length: number,
+    unit = Unit.deg
+  ): IPointData & IRotatableData {
     const x = length * Math.sin(angle * -(unit === Unit.deg ? Deg : Math.PI));
     const y = length * Math.cos(angle * -(unit === Unit.deg ? Deg : Math.PI));
 
@@ -165,7 +178,10 @@ export class Point implements IPoint {
     };
   }
 
-  static moveByRotation(point: IPointData & IRotatableData, length: number): IPointData & IRotatableData {
+  static moveByRotation(
+    point: IPointData & IRotatableData,
+    length: number
+  ): IPointData & IRotatableData {
     return Point.moveToAngle(point, point.r || 0, length);
   }
 

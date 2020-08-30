@@ -193,7 +193,8 @@ export const foreachView = <T extends IEntity = IEntity>(
   view: IViewFunction<T>
 ): IViewFunction<T> => (entity, brush, deltaTime) => {
   entity.forEach<T>(children => {
-    if (children.isVisible()) { // todo: children.drawView(view)
+    if (children.isVisible()) {
+      // todo: children.drawView(view)
       view(children, brush, deltaTime);
     }
   });

@@ -1,18 +1,44 @@
-import { Tile, TiledMap } from ".";
 import { IEntity, ISides, Position } from "core";
+import { bindMethods } from "lib/utils";
 
-export class CollisionChecker {
+import { Tile, TiledMap } from ".";
+
+export class CollisionManager {
   private readonly map: TiledMap;
 
   constructor(map: TiledMap) {
     this.map = map;
+
+    bindMethods(this, this.processCollisions, this.isWall, this.getWalls);
   }
 
-  isWall(tile?: Tile): boolean {
+  processCollisions(entity: IEntity): void {
+    const walls = this.getWalls(entity);
+    const top = walls[Position.Top];
+    const bottom = walls[Position.Bottom];
+    const left = walls[Position.Left];
+    const right = walls[Position.Right];
+
+    if (top) {
+      entity.y = top.y * this.map.cellSize.h + this.map.cellSize.h;
+    }
+    if (bottom) {
+      entity.y = bottom.y * this.map.cellSize.h - entity.h;
+    }
+    if (left) {
+      entity.x = left.x * this.map.cellSize.w + this.map.cellSize.w;
+    }
+    if (right) {
+      entity.x = right.x * this.map.cellSize.w - entity.w;
+    }
+  }
+
+  // noinspection JSMethodCanBeStatic
+  private isWall(tile?: Tile): boolean {
     return !!tile?.id;
   }
 
-  getWalls(entity: IEntity): Partial<Record<keyof ISides, Tile>> {
+  private getWalls(entity: IEntity): Partial<Record<keyof ISides, Tile>> {
     const { cellSize, getTile } = this.map;
 
     // correction
@@ -66,34 +92,5 @@ export class CollisionChecker {
     }
 
     return walls;
-  }
-
-  correctCollision(entity: IEntity): void {
-    const walls = this.getWalls(entity);
-    const top = walls[Position.Top];
-    const bottom = walls[Position.Bottom];
-    const left = walls[Position.Left];
-    const right = walls[Position.Right];
-
-    if (top) this.alignByTop(entity, top);
-    if (bottom) this.alignByBottom(entity, bottom);
-    if (left) this.alignByLeft(entity, left);
-    if (right) this.alignByRight(entity, right);
-  }
-
-  alignByTop(entity: IEntity, top: Tile): void {
-    entity.y = top.y * this.map.cellSize.h + this.map.cellSize.h;
-  }
-
-  alignByBottom(entity: IEntity, bottom: Tile): void {
-    entity.y = bottom.y * this.map.cellSize.h - entity.h;
-  }
-
-  alignByLeft(entity: IEntity, left: Tile): void {
-    entity.x = left.x * this.map.cellSize.w + this.map.cellSize.w;
-  }
-
-  alignByRight(entity: IEntity, right: Tile): void {
-    entity.x = right.x * this.map.cellSize.w - entity.w;
   }
 }

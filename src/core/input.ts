@@ -30,7 +30,7 @@ export enum Key {
   AltRight = "AltRight",
   AltLeft = "AltLeft",
   MetaLeft = "MetaLeft",
-  MetaRight = "MetaRight",
+  MetaRight = "MetaRight"
 }
 
 enum Events {

@@ -1,6 +1,6 @@
-import {TiledMap} from "lib";
-import {BaseScene, Color, IGame, Key, moveByWasdBehavior} from "core";
-import {TestBox} from "game/platformer/entity";
+import { TiledMap } from "lib";
+import { BaseScene, Color, IGame, Key, moveByWasdBehavior } from "core";
+import { TestBox } from "game/platformer/entity";
 
 export class GameScene extends BaseScene {
   style = { fillStyle: Color.MarioSky };

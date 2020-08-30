@@ -1,10 +1,4 @@
-import {
-  Bounds,
-  imagesPath,
-  removeColorOnLoad,
-  scaleOnLoad,
-  Texture
-} from "core";
+import { imagesPath, removeColorOnLoad, scaleOnLoad, Texture } from "core";
 
 export const darkwingDuckLeftTexture = new Texture(
   imagesPath("tilesets/darkwingDuck/darkwingDuck.gif")

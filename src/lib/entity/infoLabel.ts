@@ -4,9 +4,9 @@ import { Label } from "./label";
 
 export class InfoLabel extends Label {
   style: IBrushStyle = {
-    font: `Arial ${48}px`,
+    font: `${24}px Verdana`,
     textAlign: "left",
     textBaseline: "middle",
-    fillStyle: Color.White
+    fillStyle: Color.Green
   };
 }

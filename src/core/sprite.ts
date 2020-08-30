@@ -1,6 +1,6 @@
 import { IViews } from "./view";
 import { Entity } from "./entity";
-import { IPointData, Point } from "./point";
+import { Point } from "./point";
 import { Bounds, IBoundsData } from "./bounds";
 import { IBehaviorFunction, IBehaviors } from "./behavior";
 import { ITexture, setSizeOnLoad, Texture } from "./texture";
@@ -37,10 +37,12 @@ export class Sprite extends Entity implements ISprite {
       const { texture } = sprite;
 
       if (texture?.isLoaded && texture.brush) {
-        const { x, y, frameIndex, frames } = sprite;
+        const { frameIndex, frames } = sprite;
 
         // if empty frame set use texture bounds
-        const frame: ISpriteFrame = frames.length ? frames[frameIndex] : texture.getBounds();
+        const frame: ISpriteFrame = frames.length
+          ? frames[frameIndex]
+          : texture.getBounds();
 
         // console.log(frame);
 
@@ -76,8 +78,8 @@ export class Sprite extends Entity implements ISprite {
           if (typeof frame == "function") {
             frame(sprite, deltaTime);
           } else {
-            sprite.x = (frame.ox || 0);
-            sprite.y = (frame.oy || 0);
+            sprite.x = frame.ox || 0;
+            sprite.y = frame.oy || 0;
             sprite.w = frame.w;
             sprite.h = frame.h;
           }
@@ -92,20 +94,6 @@ export class Sprite extends Entity implements ISprite {
   private texture?: ITexture;
   private frames: ISpriteFrames = [];
   private mode: SpritePlayMode = SpritePlayMode.ForwardLoop;
-
-  static CreateBoundsFrame = (
-    x: number,
-    y?: number,
-    w?: number,
-    h?: number,
-    ox?: number,
-    oy?: number
-  ): ISpriteBoundsFrame => {
-    const offset = Point.valueOf(ox, oy);
-    const bounds = Bounds.valueOf(x, y, w, h);
-
-    return { ...bounds, ox: offset.x, oy: offset.y };
-  };
 
   constructor(texture?: string | ITexture, mode?: SpritePlayMode) {
     super();
@@ -123,6 +111,20 @@ export class Sprite extends Entity implements ISprite {
 
     return [Backward, BackwardLoop].includes(this.mode);
   }
+
+  static CreateBoundsFrame = (
+    x: number,
+    y?: number,
+    w?: number,
+    h?: number,
+    ox?: number,
+    oy?: number
+  ): ISpriteBoundsFrame => {
+    const offset = Point.valueOf(ox, oy);
+    const bounds = Bounds.valueOf(x, y, w, h);
+
+    return { ...bounds, ox: offset.x, oy: offset.y };
+  };
 
   // get w() {
   //   const { frames, frameIndex } = this;

@@ -1,7 +1,7 @@
 import { Position } from "./position";
 import { IWithToArray } from "./toArray";
 import { ISize, ISizeData, Size } from "./size";
-import {Deg, IRotatable, IRotatableData, Unit} from "./rotatable";
+import { IRotatable, IRotatableData, Unit } from "./rotatable";
 import { IPoint, IPointData, Point } from "./point";
 
 export interface ICorners {
@@ -24,33 +24,51 @@ export interface IBoundsData extends ISizeData, IPointData, IRotatableData {}
 
 export interface IBounds extends IBoundsData, IRotatable, IWithToArray {
   cloneBounds(): IBounds;
+
   cloneSize(): ISize;
+
   clonePosition(): IPoint;
+
   getBounds(): IBoundsData;
+
   getSize(): ISizeData;
+
   getPosition(): IPointData;
+
   setBounds(x: number | IBoundsData, y?: number, w?: number, h?: number): this;
+
   setSize(w: number | ISizeData, h?: number): this;
+
   setPosition(x: number | IPointData, y?: number): this;
+
   plusBounds(x: number | IBoundsData, y?: number, w?: number, h?: number): this;
+
   plusSize(w: number | ISizeData, h?: number): this;
+
   plusPosition(x: number | IPointData, y?: number): this;
+
   minusBounds(
     x: number | IBoundsData,
     y?: number,
     w?: number,
     h?: number
   ): this;
+
   minusSize(w: number | ISizeData, h?: number): this;
+
   minusPosition(x: number | IPointData, y?: number): this;
+
   multiplyBounds(
     x: number | IBoundsData,
     y?: number,
     w?: number,
     h?: number
   ): this;
+
   multiplySize(w: number | ISizeData, h?: number): this;
+
   multiplyPosition(x: number | IPointData, y?: number): this;
+
   divideBounds(
     x: number | IBoundsData,
     y?: number,
@@ -58,33 +76,61 @@ export interface IBounds extends IBoundsData, IRotatable, IWithToArray {
     h?: number,
     euclidean?: boolean
   ): this;
+
   divideSize(w: number | ISizeData, h?: number, euclidean?: boolean): this;
+
   dividePosition(x: number | IPointData, y?: number, euclidean?: boolean): this;
+
   minBounds(x: number | IBoundsData, y?: number, w?: number, h?: number): this;
+
   minSize(w: number | ISizeData, h?: number): this;
+
   minPosition(point: IPointData): this;
+
   maxBounds(x: number | IBoundsData, y?: number, w?: number, h?: number): this;
+
   maxSize(w: number | ISizeData, h?: number): this;
+
   maxPosition(point: IPointData): this;
+
   swapBounds(): this;
+
   swapSize(): this;
+
   swapPosition(): this;
+
   invertBounds(): this;
+
   invertSize(): this;
+
   invertPosition(): this;
+
   invertX(): this;
+
   invertY(): this;
+
   invertW(): this;
+
   invertH(): this;
+
   floorBounds(): this;
+
   floorSize(): this;
+
   floorPosition(): this;
+
   roundBounds(): this;
+
   roundSize(): this;
+
   roundPosition(): this;
+
   ceilBounds(): this;
+
   ceilSize(): this;
+
   ceilPosition(): this;
+
   eqBounds(
     x: number | IBoundsData,
     y?: number,
@@ -92,8 +138,11 @@ export interface IBounds extends IBoundsData, IRotatable, IWithToArray {
     h?: number,
     or?: boolean
   ): boolean;
+
   eqSize(w: number | ISizeData, h?: number, or?: boolean): boolean;
+
   eqPosition(x: number | IPointData, y?: number, or?: boolean): boolean;
+
   isLessBounds(
     x: number | IBoundsData,
     y?: number,
@@ -101,8 +150,11 @@ export interface IBounds extends IBoundsData, IRotatable, IWithToArray {
     h?: number,
     or?: boolean
   ): boolean;
+
   isLessSize(w: number | ISizeData, y?: number, or?: boolean): boolean;
+
   isLessPosition(w: number | IPointData, y?: number, or?: boolean): boolean;
+
   isMoreBounds(
     x: number | IBoundsData,
     y?: number,
@@ -110,29 +162,38 @@ export interface IBounds extends IBoundsData, IRotatable, IWithToArray {
     h?: number,
     or?: boolean
   ): boolean;
+
   isMoreSize(w: number | ISizeData, y?: number, or?: boolean): boolean;
+
   isMorePosition(w: number | IPointData, y?: number, or?: boolean): boolean;
+
   mergeBounds(
     x: number | IBoundsData,
     y?: number,
     w?: number,
     h?: number
   ): this;
+
   cropBounds(x: number | IBoundsData, y?: number, w?: number, h?: number): this;
+
   getCorners(): ICorners;
+
   getSides(w?: number, h?: number): ISides;
+
   isIntersect(
     x: number | IBoundsData,
     y?: number,
     w?: number,
     h?: number
   ): boolean;
+
   getIntersectSides(
     x: number | IBoundsData,
     y?: number,
     w?: number,
     h?: number
   ): ISidesIntersect;
+
   isIntersectByRadius(
     x: number | IBoundsData,
     y?: number,

@@ -1,6 +1,6 @@
 import { assetsPath, IBrush, ITexture, removeColorOnLoad, Texture } from "core";
 
-import { ITile, Tile } from "./tile";
+import { ITile } from "./tile";
 
 export interface ITilesetImage {
   width: number;
