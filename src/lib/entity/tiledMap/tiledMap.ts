@@ -8,17 +8,15 @@ import {
   IBehaviors,
   IBrush,
   IPointData,
-  IVelocity,
   IViews,
   Point,
-  Position,
   Size
 } from "core";
 import { bindMethods, fetchXml, gravityBehavior } from "lib";
 
 import { ITile } from "./tile";
+import { CollisionManager } from "..";
 import { ITileset, Tileset } from "./tileset";
-import { CollisionManager, InfoLabel } from "..";
 
 export interface ITiledMapLayer {
   id: number;
@@ -55,8 +53,6 @@ export class TiledMap extends Entity implements ITiledMap {
   private readonly mainLayerName: string;
   private readonly collisionManager: CollisionManager;
 
-  private infoLabel = new InfoLabel("Info Label");
-
   constructor(mapFile: string, mainLayerName = "", mainTilesetName = "") {
     super();
 
@@ -74,8 +70,6 @@ export class TiledMap extends Entity implements ITiledMap {
       this.onLoad()
         .enable()
         .show();
-
-      this.infoLabel.align(this, Position.CenterLeft);
     });
   }
 
@@ -91,12 +85,10 @@ export class TiledMap extends Entity implements ITiledMap {
         })
       );
     });
-
-    map.infoLabel.draw(brush, deltaTime);
   }
 
   private static processCollisions(map: TiledMap) {
-    map.forEach<IVelocity>(map.collisionManager.processCollisions);
+    map.forEach(map.collisionManager.processCollisions);
   }
 
   private static async load(mapFile: string) {

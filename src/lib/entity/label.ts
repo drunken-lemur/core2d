@@ -8,6 +8,7 @@ export class Label extends Entity {
 
   views: IView<Label>[] = [
     (label, brush) => {
+      brush.strokeText(label.text, label.x, label.y);
       brush.fillText(label.text, label.x, label.y);
     }
   ];
