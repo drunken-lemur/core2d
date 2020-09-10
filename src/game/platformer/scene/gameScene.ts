@@ -7,7 +7,7 @@ import {
   moveByWasdBehavior,
   Position
 } from "core";
-import { TestBox } from "game/platformer/entity";
+import {Player, TestBox} from "game/platformer/entity";
 
 export class GameScene extends BaseScene {
   style = { fillStyle: Color.MarioSky };
@@ -17,7 +17,8 @@ export class GameScene extends BaseScene {
 
     const map = new TiledMap("mario/world-1-1.tmx", "World");
     map.add(
-      velocityDecorator(new TestBox().addBehaviors(moveByWasdBehavior(game.input.isKeyHold, 60)))
+      new Player()
+      // velocityDecorator(new TestBox().addBehaviors(moveByWasdBehavior(game.input.isKeyHold, 3 * 60)))
     );
     // map.setPlayer(new Player());
 

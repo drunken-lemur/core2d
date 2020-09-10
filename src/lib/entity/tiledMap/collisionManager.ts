@@ -13,6 +13,8 @@ export class CollisionManager {
     bindMethods(
       this,
       this.processCollisions,
+      this.processCollisionsX,
+      this.processCollisionsY,
       this.processCollisions2,
       this.getTile,
       this.isWall,
@@ -21,8 +23,10 @@ export class CollisionManager {
     );
   }
 
-  processCollisions(entity: IEntity & IVelocity): void {
+  processCollisions_(entity: IEntity & IVelocity): void {
     const { velocity } = entity;
+
+    if (velocity?.y) entity.y += velocity.y;
 
     const walls = this.getWalls(entity);
     const top = walls[Position.Top];
@@ -30,12 +34,32 @@ export class CollisionManager {
     const left = walls[Position.Left];
     const right = walls[Position.Right];
 
+    if (velocity?.y) entity.y -= velocity.y;
+
     if (velocity) {
       if (top || bottom) velocity.y = 0;
       if (left || right) velocity.x = 0;
     }
 
     if (top && bottom && left && right) return;
+
+    if (bottom && left && right) {
+      entity.y = bottom.y * this.map.cellSize.h - entity.h;
+      return; // this.processCollisions(entity);
+    }
+    if (top && left && right) {
+      entity.y = top.y * this.map.cellSize.h + this.map.cellSize.h;
+      return; // this.processCollisions(entity);
+    }
+    if (left && top && bottom) {
+      entity.x = left.x * this.map.cellSize.w + this.map.cellSize.w;
+      return; // this.processCollisions(entity);
+    }
+    if (right && top && bottom) {
+      entity.x = right.x * this.map.cellSize.w - entity.w;
+      return; // this.processCollisions(entity);
+    }
+
     if (top) {
       entity.y = top.y * this.map.cellSize.h + this.map.cellSize.h;
     }
@@ -49,6 +73,66 @@ export class CollisionManager {
     if (right) {
       entity.x = right.x * this.map.cellSize.w - entity.w;
     }
+  }
+
+  processCollisions(entity: IEntity & IVelocity): void {
+    this.processCollisionsY(entity);
+    this.processCollisionsX(entity);
+  }
+
+  processCollisionsY(entity: IEntity & IVelocity): void {
+    const { velocity } = entity;
+
+    if (velocity && velocity.y) entity.y += velocity.y;
+
+    const walls = this.getWalls(entity);
+    const top = walls[Position.Top];
+    const bottom = walls[Position.Bottom];
+
+    if (velocity) {
+      if (velocity.y < 0) {
+        if (top) {
+          velocity.y = 0;
+          entity.y = top.y * this.map.cellSize.h + this.map.cellSize.h;
+        }
+      } else if (velocity.y > 0) {
+        if (bottom) {
+          velocity.y = 0;
+          const align = bottom.y * this.map.cellSize.h - entity.h;
+          const delta = Math.abs(entity.y - align);
+          if (delta < this.map.cellSize.h) entity.y = align;
+          console.log(delta)
+        }
+      }
+    }
+
+    if (velocity && velocity.y) entity.y -= velocity.y;
+  }
+
+  processCollisionsX(entity: IEntity & IVelocity): void {
+    const { velocity } = entity;
+
+    if (velocity && velocity.x) entity.x += velocity.x;
+
+    const walls = this.getWalls(entity);
+    const left = walls[Position.Left];
+    const right = walls[Position.Right];
+
+    if (velocity) {
+      if (velocity.x < 0) {
+        if (left) {
+          velocity.x = 0;
+          entity.x = left.x * this.map.cellSize.w + this.map.cellSize.w;
+        }
+      } else if (velocity.x > 0) {
+        if (right) {
+          velocity.x = 0;
+          entity.x = right.x * this.map.cellSize.w - entity.w;
+        }
+      }
+    }
+
+    if (velocity && velocity.x) entity.x -= velocity.x;
   }
 
   processCollisions2(entity: IEntity & IVelocity): void {
