@@ -1,13 +1,7 @@
-import {InfoLabel, TiledMap, velocityDecorator} from "lib";
-import {
-  BaseScene,
-  Color,
-  IGame,
-  Key,
-  moveByWasdBehavior,
-  Position
-} from "core";
-import {Player, TestBox} from "game/platformer/entity";
+import { InfoLabel, TiledMap } from "lib";
+import { BaseScene, Color, IGame, Key, Position } from "core";
+
+import { Player } from "../entity";
 
 export class GameScene extends BaseScene {
   style = { fillStyle: Color.MarioSky };
@@ -15,22 +9,25 @@ export class GameScene extends BaseScene {
   constructor(game: IGame) {
     super(game);
 
+    const player = new Player();
+    const label = InfoLabel.getInstance();
     const map = new TiledMap("mario/world-1-1.tmx", "World");
-    map.add(
-      new Player()
-      // velocityDecorator(new TestBox().addBehaviors(moveByWasdBehavior(game.input.isKeyHold, 3 * 60)))
-    );
-    // map.setPlayer(new Player());
 
+    this.addOnEscHandler();
+    this.configureInfoLabel();
+
+    this.add(map.add(player), label);
+  }
+
+  addOnEscHandler() {
     this.addBehaviors(() => {
-      if (game.input.isKeyPressed(Key.Escape)) {
-        game.scene = new GameScene(game);
+      if (this.game.input.isKeyPressed(Key.Escape)) {
+        this.game.scene = new GameScene(this.game);
       }
     });
-    this.add(
-      map,
-      InfoLabel.getInstance("Info Label").align(this, Position.Center)
-    );
-    // .add(numbersSprite);
+  }
+
+  configureInfoLabel() {
+    InfoLabel.getInstance("Info Label").align(this, Position.Center);
   }
 }

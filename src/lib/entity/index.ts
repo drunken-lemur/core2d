@@ -1,5 +1,7 @@
 export * from "./tiledMap";
 export * from "./box";
+export * from "./bullet";
+export * from "./bulletLayer";
 export * from "./fpsLabel";
 export * from "./infoLabel";
 export * from "./label";
