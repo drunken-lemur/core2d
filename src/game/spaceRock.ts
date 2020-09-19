@@ -10,7 +10,6 @@ import {
   ellipseView,
   Entity,
   IBehavior,
-  IBoundsData,
   IBrush,
   IBrushStyle,
   IGame,
@@ -27,7 +26,6 @@ import {
   removeAfterDelayBehavior,
   Size,
   styledView,
-  Unit
 } from "core";
 import { Score } from "lib";
 import { Label, ScoreLabel } from "lib/entity";
@@ -245,7 +243,7 @@ class Ship extends Entity {
     }
   ];
   behaviors: IBehavior<Ship>[] = [
-    (ship, dt: number) => {
+    (ship) => {
       // move by velocity
       ship.plusPosition(ship.velocity);
 
@@ -310,7 +308,7 @@ class GameScene extends BaseScene {
   style = { fillStyle: Color.Black };
   behaviors = [
     new (class extends BaseBehavior<GameScene> {
-      update(dt: number) {
+      update() {
         this.input()
           .firing()
           .turning()
@@ -369,7 +367,7 @@ class GameScene extends BaseScene {
       };
 
       private thrusting = () => {
-        const { ship, control, w, h } = this.parent;
+        const { ship, control } = this.parent;
 
         if (ship.isAlive && control.forward) {
           ship.accelerate();

@@ -12,7 +12,7 @@ import {
   Point,
   Size
 } from "core";
-import { bindMethods, fetchXml, gravityBehavior } from "lib";
+import { bindMethods, gravityBehavior } from "lib";
 
 import { CollisionManager } from "..";
 import { ITile, ITileset, Tileset, MapLoader } from ".";

@@ -1,6 +1,6 @@
 import { fetchXml } from "lib/utils";
 
-import { ITile, TiledMap } from ".";
+import { ITile } from ".";
 
 export class MapLoader {
   static async loadXml(mapFile: string) {

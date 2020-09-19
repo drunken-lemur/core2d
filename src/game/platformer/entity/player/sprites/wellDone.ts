@@ -1,6 +1,6 @@
 import { Bounds, Direction, Sprite } from "core";
 
-import { darkwingDuckLeftTexture, darkwingDuckRightTexture } from "../texture";
+import { darkwingDuckLeftTexture, darkwingDuckRightTexture } from "../../texture";
 
 const left = new Sprite(darkwingDuckLeftTexture).setFrames(
   [
@@ -20,5 +20,5 @@ const right = new Sprite(darkwingDuckRightTexture).setFrames(
   5
 );
 
-const getWellDoneSprite = (direction: Direction) =>
+export const getWellDoneSprite = (direction: Direction) =>
   direction === Direction.West ? left : right;

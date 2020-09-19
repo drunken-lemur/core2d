@@ -1,6 +1,6 @@
 import { Bounds, Direction, Sprite } from "core";
 
-import { darkwingDuckLeftTexture, darkwingDuckRightTexture } from "../texture";
+import { darkwingDuckLeftTexture, darkwingDuckRightTexture } from "../../texture";
 
 const left = new Sprite(darkwingDuckRightTexture).setFrames(
   [Bounds.valueOf(190, 157, 48, 36), Bounds.valueOf(237, 156, 48, 36)],

@@ -11,10 +11,10 @@ import {
   Position,
   sceneBehavior
 } from "core";
-import { getSpriteByState } from "game/platformer/entity/player/sprites";
-import { PlayerState } from "game/platformer/entity/player";
 import { Label } from "lib/entity";
-import { darkwingDuckLeftTexture } from "game/platformer/entity/player/texture";
+import { PlayerState } from "game/platformer/entity/player";
+import { getSpriteByState } from "game/platformer/entity/player/sprites";
+import { darkwingDuckLeftTexture } from "game/platformer/entity/texture";
 
 // const texture = new Texture(
 //   "//yastatic.net/s3/home-static/_/x/Q/xk8YidkhGjIGOrFm_dL5781YA.svg"

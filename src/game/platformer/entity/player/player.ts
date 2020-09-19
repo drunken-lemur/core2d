@@ -7,11 +7,9 @@ import {
   IPoint,
   IScene,
   IVelocity,
-  IViews,
   Key,
   moveByVelocityBehavior,
   Point,
-  sceneView,
   Sprite
 } from "core";
 
