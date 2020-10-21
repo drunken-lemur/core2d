@@ -35,8 +35,8 @@ export class Entity extends Bounds implements IEntity {
     strokeStyle: Color.None
   };
   parent?: IEntity;
-  views: IView<IEntity | any>[] = [defaultView];
-  behaviors: IBehavior<IEntity | any>[] = [defaultBehavior];
+  views: IView<IEntity | this | any>[] = [defaultView];
+  behaviors: IBehavior<IEntity | this | any>[] = [defaultBehavior];
   isInitialized = false;
   protected readonly children: Set<IEntity> = new Set();
   private isEnabledState = true;
@@ -202,19 +202,19 @@ export class Entity extends Bounds implements IEntity {
     return true;
   };
 
-  setViews = (...views: IView[]) => {
+  setViews = (...views: IView<IEntity | this | any>[]) => {
     this.views = views;
 
     return this;
   };
 
-  addViews = (...views: IView[]) => {
+  addViews = (...views: IView<IEntity | this | any>[]) => {
     views.forEach(view => this.views.push(view));
 
     return this;
   };
 
-  removeViews = (...views: IView[]) => {
+  removeViews = (...views: IView<IEntity | this | any>[]) => {
     views.forEach(view => {
       const index = this.views.indexOf(view);
       if (index > -1) {
@@ -231,19 +231,19 @@ export class Entity extends Bounds implements IEntity {
     return this;
   };
 
-  setBehaviors = (...behaviors: IBehavior[]) => {
+  setBehaviors = (...behaviors: IBehavior<IEntity | this | any>[]) => {
     this.behaviors = behaviors;
 
     return this;
   };
 
-  addBehaviors = (...behaviors: IBehavior[]) => {
+  addBehaviors = (...behaviors: IBehavior<IEntity | this | any>[]) => {
     behaviors.forEach(behavior => this.behaviors.push(behavior));
 
     return this;
   };
 
-  removeBehaviors = (...behaviors: IBehavior[]) => {
+  removeBehaviors = (...behaviors: IBehavior<IEntity | this | any>[]) => {
     behaviors.forEach(behavior => {
       const index = this.behaviors.indexOf(behavior);
       if (index > -1) {
@@ -272,7 +272,7 @@ export class Entity extends Bounds implements IEntity {
     return this;
   }
 
-  private drawView = (view: IView, brush: IBrush, deltaTime: number) => {
+  private drawView = (view: IView<IEntity | this | any>, brush: IBrush, deltaTime: number) => {
     if (typeof view === "function") {
       view(this, brush, deltaTime);
     } else {

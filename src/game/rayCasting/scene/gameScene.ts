@@ -1,8 +1,8 @@
-import { InfoLabel, TiledMap } from "lib";
-import { BaseScene, Color, IGame, Key, Point, Position } from "core";
+import { BaseScene, Color, IGame, Key, Position } from "core";
+
+import { InfoLabel } from "lib";
 
 import { Player } from "../entity";
-import { Bullet } from "../entity/bullet";
 
 export class GameScene extends BaseScene {
   style = { fillStyle: Color.MarioSky };
@@ -10,14 +10,12 @@ export class GameScene extends BaseScene {
   constructor(game: IGame) {
     super(game);
 
-    const player = new Player();
-    const label = InfoLabel.getInstance();
-    const map = new TiledMap("mario/world-1-1.tmx", "World");
-
     this.addOnEscHandler();
     this.configureInfoLabel();
 
-    this.add(map.add(player), label, new Bullet(Point.valueOf(0, 100), -90));
+    this.add(new Player());
+
+    this.add(InfoLabel.getInstance());
   }
 
   addOnEscHandler() {

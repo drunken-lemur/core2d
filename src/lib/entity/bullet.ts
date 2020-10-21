@@ -1,13 +1,10 @@
 import {
   ellipseView,
   Entity,
-  IBehavior,
   IPointData,
   IVelocity,
-  IView,
-  Size,
-  parentSphereBehavior,
-  removeAfterDelayBehavior
+  removeAfterDelayBehavior,
+  Size
 } from "core";
 import { Color } from "core/color";
 
@@ -22,10 +19,10 @@ export class Bullet extends Entity {
 
   speed: number;
   style = { fillStyle: Color.White };
-  views: IView<Bullet>[] = [ellipseView];
-  behaviors: IBehavior<Bullet>[] = [
-    bullet => bullet.moveByRotation(bullet.speed),
-    removeAfterDelayBehavior(Bullet.Entropy )
+  views = [ellipseView];
+  behaviors = [
+    (bullet: Bullet) => bullet.moveByRotation(bullet.speed),
+    removeAfterDelayBehavior(Bullet.Entropy)
   ];
 
   constructor(position: IPointData, angle: number) {

@@ -1,12 +1,13 @@
 import { IGame, IScreen, BaseApp, Resolutions, CanvasScreen } from "core";
-import { BasicGame, Demo, SnakeGame, SpaceRockGame, Platformer } from "game";
+import { BasicGame, Demo, SnakeGame, SpaceRockGame, Platformer, RayCasting } from "game";
 
 enum Game {
   BasicGame = "BasicGame",
   Demo = "Demo",
   Snake = "Snake",
   SpaceRock = "SpaceRock",
-  Platformer = "Platformer"
+  Platformer = "Platformer",
+  RayCasting = "RayCasting"
 }
 
 const games: Record<Game, (screen: IScreen) => IGame> = {
@@ -14,7 +15,8 @@ const games: Record<Game, (screen: IScreen) => IGame> = {
   Demo: screen => new Demo(screen),
   Snake: screen => new SnakeGame(screen),
   SpaceRock: screen => new SpaceRockGame(screen),
-  Platformer: screen => new Platformer(screen)
+  Platformer: screen => new Platformer(screen),
+  RayCasting: screen => new RayCasting(screen)
 };
 
 type Style = Partial<CSSStyleDeclaration>;
@@ -48,4 +50,4 @@ class App extends BaseApp {
 
 setStyle(document.body, { margin: "0" });
 
-new App().run(Game.Platformer);
+new App().run(Game.RayCasting);

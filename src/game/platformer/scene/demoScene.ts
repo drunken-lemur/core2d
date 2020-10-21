@@ -20,7 +20,7 @@ import { darkwingDuckLeftTexture } from "game/platformer/entity/texture";
 //   "//yastatic.net/s3/home-static/_/x/Q/xk8YidkhGjIGOrFm_dL5781YA.svg"
 // ).addOnLoad(scaleOnLoad(-1, 1));
 
-const sprite = getSpriteByState(PlayerState.Greeting, Direction.West);
+const sprite = getSpriteByState(PlayerState.Greeting, Direction.East);
 // const sprite = new Sprite(darkwingDuckLeftTexture);
 
 const infoLabel = new Label("Hello =)").setStyle({
@@ -70,23 +70,5 @@ export class DemoScene extends BaseScene {
         )
       )
     );
-  }
-
-  method(): void;
-  method(id: number): void;
-  method(obj: object): void;
-  method(idOrObj?: number | object) {
-    console.log({ idOrObj });
-
-    // const a = this.sum(1, 1);
-    // const b = this.sum("1", "1");
-  }
-
-  sum(a: string, b: string): string;
-  sum(a: number, b: number): number;
-  sum(a: any, b: any): any {
-    this.method(this);
-
-    return a + b;
   }
 }
