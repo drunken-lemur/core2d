@@ -3,25 +3,25 @@ import { BaseGame, Color, IScene, IScreen } from "core";
 import { GameScene } from "./scene";
 
 export class RayCasting extends BaseGame {
-	scene: IScene = new GameScene(this);
+  scene: IScene = new GameScene(this);
 
-	constructor(screen: IScreen, fps: number = 60) {
-		super(screen, fps);
+  constructor(screen: IScreen, fps: number = 60) {
+    super(screen, fps);
 
-		this.setStyle();
-	}
+    this.setStyle();
+  }
 
-	private setStyle = () => {
-		const style = document.createElement("style");
-		document.head.appendChild(style);
+  private setStyle = () => {
+    const style = document.createElement("style");
+    document.head.appendChild(style);
 
-		style.innerText = `
+    style.innerText = `
       body {
         background: ${Color.Black};
       }
       
       canvas {
-        zoom: 2;
+        // zoom: 2;
         top: 50%;
         left: 50%;
         position: absolute;
@@ -29,5 +29,5 @@ export class RayCasting extends BaseGame {
         transform: translate(-50%, -50%);
       }
     `;
-	};
+  };
 }

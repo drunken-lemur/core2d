@@ -20,6 +20,6 @@ export class Player extends Entity implements IVelocity {
 
     this.velocity = new Point();
 
-    this.setPosition(50, 50).setSize(50, 50);
+    this.setPosition(60, 60).setSize(30, 30);
   }
 }

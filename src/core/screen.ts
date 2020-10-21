@@ -32,6 +32,7 @@ export const Resolutions = {
   },
   other: {
     $1440x240: Size.valueOf(1440, 240),
+    $1440x480: Size.valueOf(1440, 480),
     $720x240: Size.valueOf(720, 240),
     $3392x240: Size.valueOf(3392, 240)
   }

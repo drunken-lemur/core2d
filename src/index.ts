@@ -1,5 +1,12 @@
 import { IGame, IScreen, BaseApp, Resolutions, CanvasScreen } from "core";
-import { BasicGame, Demo, SnakeGame, SpaceRockGame, Platformer, RayCasting } from "game";
+import {
+  BasicGame,
+  Demo,
+  SnakeGame,
+  SpaceRockGame,
+  Platformer,
+  RayCasting
+} from "game";
 
 enum Game {
   BasicGame = "BasicGame",
@@ -39,7 +46,8 @@ class App extends BaseApp {
   }
 
   run = (gameName: Game) => {
-    const screen = new CanvasScreen(this.canvas, Resolutions.other.$720x240);
+    // const screen = new CanvasScreen(this.canvas, Resolutions.other.$720x240);
+    const screen = new CanvasScreen(this.canvas, Resolutions.other.$1440x480);
 
     const game = games[gameName](screen);
     game.start();

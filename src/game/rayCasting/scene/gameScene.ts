@@ -2,7 +2,7 @@ import { BaseScene, Color, IGame, Key, Position } from "core";
 
 import { InfoLabel } from "lib";
 
-import { Player } from "../entity";
+import { Map, Player } from "../entity";
 
 export class GameScene extends BaseScene {
   style = { fillStyle: Color.MarioSky };
@@ -13,7 +13,7 @@ export class GameScene extends BaseScene {
     this.addOnEscHandler();
     this.configureInfoLabel();
 
-    this.add(new Player());
+    this.add(new Map(), new Player());
 
     this.add(InfoLabel.getInstance());
   }
