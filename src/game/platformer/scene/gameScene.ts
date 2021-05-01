@@ -17,7 +17,7 @@ export class GameScene extends BaseScene {
     this.addOnEscHandler();
     this.configureInfoLabel();
 
-    this.add(map.add(player), label, new Bullet(Point.valueOf(0, 100), -90));
+    this.add(map.add(player), label, new Bullet(Point.valueOf(100, 100), -90));
   }
 
   addOnEscHandler() {

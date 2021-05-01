@@ -1,6 +1,7 @@
 import {
   Color,
   defaultBehavior,
+  Delay,
   Direction,
   Entity,
   IBehaviors,
@@ -15,12 +16,7 @@ import {
 
 import { PlayerState } from "./state";
 import { getSpriteByState } from "./sprites";
-
-/*
-В прижке, нельзя присесть.
-В обычном, прыжке два кадра - один прыжок, вторй падение
-В присядке, нельзя прыгать, нельзя блокировать, нельз развернуться. (выстрел сидя два кдра - сидя закрыт и стреляет)
- */
+import {Bullet} from "../bullet";
 
 export class Player extends Entity implements IVelocity {
   private static DefaultSpeed = new Point(2);
@@ -31,6 +27,7 @@ export class Player extends Entity implements IVelocity {
     defaultBehavior,
     Player.processControl,
     Player.moveByControl,
+    Player.shoot,
     moveByVelocityBehavior
   ];
   style = { fillStyle: Color.Blue, strokeStyle: Color.Blue };
@@ -51,6 +48,7 @@ export class Player extends Entity implements IVelocity {
     left: false,
     right: false
   };
+  private shootDelay: Delay = new Delay(.5);
 
   constructor() {
     super();
@@ -125,6 +123,21 @@ export class Player extends Entity implements IVelocity {
       // player.isDucking = false;
       // player.isFiring = false;
       // player.isBlocking = false;
+    }
+  };
+
+  private static shoot = (player: Player, deltaTime: number) => {
+    const { control, parent, shootDelay, direction } = player;
+
+    shootDelay.update(deltaTime);
+    if (control.fire && shootDelay.isDone) {
+      shootDelay.reset();
+
+      const toLeft = direction === Direction.East;
+      const toRight = direction === Direction.West;
+
+      const angle = toLeft ? -90 : toRight ? 90 : 90;
+      parent?.add(new Bullet(player, angle));
     }
   };
 

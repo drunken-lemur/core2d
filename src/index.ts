@@ -46,8 +46,8 @@ class App extends BaseApp {
   }
 
   run = (gameName: Game) => {
-    // const screen = new CanvasScreen(this.canvas, Resolutions.other.$720x240);
-    const screen = new CanvasScreen(this.canvas, Resolutions.other.$1440x480);
+    const screen = new CanvasScreen(this.canvas, Resolutions.other.$720x240);
+    // const screen = new CanvasScreen(this.canvas, Resolutions.other.$1440x480);
 
     const game = games[gameName](screen);
     game.start();
@@ -58,4 +58,4 @@ class App extends BaseApp {
 
 setStyle(document.body, { margin: "0" });
 
-new App().run(Game.RayCasting);
+new App().run(Game.Platformer);

@@ -25,7 +25,7 @@ export class Bullet extends LibBullet {
 
     this.speed = 0;
     this.sprite = getBulletSprite();
-    this.collider = new Box().setStyle({ fillStyle: Color.Red });
+    this.collider = new Box(); // .setStyle({ fillStyle: Color.Red });
 
     bindMethods(this, this.shoot);
 
